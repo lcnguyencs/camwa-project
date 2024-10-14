@@ -40,6 +40,8 @@ build/Release
 
 # Dependency directories
 node_modules/
+frontend/node_modules/
+backend/node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -74,6 +76,8 @@ web_modules/
 
 # dotenv environment variable files
 .env
+backend/.env
+frontend/.env
 .env.development.local
 .env.test.local
 .env.production.local
@@ -93,9 +97,8 @@ dist
 
 # Gatsby files
 .cache/
-# Comment in the public line in if your project uses Gatsby and not Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
-# public
+# Uncomment the next line if your project uses Gatsby (instead of Next.js)
+# public/
 
 # vuepress build output
 .vuepress/dist
@@ -122,7 +125,7 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-# yarn v2
+# Yarn v2
 .yarn/cache
 .yarn/unplugged
 .yarn/build-state.yml
