@@ -1,7 +1,7 @@
 const express = require('express');
 const admin = require('../config/firebaseConfig');
 const { generateToken } = require('../config/jwtConfig');
-const { authenticateJWT, authorizeRoles } = require('../middleware/authMiddleware');
+const { authenticateJWT, authorizeRoles, verifyTokenAndRole } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -17,13 +17,23 @@ router.post('/login', async (req, res) => {
     // Generate JWT including the user's role
     const token = generateToken(decodedToken, userRole);
 
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, role: userRole });
   } catch (error) {
     return res.status(401).json({ message: 'Authentication failed', error: error.message });
   }
 });
 
-// A protected route for testing roles
+// Admin dashboard route - Only accessible to admin users
+router.get('/admin-dashboard', verifyTokenAndRole(['admin']), (req, res) => {
+  res.send('Welcome to the admin dashboard.');
+});
+
+// Faculty dashboard - Accessible to both faculty assistants and lecturers
+router.get('/faculty-dashboard', verifyTokenAndRole(['faculty_assistant', 'lecturer']), (req, res) => {
+  res.send('Welcome to the faculty dashboard.');
+});
+
+// A protected route for faculty assistant roles
 router.get('/protected', authenticateJWT, authorizeRoles('faculty_assistant'), (req, res) => {
   res.send('You are authorized as a faculty assistant');
 });
