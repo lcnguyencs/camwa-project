@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Attendance = sequelize.define('Attendance', {
-  attendance_id: {
+const AttendanceRequest = sequelize.define('AttendanceRequest', {
+  request_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -15,15 +15,23 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.STRING(36),
     references: { model: 'Module', key: 'module_id' },
   },
-  class_date: {
+  lecturer_id: {
+    type: DataTypes.STRING(20),
+    references: { model: 'Lecture', key: 'staff_id' },
+  },
+  request_date: {
     type: DataTypes.DATE,
   },
-  attendance_status: {
+  status: {
     type: DataTypes.STRING(10),
+    defaultValue: 'pending',
+  },
+  reason: {
+    type: DataTypes.TEXT,
   },
 }, {
-  tableName: 'attendance',
+  tableName: 'attendance_request',
   timestamps: false,
 });
 
-module.exports = Attendance;
+module.exports = AttendanceRequest;

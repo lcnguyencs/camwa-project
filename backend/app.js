@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const lecturerRoutes = require('./routes/lecturerRoutes');
+const lecturerRoutes = require('./src/routes/lecturerRoutes');
 const facultyAssistantRoutes = require('./routes/facultyAssistantRoutes');
 
 app.use(express.json());
