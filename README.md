@@ -1,3 +1,7 @@
+Here’s the updated **README.md** for the CAMWA project, reflecting all the details discussed earlier, including Firebase Authentication with JWT, Postgres, and other changes to the setup and configuration:
+
+---
+
 # **CAMWA – Class Attendance Management Web Application**
 
 ## **Overview**
@@ -5,7 +9,7 @@
 CAMWA is a web-based system designed for managing class attendance efficiently. It allows lecturers to track attendance, students to view their attendance records, and admins to manage courses, programs, and users seamlessly.  
 The system consists of:
 - **Frontend:** Angular-based single-page application (SPA).
-- **Backend:** Node.js with Express and MySQL database (using Docker).
+- **Backend:** Node.js with Express and PostgreSQL (using Docker).
 - **Authentication:** Firebase Authentication with JWT for secure access control.
 
 ---
@@ -32,7 +36,7 @@ The system consists of:
   ```
 - **Docker Desktop**: Download from [Docker](https://www.docker.com/products/docker-desktop).
 - **Git**: Download from [Git](https://git-scm.com/).  
-- **MySQL Client (TablePlus)**: [Download TablePlus](https://tableplus.com/download).
+- **Postgres Client (TablePlus)**: [Download TablePlus](https://tableplus.com/download).
 
 ---
 
@@ -49,27 +53,28 @@ The system consists of:
    npm install
    ```
 
-3. **Set up Docker for MySQL:**
+3. **Set up Docker for PostgreSQL:**
    ```bash
-   docker run --name Attendance-Checking-System -e MYSQL_ROOT_PASSWORD=1234 -d -p 3307:3306 mysql:latest
+   docker run --name Attendance-Checking-System-Postgres -e POSTGRES_PASSWORD=1234 -d -p 5433:5432 postgres:latest
    ```
 
-4. **Configure MySQL using TablePlus:**
-   - Connect to the MySQL database with:
+4. **Configure PostgreSQL using TablePlus:**
+   - Connect to the Postgres database with:
      - **Host:** `127.0.0.1`
-     - **Port:** `3307`
-     - **User:** `root`
+     - **Port:** `5433`
+     - **User:** `postgres`
      - **Password:** `1234`
    - Create the database and tables using the SQL script provided in the `/backend` directory.
 
 5. **Create `.env` file in the backend directory:**
    ```bash
    DB_HOST=127.0.0.1
-   DB_PORT=3307
-   DB_USER=root
+   DB_PORT=5433
+   DB_USER=postgres
    DB_PASSWORD=1234
    DB_NAME=camwa_db
    JWT_SECRET=mysecretkey
+   GOOGLE_APPLICATION_CREDENTIALS=./backend/src/config/serviceAccountKey.json
    ```
 
 6. **Start the backend server:**
@@ -146,13 +151,13 @@ The system consists of:
 ```
 camwa-project/
 │
-├── backend/                      # Backend (Node.js + Express)
+├── backend/                      # Backend (Node.js + Express + PostgreSQL)
 │   ├── src/                      # Source code for backend
 │   │   ├── controllers/          # Controllers for API logic
 │   │   ├── models/               # Sequelize models for database tables
 │   │   ├── routes/               # Express routes
 │   │   ├── middleware/           # Middleware for authentication, validation
-│   │   └── config/               # Database configuration
+│   │   └── config/               # Database and Firebase configuration
 │   ├── .env                      # Environment variables
 │   └── server.js                 # Server setup and launch
 │
@@ -247,5 +252,3 @@ We welcome contributions from the community! Please follow these steps to contri
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ---
-
-This **README.md** template ensures that your project is well-documented and easy to set up for both developers and contributors. You can modify the sections as needed to fit the specifics of your project.
