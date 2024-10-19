@@ -1,22 +1,20 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Lecturer = sequelize.define('Lecturer', {
-  staff_id: {
+const Program = sequelize.define('Program', {
+  program_id: {
     type: DataTypes.STRING(20),
     primaryKey: true,
   },
   name: {
     type: DataTypes.STRING(50),
-    allowNull: false,
   },
-  program_id: {
-    type: DataTypes.STRING(20),
-    allowNull: false,
-  }
+  duration: {
+    type: DataTypes.INTEGER,
+  },
 }, {
+  tableName: 'program',
   timestamps: false,
-  tableName: 'lecturer'
 });
 
-module.exports = Lecturer;
+module.exports = Program;
