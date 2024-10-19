@@ -1,13 +1,30 @@
-version: '3.8'
 services:
-  mysql:
-    image: mysql:latest
-    container_name: Attendance-Checking-System
+  db:
+    image: postgres:latest
+    container_name: Attendance-Checking-System-Postgres
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: AttendanceAutomaticCheckingSystem
     ports:
-      - "3307:3306"
+      - "5433:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+      DB_NAME: AttendanceAutomaticCheckingSystem
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/usr/src/app
+
 volumes:
-  mysql_data:
+  postgres_data:
