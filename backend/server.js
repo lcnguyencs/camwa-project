@@ -1,6 +1,6 @@
 const express = require('express');
 const sequelize = require('./src/config/database');  // Sequelize setup for database connection
-const authRoutes = require('./src/routes/authRoutes');    // Import the authentication routes
+const rootRoutes = require('./src/routes/rootRoutes');    // Import the authentication routes
 
 const app = express();  // Initialize the Express app
 const PORT = process.env.PORT || 3000;
@@ -16,7 +16,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);  // Authentication-related routes
+app.use(rootRoutes)
 
 // Start the server only after syncing with the database
 sequelize.sync().then(() => {
