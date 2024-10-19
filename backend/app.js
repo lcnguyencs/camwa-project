@@ -1,10 +1,12 @@
 const express = require('express');
-const app = express();
-const lecturerRoutes = require('./src/routes/lecturerRoutes');
-const facultyAssistantRoutes = require('./routes/facultyAssistantRoutes');
+const cors = require('cors');
+const authRoutes = require('./routes/authRoutes');
 
-app.use(express.json());
-app.use('/api/lecturers', lecturerRoutes);
-app.use('/api/facultyAssistant', facultyAssistantRoutes);
+const app = express();
+app.use(cors());
+app.use(express.json());  // Parse JSON bodies
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 module.exports = app;
