@@ -1,6 +1,7 @@
-const express = require('express');
-const admin = require('../config/firebaseConfig');
-const { authenticateJWT, authorizeRoles, verifyTokenAndRole } = require('../middleware/authMiddleware');
+import express from 'express';
+import admin from '../config/firebaseConfig.js';
+import { authenticateJWT, authorizeRoles, verifyTokenAndRole } from '../middleware/authMiddleware.js';
+import { generateToken } from '../utils/jwtUtils.js';  // Assuming generateToken is implemented in utils
 
 const router = express.Router();
 
@@ -11,10 +12,10 @@ router.post('/login', async (req, res) => {
   try {
     // Verify Firebase ID token
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const userRole = await getUserRole(decodedToken.uid);  // Get role from your database or Firebase custom claims
+    const userRole = await getUserRole(decodedToken.uid);  // Get role from database
 
-    // Generate JWT including the user's role (if you are using JWT separately)
-    const token = generateToken(decodedToken, userRole);  // Assuming generateToken is implemented elsewhere
+    // Generate JWT including the user's role 
+    const token = generateToken(decodedToken, userRole);
 
     return res.status(200).json({ token, role: userRole });
   } catch (error) {
@@ -47,4 +48,4 @@ async function getUserRole(uid) {
   return 'student';  // Default role if no specific role is found
 }
 
-module.exports = router;
+export default router;
