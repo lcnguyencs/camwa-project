@@ -1,31 +1,30 @@
-import express from "express";
-import authRoutes from "./authRoutes.js";
-import attendanceManagement from "../controllers/attendanceManagement.controller.js"; 
-import classManagement from "../controllers/classManagement.controller.js"; 
-import courseManagement from "../controllers/courseManagement.controller.js"; 
-import notificationManagement from "../controllers/notificationManagement.controller.js"; 
+import express from 'express';
+import authRouter from './authRoutes.js';
+import attendanceRouter from './attendance.router.js';
+import classRouter from './class.router.js';
+import courseRouter from './course.router.js';
+import notificationRouter from './notification.router.js';
 
-// Default route for
 const rootRoutes = express.Router();
 
 // Default route for the root
-rootRoutes.get(`/`, (request, response, next) => {
-    response.json({ message: 'Welcome to the API' });
+rootRoutes.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the API' });
 });
 
 // Auth routes
-rootRoutes.use("/auth", authRoutes);
+rootRoutes.use('/auth', authRouter);
 
 // Attendance routes
-rootRoutes.use("/attendance", attendanceManagement);
+rootRoutes.use('/attendance', attendanceRouter);
 
 // Class routes
-rootRoutes.use("/class", classManagement);
+rootRoutes.use('/class', classRouter);
 
 // Course routes
-rootRoutes.use("/course", courseManagement);
+rootRoutes.use('/course', courseRouter);
 
 // Notification routes
-rootRoutes.use("/notification", notificationManagement);
+rootRoutes.use('/notification', notificationRouter);
 
 export default rootRoutes;
