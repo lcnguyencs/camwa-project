@@ -1,4 +1,5 @@
 import notificationService from "../services/notification.service.js";
+import { responseError, responseSuccess } from "../common/helpers/response.helper.js";
 
 const notificationManagement = {
     // Create Notification (Automatic or Manual)
@@ -6,9 +7,11 @@ const notificationManagement = {
         try {
             const notificationData = req.body;
             const result = await notificationService.createNotification(notificationData);
-            res.status(201).json({ message: 'Notification created successfully', data: result });
+            const resData = responseSuccess(result, 'Notification created successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to create notification');
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -17,9 +20,11 @@ const notificationManagement = {
         try {
             const userId = req.params.userId;  // User-specific notifications
             const result = await notificationService.viewNotifications(userId);
-            res.status(200).json({ message: 'Notifications retrieved successfully', data: result });
+            const resData = responseSuccess(result, 'Notifications retrieved successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to retrieve notifications');
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -29,9 +34,11 @@ const notificationManagement = {
             const notificationId = req.params.notificationId;
             const updatedData = req.body;
             const result = await notificationService.updateNotification(notificationId, updatedData);
-            res.status(200).json({ message: 'Notification updated successfully', data: result });
+            const resData = responseSuccess(result, 'Notification updated successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to update notification');
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -40,9 +47,11 @@ const notificationManagement = {
         try {
             const notificationId = req.params.notificationId;
             await notificationService.deleteNotification(notificationId);
-            res.status(200).json({ message: 'Notification deleted successfully' });
+            const resData = responseSuccess(result, 'Notification deleted successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to delete notification');
+            res.status(resError.code).json(resError);
         }
     },
 };

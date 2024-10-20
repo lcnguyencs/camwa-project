@@ -1,4 +1,5 @@
 import classService from "../services/class.service.js";
+import { responseError, responseSuccess } from '../common/helpers/response.helper.js';
 
 const classManagement = {
     // Create Class
@@ -6,9 +7,11 @@ const classManagement = {
         try {
             const classData = req.body;
             const result = await classService.createClass(classData);
-            res.status(201).json({ message: 'Class created successfully', data: result });
+            const resData = responseSuccess(result, 'Class created successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to create class');
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -17,9 +20,11 @@ const classManagement = {
         try {
             const courseId = req.params.courseId;
             const result = await classService.viewClasses(courseId);
-            res.status(200).json({ message: 'Classes retrieved successfully', data: result });
+            const resData = responseSuccess(result, 'Classes retrieved successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to retrieve classes');
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -29,9 +34,11 @@ const classManagement = {
             const classId = req.params.classId;
             const updatedData = req.body;
             const result = await classService.updateClass(classId, updatedData);
-            res.status(200).json({ message: 'Class updated successfully', data: result });
+            const resData = responseSuccess(result, 'Class updated successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to update class');
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -40,9 +47,11 @@ const classManagement = {
         try {
             const classId = req.params.classId;
             await classService.deleteClass(classId);
-            res.status(200).json({ message: 'Class deleted successfully' });
+            const resData = responseSuccess(result, 'Class deleted successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error, 'Failed to delete class');
+            res.status(resError.code).json(resError);
         }
     },
 };

@@ -1,4 +1,5 @@
 import attendanceService from "../services/attendance.service.js";
+import { responseError, responseSuccess } from "../common/helpers/response.helper.js";
 
 const attendanceManagement = {
     // Create Attendance (Automated or Manual)
@@ -6,9 +7,11 @@ const attendanceManagement = {
         try {
             const attendanceData = req.body;
             const result = await attendanceService.createAttendance(attendanceData);
-            res.status(201).json({ message: 'Attendance recorded successfully', data: result });
+            const resData = responseSuccess(result, 'Attendance recorded successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -17,9 +20,11 @@ const attendanceManagement = {
         try {
             const classId = req.params.classId; // or studentId, based on what's required
             const result = await attendanceService.viewAttendance(classId);
-            res.status(200).json({ message: 'Attendance records retrieved successfully', data: result });
+            const resData = responseSuccess(result, 'Attendance records retrieved successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -29,9 +34,11 @@ const attendanceManagement = {
             const attendanceId = req.params.attendanceId;
             const updatedData = req.body;
             const result = await attendanceService.updateAttendance(attendanceId, updatedData);
-            res.status(200).json({ message: 'Attendance updated successfully', data: result });
+            const resData = responseSuccess(result, 'Attendance updated successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
         }
     },
 
@@ -40,9 +47,11 @@ const attendanceManagement = {
         try {
             const attendanceId = req.params.attendanceId;
             await attendanceService.deleteAttendance(attendanceId);
-            res.status(200).json({ message: 'Attendance record deleted successfully' });
+            const resData = responseSuccess(result, 'Attendance record deleted successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            next(error);
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
         }
     },
 };
