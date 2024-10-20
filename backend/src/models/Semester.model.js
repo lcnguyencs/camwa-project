@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../common/sequelize/connect.sequelize.js';
 
 const Semester = sequelize.define('Semester', {
   sem_id: {
@@ -20,4 +20,4 @@ const Semester = sequelize.define('Semester', {
   timestamps: false,
 });
 
-module.exports = Semester;
+export default Semester;

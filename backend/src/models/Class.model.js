@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../common/sequelize/connect.sequelize.js';
 
 const Class = sequelize.define('Class', {
   class_id: {
@@ -28,4 +28,4 @@ const Class = sequelize.define('Class', {
   timestamps: false,
 });
 
-module.exports = Class;
+export default Class;

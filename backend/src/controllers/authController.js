@@ -1,9 +1,9 @@
-const admin = require('../config/firebaseConfig');
-const { generateToken } = require('../config/jwtConfig');
+import admin from '../config/firebaseConfig.js';
+import { generateToken } from '../config/jwtConfig.js';
 
-exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   const { idToken } = req.body;
-  
+
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const userRole = decodedToken.role || 'student';  // Default to student if no role is set
