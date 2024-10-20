@@ -1,10 +1,14 @@
 import admin from 'firebase-admin';
-import serviceAccount from './serviceAccountKey.json' assert { type: 'json' };
+import fs from 'fs';
+import path from 'path';
+
+// Read and parse the JSON file manually
+const serviceAccount = JSON.parse(fs.readFileSync(path.resolve('./src/config/serviceAccountKey.json'), 'utf8'));
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://vgu-attendance-management.firebaseio.com",  // Your project database URL
+  databaseURL: "https://vgu-attendance-management.firebaseio.com"  // Your project database URL
 });
 
 export default admin;

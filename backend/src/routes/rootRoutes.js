@@ -1,9 +1,9 @@
 import express from "express";
 import authRoutes from "./authRoutes.js";
-import attendanceRoutes from "./attendanceRoutes.js"; // Assuming you have attendance routes
-import classRoutes from "./classRoutes.js"; // Assuming you have class routes
-import courseRoutes from "./courseRoutes.js"; // Assuming you have course routes
-import notificationRoutes from "./notificationRoutes.js"; // Assuming you have notification routes
+import attendanceManagement from "../controllers/attendanceManagement.controller.js"; 
+import classManagement from "../controllers/classManagement.controller.js"; 
+import courseManagement from "../controllers/courseManagement.controller.js"; 
+import notificationManagement from "../controllers/notificationManagement.controller.js"; 
 
 // Default route for
 const rootRoutes = express.Router();
@@ -17,15 +17,15 @@ rootRoutes.get(`/`, (request, response, next) => {
 rootRoutes.use("/auth", authRoutes);
 
 // Attendance routes
-rootRoutes.use("/attendance", attendanceRoutes);
+rootRoutes.use("/attendance", attendanceManagement);
 
 // Class routes
-rootRoutes.use("/class", classRoutes);
+rootRoutes.use("/class", classManagement);
 
 // Course routes
-rootRoutes.use("/course", courseRoutes);
+rootRoutes.use("/course", courseManagement);
 
 // Notification routes
-rootRoutes.use("/notification", notificationRoutes);
+rootRoutes.use("/notification", notificationManagement);
 
 export default rootRoutes;
