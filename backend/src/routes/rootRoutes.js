@@ -1,9 +1,9 @@
 import express from 'express';
-import authRouter from './authRoutes.js';
 import attendanceRouter from './attendance.router.js';
 import classRouter from './class.router.js';
 import courseRouter from './course.router.js';
 import notificationRouter from './notification.router.js';
+import authRoutes from './authRoutes.js';
 
 const rootRoutes = express.Router();
 
@@ -13,7 +13,7 @@ rootRoutes.get('/', (req, res) => {
 });
 
 // Auth routes
-rootRoutes.use('/auth', authRouter);
+rootRoutes.use('/auth', authRoutes);
 
 // Attendance routes
 rootRoutes.use('/attendance', attendanceRouter);
