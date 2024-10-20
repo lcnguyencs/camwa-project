@@ -1,5 +1,5 @@
 import express from 'express';
-import sequelize from './src/config/database.js';  // Sequelize setup for database connection
+import sequelize from './src/common/sequelize/connect.sequelize.js';  // Sequelize setup for database connection
 import rootRoutes from './src/routes/rootRoutes.js';  // Import the root routes
 import cors from 'cors';
 

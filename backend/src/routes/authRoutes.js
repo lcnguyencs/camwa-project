@@ -1,27 +1,11 @@
 import express from 'express';
-import admin from '../config/firebaseConfig.js';
-import { authenticateJWT, authorizeRoles, verifyTokenAndRole } from '../middleware/authMiddleware.js';
-import { generateToken } from '../utils/jwtUtils.js';  // Assuming generateToken is implemented in utils
+import { loginUser } from '../controllers/authController.js';  // Import the login logic from the controller
+import { authenticateJWT, authorizeRoles, verifyTokenAndRole } from '../middleware/authMiddleware.js';  // Middleware for token and roles
 
 const router = express.Router();
 
 // User Login - Firebase authentication
-router.post('/login', async (req, res) => {
-  const { idToken } = req.body;
-
-  try {
-    // Verify Firebase ID token
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const userRole = await getUserRole(decodedToken.uid);  // Get role from database
-
-    // Generate JWT including the user's role 
-    const token = generateToken(decodedToken, userRole);
-
-    return res.status(200).json({ token, role: userRole });
-  } catch (error) {
-    return res.status(401).json({ message: 'Authentication failed', error: error.message });
-  }
-});
+router.post('/login', loginUser);
 
 // Admin dashboard route - Only accessible to admin users
 router.get('/admin-dashboard', verifyTokenAndRole(['admin']), (req, res) => {
@@ -37,15 +21,5 @@ router.get('/faculty-dashboard', verifyTokenAndRole(['faculty_assistant', 'lectu
 router.get('/protected', authenticateJWT, authorizeRoles('faculty_assistant'), (req, res) => {
   res.send('You are authorized as a faculty assistant');
 });
-
-// Mock function to get the user's role
-async function getUserRole(uid) {
-  // This should query your database or retrieve the Firebase custom claims
-  if (uid === 'admin_uid') return 'admin';
-  if (uid === 'faculty_uid') return 'faculty_assistant';
-  if (uid === 'student_uid') return 'student';
-  if (uid === 'lecturer_uid') return 'lecturer';
-  return 'student';  // Default role if no specific role is found
-}
 
 export default router;
