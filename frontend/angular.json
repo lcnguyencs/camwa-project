@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "575901d4-cf31-417d-9b4a-1403fcc7e7aa"
+  },
   "version": 1,
   "projects": {
     "camwa-frontend": {
