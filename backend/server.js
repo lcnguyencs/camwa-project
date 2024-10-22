@@ -1,10 +1,11 @@
-const express = require('express');
-const sequelize = require('./src/config/database');  // Sequelize setup for database connection
-const rootRoutes = require('./src/routes/rootRoutes');    // Import the authentication routes
+import express from 'express';
+import sequelize from './src/common/sequelize/connect.sequelize.js';  // Sequelize setup for database connection
+import rootRoutes from './src/routes/rootRoutes.js';  // Import the root routes
+import cors from 'cors';
 
 const app = express();  // Initialize the Express app
 const PORT = process.env.PORT || 3000;
-const cors = require('cors');
+
 app.use(cors());
 
 // Middleware
@@ -16,7 +17,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // Routes
-app.use(rootRoutes)
+app.use(rootRoutes);
 
 // Start the server only after syncing with the database
 sequelize.sync().then(() => {
@@ -25,4 +26,4 @@ sequelize.sync().then(() => {
   });
 }).catch(err => console.error('Database connection failed:', err));
 
-module.exports = app;
+export default app;

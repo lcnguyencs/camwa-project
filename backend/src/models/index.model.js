@@ -1,18 +1,18 @@
-const Student = require('./Student');
-const Program = require('./Program');
-const Intake = require('./Intake');
-const ProgramRegistering = require('./ProgramRegistering');
-const Module = require('./Module');
-const ProgramModules = require('./ProgramModules');
-const Semester = require('./Semester');
-const Class = require('./Class');
-const Exam = require('./Exam');
-const Lecturer = require('./Lecturer');
-const Attendance = require('./Attendance');
-const Iam = require('./Iam');
-const Notification = require('./Notification');
-const AttendanceRequest = require('./AttendanceRequest');
-const ExamTaking = require('./ExamTaking');
+import Student from './Student.js';
+import Program from './Program.js';
+import Intake from './Intake.js';
+import ProgramRegistering from './ProgramRegistering.js';
+import Module from './Module.js';
+import ProgramModules from './ProgramModules.js';
+import Semester from './Semester.js';
+import Class from './Class.js';
+import Exam from './Exam.js';
+import Lecturer from './Lecturer.js';
+import Attendance from './Attendance.js';
+import Iam from './Iam.js';
+import Notification from './Notification.js';
+import AttendanceRequest from './AttendanceRequest.js';
+import ExamTaking from './ExamTaking.js';
 
 // Define Associations
 Program.hasMany(Student, { foreignKey: 'program_id' });
@@ -36,10 +36,10 @@ ProgramModules.belongsTo(Module, { foreignKey: 'module_id' });
 Semester.hasMany(ProgramModules, { foreignKey: 'sem_id' });
 ProgramModules.belongsTo(Semester, { foreignKey: 'sem_id' });
 
-Lecture.hasMany(Class, { foreignKey: 'lecturer_id' });
+Lecturer.hasMany(Class, { foreignKey: 'lecturer_id' });
 Class.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 
-Lecture.hasMany(Module, { foreignKey: 'lecturer_id' });
+Lecturer.hasMany(Module, { foreignKey: 'lecturer_id' });
 Module.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 
 Student.hasMany(Attendance, { foreignKey: 'student_id' });
@@ -66,7 +66,7 @@ ExamTaking.belongsTo(Student, { foreignKey: 'student_id' });
 Module.hasMany(ExamTaking, { foreignKey: 'module_id' });
 ExamTaking.belongsTo(Module, { foreignKey: 'module_id' });
 
-module.exports = {
+export {
   Student,
   Program,
   Intake,

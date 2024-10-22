@@ -1,18 +1,16 @@
-const admin = require('../config/firebaseConfig');
-const { generateToken } = require('../config/jwtConfig');
+import authService from '../services/auth.service.js';
 
-exports.loginUser = async (req, res) => {
-  const { idToken } = req.body;
-  
+
+// User Login Controller
+export const loginUser = async (req, res) => {
   try {
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const userRole = decodedToken.role || 'student';  // Default to student if no role is set
-
-    // Optionally, generate a JWT for session management
-    const jwtToken = generateToken(decodedToken, userRole);
-
-    res.status(200).json({ jwtToken, role: userRole });
+    const result = await authService.login(req)
+    // Send the JWT token and role back to the client
+    const resData = responseSuccess(result, 'User authenticated successfully');
+    return res.status(resData.code).json(resData);
   } catch (error) {
-    res.status(401).json({ message: 'Authentication failed', error: error.message });
+    // Handle errors (e.g., invalid token, user not found)
+    const resError = responseError(error, 'Authentication failed');
+    return res.status(resError.code).json(resError);
   }
 };

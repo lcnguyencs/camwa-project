@@ -1,8 +1,8 @@
-const admin = require('../config/firebaseConfig');  // Firebase Admin SDK initialized
-const jwt = require('jsonwebtoken');
+import admin from '../config/firebaseConfig.js';  // Firebase Admin SDK initialized
+import jwt from 'jsonwebtoken';
 
 // Middleware to authenticate the JWT token
-const authenticateJWT = async (req, res, next) => {
+export const authenticateJWT = async (req, res, next) => {
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
   if (!token) {
@@ -21,7 +21,7 @@ const authenticateJWT = async (req, res, next) => {
 };
 
 // Middleware to authorize based on user roles
-const authorizeRoles = (...allowedRoles) => {
+export const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     const userRole = req.user && req.user.role;  // Ensure the role is set
 
@@ -34,7 +34,7 @@ const authorizeRoles = (...allowedRoles) => {
 };
 
 // Middleware to verify token and role for specific routes
-const verifyTokenAndRole = (requiredRoles) => {
+export const verifyTokenAndRole = (requiredRoles) => {
   return async (req, res, next) => {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
@@ -57,10 +57,4 @@ const verifyTokenAndRole = (requiredRoles) => {
       return res.status(401).json({ message: 'Invalid token', error: error.message });
     }
   };
-};
-
-module.exports = {
-  authenticateJWT,
-  authorizeRoles,
-  verifyTokenAndRole,
 };

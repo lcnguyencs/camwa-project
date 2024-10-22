@@ -1,6 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
+import express from 'express';
+import cors from 'cors';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 app.use(cors());
@@ -9,4 +9,4 @@ app.use(express.json());  // Parse JSON bodies
 // Routes
 app.use('/api/auth', authRoutes);
 
-module.exports = app;
+export default app;
