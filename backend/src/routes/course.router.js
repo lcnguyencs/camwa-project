@@ -13,20 +13,20 @@ courseRouter.put('/faculty-assistant/:courseId/assign-lecturer', courseControlle
 courseRouter.put('/faculty-assistant/:courseId/assign-students', courseController.assignStudentsToCourse);
 
 // General route to view all courses (for Admin/Faculty Assistant)
-courseRouter.get('/admin/courses', courseController.viewCourses);
-courseRouter.get('/faculty-assistant/courses', courseController.viewCourses);
+courseRouter.get('/admin/courses-view', courseController.viewCourses);
+courseRouter.get('/faculty-assistant/courses-view', courseController.viewCourses);
 
 // Lecturer views assigned courses
-courseRouter.get('/lecturer/:lecturerId', courseController.viewCoursesByLecturer);
+courseRouter.get('/lecturer/:lecturerId/courses-view', courseController.viewCoursesByLecturer);
 
 // Student views enrolled courses
-courseRouter.get('/student/:studentId', courseController.viewCoursesByStudent);
+courseRouter.get('/student/:studentId/courses-view', courseController.viewCoursesByStudent);
 
 // Admin/Faculty Assistant updates a course
-courseRouter.put('/admin/courses/:courseId', courseController.updateCourse);
-courseRouter.put('/faculty-assistant/courses/:courseId', courseController.updateCourse);
+courseRouter.put('/admin/:courseId/courses-update', courseController.updateCourse);
+courseRouter.put('/faculty-assistant/:courseId/courses-update', courseController.updateCourse);
 
 // Admin deletes a course
-courseRouter.delete('/admin/courses/:courseId', courseController.deleteCourse);
+courseRouter.delete('/admin/:courseId/courses-delete', courseController.deleteCourse);
 
 export default courseRouter;
