@@ -9,9 +9,11 @@ export const searchInTable = async (model, query) => {
         for (const [key, value] of Object.entries(query)) {
             // Check if the value is a string for partial matching
             if (typeof value === 'string') {
-                whereClause[key] = { [Op.like]: `%${value}%` }; // Partial match
+                whereClause[key] = { [Op.iLike]: `%${value}%` }; // Case-insensitive partial match
+            } else if (typeof value === 'number') {
+                whereClause[key] = value; // Exact match for number types
             } else {
-                whereClause[key] = value; // Exact match for non-string types
+                whereClause[key] = value; // Exact match for non-string and non-number types
             }
         }
 
