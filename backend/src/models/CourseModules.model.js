@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
-const ProgramModules = sequelize.define('ProgramModules', {
-  program_id: {
+const CourseModules = sequelize.define('ProgramModules', {
+  course_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Program', key: 'program_id' },
     primaryKey: true,
@@ -20,10 +20,11 @@ const ProgramModules = sequelize.define('ProgramModules', {
   intake: {
     type: DataTypes.DATE,
     references: { model: 'Intake', key: 'year' },
+    allowNull: false,
   },
 }, {
   tableName: 'program_modules',
   timestamps: false,
 });
 
-export default ProgramModules;
+export default CourseModules;
