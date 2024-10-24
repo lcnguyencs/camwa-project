@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:latest
-    container_name: Attendance-Checking-System-Postgres
+    container_name: Attendance-Checking-System-Postgres1
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
