@@ -17,7 +17,7 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
   },
   lecturer_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Lecture', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'staff_id' },
   },
   request_date: {
     type: DataTypes.DATE,

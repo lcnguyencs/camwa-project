@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
-const CourseModules = sequelize.define('ProgramModules', {
+const IntakeModules = sequelize.define('ProgramModules', {
   course_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Program', key: 'program_id' },
@@ -27,4 +27,4 @@ const CourseModules = sequelize.define('ProgramModules', {
   timestamps: false,
 });
 
-export default CourseModules;
+export default IntakeModules;
