@@ -6,21 +6,14 @@ const courseRouter = express.Router();
 // Admin creates a course
 courseRouter.post('/admin/create-courses', courseController.createCourse);
 
-// Faculty Assistant assigns lecturer to a course
-courseRouter.put('/faculty-assistant/:courseId/assign-lecturer', courseController.assignLecturerToCourse);
+// Faculty Assistant assigns lecturer to an intake module
+courseRouter.put('/faculty-assistant/:intakeModuleId/assign-lecturer', courseController.assignLecturerToIntakeModule);
 
-// Faculty Assistant assigns students to a course
-courseRouter.put('/faculty-assistant/:courseId/assign-students', courseController.assignStudentsToCourse);
+// Faculty Assistant assigns students to an intake module
+courseRouter.put('/faculty-assistant/:intakeModuleId/assign-students', courseController.assignStudentsToIntakeModule);
 
-// General route to view all courses (for Admin/Faculty Assistant)
-courseRouter.get('/admin/courses-view', courseController.viewCourses);
-courseRouter.get('/faculty-assistant/courses-view', courseController.viewCourses);
-
-// Lecturer views assigned courses
-courseRouter.get('/lecturer/:lecturerId/courses-view', courseController.viewCoursesByLecturer);
-
-// Student views enrolled courses
-courseRouter.get('/student/:studentId/courses-view', courseController.viewCoursesByStudent);
+// Faculty Assistant creates classes for intake module
+courseRouter.post('/faculty-assistant/:intakeModuleId/create-classes', courseController.createClassesForIntakeModule);
 
 // Admin/Faculty Assistant updates a course
 courseRouter.put('/admin/:courseId/courses-update', courseController.updateCourse);

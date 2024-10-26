@@ -1,5 +1,7 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
+import Class from '../models/Class.model.js';
+import ExamTaking from '../models/ExamTaking.model.js';
 
 const attendanceService = {
     // Create a new attendance request
@@ -50,6 +52,69 @@ const attendanceService = {
     // Delete attendance by attendance_id
     deleteAttendance: async (attendanceId) => {
         return await Attendance.destroy({ where: { attendance_id: attendanceId } });
+    },
+
+    // Calculate attendance eligibility for a student based on 80% rule
+    calculateEligibility: async (studentId, moduleId) => {
+        const totalClasses = await Class.count({
+            where: { module_id: moduleId }
+        });
+
+        const attendedClasses = await Attendance.count({
+            where: { student_id: studentId, module_id: moduleId, status: 'present' }
+        });
+
+        const attendancePercentage = (attendedClasses / totalClasses) * 100;
+        const eligibilityStatus = attendancePercentage >= 80;
+
+        // Update or create an entry in ExamTaking with eligibility status
+        await ExamTaking.upsert({
+            student_id: studentId,
+            module_id: moduleId,
+            exam_date: null,  // Set this to the actual exam date if known
+            is_eligible: eligibilityStatus
+        });
+
+        return { attendancePercentage, eligibilityStatus: eligibilityStatus ? 'Eligible' : 'Not Eligible' };
+    },
+
+    // Retrieve exam eligibility status for a student
+    viewExamEligibilityStatus: async (studentId, moduleId) => {
+        const examStatus = await ExamTaking.findOne({
+            where: { student_id: studentId, module_id: moduleId }
+        });
+        return examStatus ? examStatus.is_eligible ? 'Eligible' : 'Not Eligible' : 'No Record';
+    },
+
+    // Handle attendance discrepancy - request correction
+    requestAttendanceCorrection: async (studentId, moduleId, requestDetails) => {
+        return await AttendanceRequest.create({
+            student_id: studentId,
+            module_id: moduleId,
+            status: 'pending',
+            ...requestDetails
+        });
+    },
+
+    // Approve or deny attendance correction
+    handleCorrectionRequest: async (requestId, approvalStatus) => {
+        // Update the correction request's status
+        await AttendanceRequest.update(
+            { status: approvalStatus ? 'approved' : 'denied' },
+            { where: { request_id: requestId } }
+        );
+
+        // If approved, update the attendance record accordingly
+        if (approvalStatus) {
+            const request = await AttendanceRequest.findOne({ where: { request_id: requestId } });
+            if (request) {
+                await Attendance.update(
+                    { status: 'present' },  // Assuming correction to mark as present
+                    { where: { student_id: request.student_id, module_id: request.module_id } }
+                );
+            }
+        }
+        return approvalStatus ? 'Correction Approved' : 'Correction Denied';
     }
 };
 

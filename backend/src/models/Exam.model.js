@@ -4,7 +4,7 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 const Exam = sequelize.define('Exam', {
   module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'module', key: 'module_id' },
+    references: { model: 'IntakeModule', key: 'intake_module_id' },
   },
   exam_date: {
     type: DataTypes.DATE,

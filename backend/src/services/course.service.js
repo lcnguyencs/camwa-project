@@ -13,47 +13,66 @@ const courseService = {
         return await Course.findAll();
     },
 
-    // View courses by program (Admin/Faculty Assistant)
-    viewCoursesByProgram: async (programId) => {
-        return await Course.findAll({ where: { program_id: programId } });
-    },
-
     // View courses by lecturer (Lecturer)
     viewCoursesByLecturer: async (lecturerId) => {
-        return await Course.findAll({ where: { lecturer_id: lecturerId } });
+        return await IntakeModule.findAll({
+            where: { lecturer_id: lecturerId },
+            include: [Course]
+        });
     },
 
-    // View courses by intake (Admin/Faculty Assistant)
-    viewCoursesByIntake: async (intake) => {
-        return await Course.findAll({ where: { intake } });
+    // View intake modules by student (Student)
+    viewCoursesForStudent: async (studentId) => {
+        return await IntakeModule.findAll({
+            include: [{
+                model: Student,
+                where: { student_id: studentId }
+            }]
+        });
     },
 
-    // Assign a lecturer to a course (Faculty Assistant)
-    assignLecturerToCourse: async (courseId, lecturerId) => {
+    // Assign a lecturer to an intake module (Faculty Assistant)
+    assignLecturerToIntakeModule: async (intakeModuleId, lecturerId) => {
         // Check if the lecturer exists
         const lecturer = await Lecturer.findByPk(lecturerId);
         if (!lecturer) {
             throw new Error('Lecturer not found');
         }
-        // Assign lecturer to the course
-        return await Course.update({ lecturer_id: lecturerId }, { where: { course_id: courseId } });
+        // Assign lecturer to the intake module
+        return await IntakeModule.update(
+            { lecturer_id: lecturerId },
+            { where: { intake_module_id: intakeModuleId } }
+        );
     },
 
-    // Assign students to a course (Faculty Assistant)
-    assignStudentsToCourse: async (courseId, studentIds) => {
-        // Check if all students exist
+    // Assign students to an intake module (Faculty Assistant)
+    assignStudentsToIntakeModule: async (intakeModuleId, studentIds) => {
         const students = await Student.findAll({ where: { student_id: studentIds } });
         if (students.length !== studentIds.length) {
             throw new Error('Some students not found');
         }
-        // Assign each student to the course (assuming a many-to-many relationship)
-        const course = await Course.findByPk(courseId);
-        if (!course) {
-            throw new Error('Course not found');
+        const intakeModule = await IntakeModule.findByPk(intakeModuleId);
+        if (!intakeModule) {
+            throw new Error('Intake module not found');
         }
-        await course.addStudents(students);
-        return course;
+        await intakeModule.addStudents(students);
+        return intakeModule;
     },
+
+    // Create classes for an intake module (Faculty Assistant)
+    createClassesForIntakeModule: async (intakeModuleId) => {
+        const intakeModule = await IntakeModule.findByPk(intakeModuleId);
+        if (!intakeModule) {
+            throw new Error('Intake module not found');
+        }
+        const classes = [];
+        for (let i = 1; i <= 15; i++) {
+            classes.push({ intake_module_id: intakeModuleId, class_number: i });
+        }
+        await Class.bulkCreate(classes); // Assuming a Class model to store individual classes
+        return classes;
+    },
+
 
     // Update a course by course_id (Admin/Faculty Assistant)
     updateCourse: async (courseId, updatedData) => {
@@ -65,15 +84,6 @@ const courseService = {
         return await Course.destroy({ where: { course_id: courseId } });
     },
 
-    // View courses for a student (Student)
-    viewCoursesForStudent: async (studentId) => {
-        return await Course.findAll({
-            include: {
-                model: Student,
-                where: { student_id: studentId }
-            }
-        });
-    }
 };
 
 export default courseService;
