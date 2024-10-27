@@ -4,16 +4,20 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 const AttendanceRequest = sequelize.define('AttendanceRequest', {
   request_id: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+    allowNull: false, 
   },
   student_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
+    allowNull: false,
   },
-  module_id: {
+  class_id: {  
     type: DataTypes.STRING(36),
-    references: { model: 'Module', key: 'module_id' },
+    allowNull: false,
+  },
+  intake_module_id: {  
+    type: DataTypes.STRING(36),
+    allowNull: false,
   },
   lecturer_id: {
     type: DataTypes.STRING(20),
@@ -32,6 +36,12 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
 }, {
   tableName: 'attendance_request',
   timestamps: false,
+  indexes: [
+    {
+      unique: true,
+      fields: ['request_id', 'class_id', 'intake_module', 'student_id'], 
+    }
+  ]
 });
 
 export default AttendanceRequest;
