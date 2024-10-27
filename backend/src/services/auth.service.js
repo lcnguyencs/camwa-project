@@ -1,31 +1,54 @@
+import bcrypt from 'bcrypt';
 import admin from '../config/firebaseConfig.js';
 import { generateToken } from '../config/jwtConfig.js';
-import Iam from '../models/Iam.model.js';  // Import the Iam model
+import Iam from '../models/Iam.model.js';
 
 const authService = {
-    login: async (req) => {
-        const { idToken } = req.body;  // The ID token sent from the client
-        
-        // Verify Firebase ID token using Firebase Admin SDK
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const { uid, email } = decodedToken;
+  register: async (userData) => {
+    const { acc_id, username, email, password, role } = userData;
 
-        // Retrieve the user role from the Iam database using the UID (Firebase UID)
-        const user = await Iam.findOne({ where: { acc_id: uid } });
+    // Hash the password before saving to the database
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-        if (!user) {
-            throw new Error()
-            return res.status(404).json({ message: 'User not found in the system' });
-        }
+    // Save the user with hashed password
+    const newUser = await Iam.create({
+      acc_id,
+      username,
+      email,
+      password: hashedPassword,
+      role: role || 'student',
+    });
 
-        // Get the user's role, or default to 'student' if no role is found
-        const userRole = user.role || 'student';
+    return newUser;
+  },
 
-        // Generate JWT token including the user's role and Firebase UID
-        const jwtToken = generateToken({ uid, email, role: userRole });
+  login: async (req) => {
+    const { idToken, password } = req.body;  // ID token and password from the client
 
-        return { jwtToken, role: userRole }
+    // Verify Firebase ID token using Firebase Admin SDK
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { uid, email } = decodedToken;
+
+    // Retrieve the user from the database using the UID
+    const user = await Iam.findOne({ where: { acc_id: uid } });
+
+    if (!user) {
+      throw new Error('User not found');
     }
-}
+
+    // Compare the provided password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Invalid password');
+    }
+
+    // Generate JWT token with user's role and Firebase UID
+    const userRole = user.role || 'student';
+    const jwtToken = generateToken({ uid, email, role: userRole });
+
+    return { jwtToken, role: userRole };
+  },
+};
 
 export default authService;
