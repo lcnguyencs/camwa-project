@@ -7,6 +7,9 @@ const authRoutes = express.Router();
 // User Login - Firebase authentication
 authRoutes.post('/login', loginUser);
 
+// Route for admin to create a user
+authRoutes.post('/create-user', verifyTokenAndRole(['admin']), createUser);
+
 // Admin dashboard route - Only accessible to admin users
 authRoutes.get('/admin-dashboard', verifyTokenAndRole(['admin']), (req, res) => {
     res.send('Welcome to the admin dashboard.');
