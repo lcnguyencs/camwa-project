@@ -3,36 +3,18 @@ import classController from '../controllers/classManagement.controller.js';
 
 const classRouter = express.Router();
 
-// Faculty Assistant creates a class
-classRouter.post('/faculty-assistant/create-classes', classController.createClass);
+// Create and update classes (for Faculty Assistant or Admin)
+classRouter.post('/create', classController.createClass);
+classRouter.put('/:classId', classController.updateClass);
+classRouter.delete('/:classId', classController.deleteClass);
 
-// Lecturer views assigned classes
-classRouter.get('/lecturer/:lecturerId/classes-view', classController.viewClassesByLecturer);
+// View classes by role and module
+classRouter.get('/lecturer/:lecturerId', classController.viewClassesByLecturer);
+classRouter.get('/student/:studentId', classController.viewClassesByStudent);
+classRouter.get('/intake-module/:moduleId', classController.viewClassesByModule);
 
-// Student views enrolled classes
-classRouter.get('/student/:studentId/classes-view', classController.viewClassesByStudent);
-
-// Faculty Assistant views classes by module
-classRouter.get('/faculty-assistant/modules/:moduleId/classes-view', classController.viewClassesByModule);
-
-// Faculty Assistant or Lecturer views classes by lecturer
-classRouter.get('/faculty-assistant/lecturers/:lecturerId/classes-view', classController.viewClassesByLecturer);
-classRouter.get('/lecturer/:lecturerId/classes-view', classController.viewClassesByLecturer);
-
-// Lecturer views student attendance for a class
-classRouter.get('/lecturer/:classId/attendance-view', classController.viewStudentAttendance);
-
-// Lecturer views student's attendance rate for the module
-classRouter.get('/lecturer/:moduleId/attendance-rate', classController.viewStudentAttendanceRate);
-
-// Admin/Faculty Assistant updates a class
-classRouter.put('/admin/:classId/classes-update', classController.updateClass);
-classRouter.put('/faculty-assistant/:classId/classes-update', classController.updateClass);
-
-// Admin deletes a class
-classRouter.delete('/admin/classes/:classId/delete', classController.deleteClass);
-
-// Faculty Assistant deletes a class
-classRouter.delete('/faculty-assistant/classes/:classId/delete', classController.deleteClass);
+// Attendance views and rates
+classRouter.get('/attendance/:classId', classController.viewStudentAttendance);
+classRouter.get('/attendance-rate/:moduleId', classController.viewStudentAttendanceRate);
 
 export default classRouter;

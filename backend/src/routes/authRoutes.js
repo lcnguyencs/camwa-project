@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, createUser, refreshToken } from '../controllers/authController.js';
+import { loginUser, createUser, refreshToken, logOutUser } from '../controllers/authController.js';
 import { authenticateJWT, verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const authRoutes = express.Router();

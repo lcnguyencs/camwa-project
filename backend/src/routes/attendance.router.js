@@ -3,29 +3,18 @@ import attendanceController from '../controllers/attendanceManagement.controller
 
 const attendanceRouter = express.Router();
 
-// Admin or Faculty Assistant creates an attendance record (automated or manual)
-attendanceRouter.post('/admin-faculty/create-attendance', attendanceController.createAttendance);
+// Create and manage attendance records (for Admin or Faculty Assistant)
+attendanceRouter.post('/create', attendanceController.createAttendance);
+attendanceRouter.get('/view', attendanceController.viewAttendance);
+attendanceRouter.put('/:attendanceId', attendanceController.updateAttendance);
+attendanceRouter.delete('/:attendanceId', attendanceController.deleteAttendance);
 
-// View attendance records by class or student (Admin/Faculty Assistant)
-attendanceRouter.get('/admin-faculty/attendance-view', attendanceController.viewAttendance);
+// Calculate and view eligibility for exams
+attendanceRouter.get('/eligibility/calculate', attendanceController.calculateEligibility);
+attendanceRouter.get('/eligibility/status', attendanceController.viewExamEligibilityStatus);
 
-// Faculty Assistant or Lecturer updates an attendance record for corrections
-attendanceRouter.put('/faculty-assistant/:attendanceId/update-attendance', attendanceController.updateAttendance);
-attendanceRouter.put('/lecturer/:attendanceId/update-attendance', attendanceController.updateAttendance);
-
-// Faculty Assistant deletes an attendance record by ID
-attendanceRouter.delete('/faculty-assistant/:attendanceId/delete-attendance', attendanceController.deleteAttendance);
-
-// Calculate a student's eligibility for exams based on attendance (Admin/Faculty Assistant)
-attendanceRouter.get('/admin-faculty/calculate-eligibility', attendanceController.calculateEligibility);
-
-// View a student's exam eligibility status for a specific module (Admin/Faculty Assistant)
-attendanceRouter.get('/admin-faculty/eligibility-status', attendanceController.viewExamEligibilityStatus);
-
-// Students submit a request for attendance correction
-attendanceRouter.post('/student/request-correction', attendanceController.requestAttendanceCorrection);
-
-// Faculty Assistant approves or denies an attendance correction request
-attendanceRouter.put('/faculty-assistant/correction/:requestId/approve-deny', attendanceController.handleCorrectionRequest);
+// Attendance correction requests
+attendanceRouter.post('/student/correction', attendanceController.requestAttendanceCorrection);
+attendanceRouter.put('/correction/:requestId', attendanceController.handleCorrectionRequest);
 
 export default attendanceRouter;

@@ -24,8 +24,8 @@ const classService = {
     },
 
     // View classes by module (Admin/Faculty Assistant)
-    viewClassesByModule: async (moduleId) => {
-        return await Class.findAll({ where: { module_id: moduleId } });
+    viewClassesByIntakeModule: async (intakeModuleId) => {
+        return await Class.findAll({ where: { intake_module_id: intakeModuleId } });
     },
 
     // Assign lecturer to a class (Admin/Faculty Assistant)

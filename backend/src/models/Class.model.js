@@ -6,9 +6,9 @@ const Class = sequelize.define('Class', {
     type: DataTypes.STRING(36),
     primaryKey: true,
   },
-  module_id: {
+  intake_module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'Module', key: 'module_id' },
+    references: { model: 'IntakeModules', key: 'intake_module_id' },
   },
   class_date: {
     type: DataTypes.DATE,

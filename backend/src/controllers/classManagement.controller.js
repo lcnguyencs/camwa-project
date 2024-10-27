@@ -16,13 +16,13 @@ const classManagement = {
     },
 
     // View Classes by Module (for Admin/Faculty Assistant)
-    viewClassesByModule: async (req, res, next) => {
+    viewClassesByIntakeModule: async (req, res, next) => {
         try {
-            const moduleId = req.params.moduleId;
-            const result = await classService.viewClassesByModule(moduleId);
+            const intakeModuleId = req.params.intakeModuleId;
+            const result = await classService.viewClassesByIntakeModule(intakeModuleId);
             const resData = responseSuccess(result, 'Classes retrieved successfully for the module');
             res.status(resData.code).json(resData);
-        } catch (error) {
+        } catch (error) {x
             const resError = responseError(error, 'Failed to retrieve classes for the module');
             res.status(resError.code).json(resError);
         }

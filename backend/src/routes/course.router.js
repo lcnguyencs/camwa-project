@@ -3,23 +3,16 @@ import courseController from '../controllers/courseManagement.controller.js';
 
 const courseRouter = express.Router();
 
-// Admin creates a course
-courseRouter.post('/admin/create-courses', courseController.createCourse);
+// Create and manage courses
+courseRouter.post('/create', courseController.createCourse);
+courseRouter.put('/:courseId', courseController.updateCourse);
+courseRouter.delete('/:courseId', courseController.deleteCourse);
 
-// Faculty Assistant assigns lecturer to an intake module
-courseRouter.put('/faculty-assistant/:intakeModuleId/assign-lecturer', courseController.assignLecturerToIntakeModule);
+// Assign lecturers and students to intake modules
+courseRouter.put('/:intakeModuleId/assign-lecturer', courseController.assignLecturerToIntakeModule);
+courseRouter.put('/:intakeModuleId/assign-students', courseController.assignStudentsToIntakeModule);
 
-// Faculty Assistant assigns students to an intake module
-courseRouter.put('/faculty-assistant/:intakeModuleId/assign-students', courseController.assignStudentsToIntakeModule);
-
-// Faculty Assistant creates classes for intake module
-courseRouter.post('/faculty-assistant/:intakeModuleId/create-classes', courseController.createClassesForIntakeModule);
-
-// Admin/Faculty Assistant updates a course
-courseRouter.put('/admin/:courseId/courses-update', courseController.updateCourse);
-courseRouter.put('/faculty-assistant/:courseId/courses-update', courseController.updateCourse);
-
-// Admin deletes a course
-courseRouter.delete('/admin/:courseId/courses-delete', courseController.deleteCourse);
+// Create classes for intake modules
+courseRouter.post('/:intakeModuleId/classes', courseController.createClassesForIntakeModule);
 
 export default courseRouter;

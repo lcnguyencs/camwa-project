@@ -32,7 +32,7 @@ export const refreshToken = async (req, res) => {
 export const logOutUser = async (req, res) => {
   try {
     const result = await authService.logOut();
-    res.status(200).json(result); // Respond with logout success message
+    res.status(200).json(result); 
   } catch (error) {
     res.status(500).json({ message: 'Error logging out user' });
   }
