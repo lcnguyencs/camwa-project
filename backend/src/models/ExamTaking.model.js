@@ -5,16 +5,16 @@ const ExamTaking = sequelize.define('ExamTaking', {
   student_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
-    primaryKey: true,
+    allowNull: false,
   },
   module_id: {
     type: DataTypes.STRING(36),
     references: { model: 'Module', key: 'module_id' },
-    primaryKey: true,
+    allowNull: false,
   },
   exam_date: {
     type: DataTypes.DATE,
-    primaryKey: true,
+    allowNull: false,
   },
   is_eligible: {
     type: DataTypes.BOOLEAN,
@@ -23,6 +23,12 @@ const ExamTaking = sequelize.define('ExamTaking', {
 }, {
   tableName: 'exam_taking',
   timestamps: false,
+  indexes: [
+    {
+      unique: true,
+      fields: ['student_id', 'module_id', 'exam_date'],
+    }
+  ]
 });
 
 export default ExamTaking;

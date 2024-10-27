@@ -5,12 +5,12 @@ const ProgramRegistering = sequelize.define('ProgramRegistering', {
   student_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
-    primaryKey: true,
+    allowNull: false,
   },
   program_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Program', key: 'program_id' },
-    primaryKey: true,
+    allowNull: false,
   },
   intake: {
     type: DataTypes.DATE,
@@ -19,6 +19,12 @@ const ProgramRegistering = sequelize.define('ProgramRegistering', {
 }, {
   tableName: 'program_registering',
   timestamps: false,
+  indexes: [
+    {
+      unique: true,
+      fields: ['student_id', 'program_id'],
+    }
+  ]
 });
 
 export default ProgramRegistering;

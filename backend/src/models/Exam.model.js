@@ -5,10 +5,11 @@ const Exam = sequelize.define('Exam', {
   module_id: {
     type: DataTypes.STRING(36),
     references: { model: 'IntakeModule', key: 'intake_module_id' },
+    allowNull: false,
   },
   exam_date: {
     type: DataTypes.DATE,
-    primaryKey: true,
+    allowNull: false,
   },
   duration: {
     type: DataTypes.INTEGER,
@@ -19,6 +20,12 @@ const Exam = sequelize.define('Exam', {
 }, {
   tableName: 'exam',
   timestamps: false,
+  indexes: [
+    {
+      unique: true,
+      fields: ['module_id', 'exam_date'],
+    }
+  ]
 });
 
 export default Exam;
