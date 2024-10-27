@@ -50,6 +50,11 @@ const authService = {
     return { accessToken, refreshToken, role: userRole };
   },
 
+  logOut: async () => {
+    // In a real application, you might also revoke refresh tokens in the database here
+    return { message: "User logged out successfully" };
+  },
+
   refreshAccessToken: async (refreshToken) => {
     // Verify the refresh token
     const decoded = verifyRefreshToken(refreshToken);

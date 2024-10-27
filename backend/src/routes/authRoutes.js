@@ -10,6 +10,9 @@ authRoutes.post('/login', loginUser);
 // Route to refresh the access token
 authRoutes.post('/refresh-token', refreshToken);
 
+// Route for logging out
+authRoutes.post('/logout', logOutUser);
+
 // Route for admin to create a user
 authRoutes.post('/create-user', verifyTokenAndRole(['admin']), createUser);
 
