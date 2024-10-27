@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import admin from '../config/firebaseConfig.js';
-import { generateToken } from '../config/jwtConfig.js';
+import { generateTokens, verifyRefreshToken } from '../config/jwtConfig.js';
 import Iam from '../models/Iam.model.js';
 
 const authService = {
@@ -43,11 +43,25 @@ const authService = {
       throw new Error('Invalid password');
     }
 
-    // Generate JWT token with user's role and Firebase UID
+    // Generate both access and refresh tokens with user's role and Firebase UID
     const userRole = user.role || 'student';
-    const jwtToken = generateToken({ uid, email, role: userRole });
+    const { accessToken, refreshToken } = generateTokens({ uid, email, role: userRole });
 
-    return { jwtToken, role: userRole };
+    return { accessToken, refreshToken, role: userRole };
+  },
+
+  refreshAccessToken: async (refreshToken) => {
+    // Verify the refresh token
+    const decoded = verifyRefreshToken(refreshToken);
+
+    // Generate new access and refresh tokens if verification is successful
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens({
+      uid: decoded.uid,
+      email: decoded.email,
+      role: decoded.role,
+    });
+
+    return { accessToken, refreshToken: newRefreshToken };
   },
 };
 

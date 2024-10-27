@@ -6,10 +6,6 @@ const classRouter = express.Router();
 // Faculty Assistant creates a class
 classRouter.post('/faculty-assistant/create-classes', classController.createClass);
 
-// View all classes (for Admin/Faculty Assistant)
-classRouter.get('/admin/classes-view', classController.viewClasses);
-classRouter.get('/faculty-assistant/classes-view', classController.viewClasses);
-
 // Lecturer views assigned classes
 classRouter.get('/lecturer/:lecturerId/classes-view', classController.viewClassesByLecturer);
 

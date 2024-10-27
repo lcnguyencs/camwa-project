@@ -1,8 +1,8 @@
 import Class from '../models/Class.model.js';
 import Lecturer from '../models/Lecturer.model.js';
-import Attendance from '../models/Attendance.model.js'; // Assuming an Attendance model exists
-import NotificationService from '../services/notification.service.js'; // Assuming a Notification service exists
-
+import Attendance from '../models/Attendance.model.js'; 
+import NotificationService from '../services/notification.service.js'; 
+import Student from '../models/Student.model.js';
 
 const classService = {
     // Create a new class (Faculty Assistant)

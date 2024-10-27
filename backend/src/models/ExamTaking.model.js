@@ -7,7 +7,7 @@ const ExamTaking = sequelize.define('ExamTaking', {
     references: { model: 'Student', key: 'student_id' },
     allowNull: false,
   },
-  module_id: {
+  intake_module_id: {  
     type: DataTypes.STRING(36),
     references: { model: 'Module', key: 'module_id' },
     allowNull: false,
@@ -26,7 +26,7 @@ const ExamTaking = sequelize.define('ExamTaking', {
   indexes: [
     {
       unique: true,
-      fields: ['student_id', 'module_id', 'exam_date'],
+      fields: ['student_id', 'intake_module_id', 'exam_date'], 
     }
   ]
 });

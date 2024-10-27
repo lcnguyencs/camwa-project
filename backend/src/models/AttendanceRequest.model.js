@@ -39,7 +39,8 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
   indexes: [
     {
       unique: true,
-      fields: ['request_id', 'class_id', 'intake_module', 'student_id'], 
+      fields: ['request_id', 'class_id', 'intake_module_id', 'student_id'], 
+      name: 'unique_attendance_request_index'
     }
   ]
 });

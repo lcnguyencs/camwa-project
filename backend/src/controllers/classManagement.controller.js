@@ -101,13 +101,14 @@ const classManagement = {
         try {
             const classId = req.params.classId;
             await classService.deleteClass(classId);
-            const resData = responseSuccess(result, 'Class deleted successfully');
+            const resData = responseSuccess(null, 'Class deleted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             const resError = responseError(error, 'Failed to delete class');
             res.status(resError.code).json(resError);
         }
     },
+    
 
     // Lecturer views student attendance for a class
     viewStudentAttendance: async (req, res, next) => {

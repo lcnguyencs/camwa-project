@@ -1,23 +1,47 @@
 import jwt from 'jsonwebtoken';
 
 const secret = process.env.JWT_SECRET || 'your_jwt_secret';
+const refreshSecret = process.env.JWT_REFRESH_SECRET || 'your_refresh_jwt_secret';
 
-export const generateToken = (user, role) => {
-  return jwt.sign(
+// Generate Access and Refresh Tokens
+export const generateTokens = (user) => {
+  const accessToken = jwt.sign(
     {
       uid: user.uid,
       email: user.email,
-      role: role,  // Include the user's role in the token
+      role: user.role,
     },
     secret,
-    { expiresIn: '1h' }  // Token expires in 1 hour
+    { expiresIn: '1h' }
   );
+
+  const refreshToken = jwt.sign(
+    {
+      uid: user.uid,
+      email: user.email,
+      role: user.role,
+    },
+    refreshSecret,
+    { expiresIn: '7d' }
+  );
+
+  return { accessToken, refreshToken };
 };
 
+// Verify Access Token
 export const verifyToken = (token) => {
   try {
     return jwt.verify(token, secret);
   } catch (err) {
-    throw new Error('Invalid token');
+    throw new Error('Invalid access token');
+  }
+};
+
+// Verify Refresh Token
+export const verifyRefreshToken = (token) => {
+  try {
+    return jwt.verify(token, refreshSecret);
+  } catch (err) {
+    throw new Error('Invalid refresh token');
   }
 };

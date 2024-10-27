@@ -1,11 +1,14 @@
 import express from 'express';
-import { loginUser } from '../controllers/authController.js';
+import { loginUser, createUser, refreshToken } from '../controllers/authController.js';
 import { authenticateJWT, verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const authRoutes = express.Router();
 
 // User Login - Firebase authentication
 authRoutes.post('/login', loginUser);
+
+// Route to refresh the access token
+authRoutes.post('/refresh-token', refreshToken);
 
 // Route for admin to create a user
 authRoutes.post('/create-user', verifyTokenAndRole(['admin']), createUser);
