@@ -11,7 +11,7 @@ classRouter.delete('/:classId', classController.deleteClass);
 // View classes by role and module
 classRouter.get('/lecturer/:lecturerId', classController.viewClassesByLecturer);
 classRouter.get('/student/:studentId', classController.viewClassesByStudent);
-classRouter.get('/intake-module/:moduleId', classController.viewClassesByModule);
+classRouter.get('/intake-module/:moduleId', classController.viewClassesByIntakeModule);
 
 // Attendance views and rates
 classRouter.get('/attendance/:classId', classController.viewStudentAttendance);

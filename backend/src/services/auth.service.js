@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import admin from '../config/firebaseConfig.js';
 import { generateTokens, verifyRefreshToken } from '../config/jwtConfig.js';
 import Iam from '../models/Iam.model.js';
+import { UnauthorizedError, NotFoundError } from '../common/helpers/error.helper.js';
 
 const authService = {
   register: async (userData) => {
@@ -34,13 +35,13 @@ const authService = {
     const user = await Iam.findOne({ where: { acc_id: uid } });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundError('User not found');
     }
 
     // Compare the provided password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new Error('Invalid password');
+      throw new UnauthorizedError('Invalid password');
     }
 
     // Generate both access and refresh tokens with user's role and Firebase UID
