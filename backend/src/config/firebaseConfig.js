@@ -8,7 +8,7 @@ const serviceAccount = JSON.parse(fs.readFileSync(path.resolve('./src/config/ser
 // Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://vgu-attendance-management.firebaseio.com"  // Your project database URL
+  databaseURL: "https://vgu-attendance-management.firebaseio.com"  
 });
 
 export default admin;

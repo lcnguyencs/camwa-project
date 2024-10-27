@@ -5,6 +5,7 @@ import Iam from '../models/Iam.model.js';  // Import the Iam model
 const authService = {
     login: async (req) => {
         const { idToken } = req.body;  // The ID token sent from the client
+        
         // Verify Firebase ID token using Firebase Admin SDK
         const decodedToken = await admin.auth().verifyIdToken(idToken);
         const { uid, email } = decodedToken;
