@@ -6,9 +6,6 @@ const Iam = sequelize.define('Iam', {
     type: DataTypes.STRING(100),
     primaryKey: true,
   },
-  should_id: {
-    type: DataTypes.STRING(45),
-  },
   username: {
     type: DataTypes.STRING(45),
   },
