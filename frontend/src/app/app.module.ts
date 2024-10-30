@@ -1,15 +1,19 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
-import { environment } from '../environments/environment';
-
+import { NgModule, ModuleWithProviders } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { AppComponent } from "./app.component";
+import { AngularFireModule } from "@angular/fire/compat";
+import { AngularFireAnalyticsModule } from "@angular/fire/compat/analytics";
+import { environment } from "../environments/environment";
+import { SidebarComponent } from "./components/sidebar/sidebar.component";
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
+
+    SidebarComponent,
+    AngularFireModule.initializeApp(
+      environment.firebaseConfig
+    ) as ModuleWithProviders<any>,
     AngularFireAnalyticsModule,
   ],
   providers: [],

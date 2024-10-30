@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "575901d4-cf31-417d-9b4a-1403fcc7e7aa"
+  },
   "version": 1,
   "projects": {
     "camwa-frontend": {
@@ -17,14 +20,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -38,7 +35,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -50,11 +46,11 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "camwa-frontend:build"
+            "buildTarget": "camwa-frontend:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "camwa-frontend:build:production"
+              "buildTarget": "camwa-frontend:build:production"
             }
           }
         }
