@@ -8,6 +8,7 @@ const Class = sequelize.define('Class', {
   },
   intake_module_id: {
     type: DataTypes.STRING(36),
+    allowNull: false,
     references: { model: 'IntakeModules', key: 'intake_module_id' },
   },
   class_date: {
@@ -21,6 +22,7 @@ const Class = sequelize.define('Class', {
   },
   lecturer_id: {
     type: DataTypes.STRING(20),
+    allowNull: true,
     references: { model: 'Lecture', key: 'staff_id' },
   },
 }, {
