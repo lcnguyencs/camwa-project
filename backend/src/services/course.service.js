@@ -1,8 +1,8 @@
 import Course from '../models/Course.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
-import IntakeModule from '../models/IntakeModule.model.js';
-import auditLogService from '../services/auditLog.service.js';
+import IntakeModule from '../models/IntakeModules.model.js';
+import auditLogService from '../services/auditLogService.js';
 
 const courseService = {
     // Create a new course (Admin only)
