@@ -10,7 +10,7 @@ const auditLogService = {
                 timestamp: new Date(),
             });
         } catch (error) {
-            console.error("Failed to log action:", error); // New: Log any logging errors
+            console.error("Failed to log action:", error); 
         }
     },
 };
