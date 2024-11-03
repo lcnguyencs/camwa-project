@@ -18,4 +18,7 @@ courseRouter.put('/:intakeModuleId/assign-students', verifyTokenAndRole(['facult
 // Create classes for intake modules (Faculty Assistant only)
 courseRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['faculty_assistant']), courseController.createClassesForIntakeModule); 
 
+// Export Intake Module Report (Faculty Assistant only)
+courseRouter.get('/:intakeModuleId/export-report', verifyTokenAndRole(['faculty_assistant']), courseController.exportIntakeModuleReport);
+
 export default courseRouter;

@@ -1,6 +1,7 @@
 import Course from '../models/Course.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
+import IntakeModule from '../models/IntakeModule.model.js';
 import auditLogService from '../services/auditLog.service.js';
 
 const courseService = {
@@ -78,6 +79,41 @@ const courseService = {
         await Class.bulkCreate(classes); // Assuming a Class model to store individual classes
         await auditLogService.logAction('faculty_assistant', 'createClasses', { intakeModuleId, classCount });
         return classes;
+    },
+
+    // Get Intake Module Analytics for Export
+    getIntakeModuleAnalytics: async (intakeModuleId) => {
+        // Retrieve students enrolled in the intake module
+        const students = await Student.findAll({
+            include: {
+                model: IntakeModule,
+                where: { intake_module_id: intakeModuleId }
+            }
+        });
+
+        // Retrieve attendance records for each student
+        const attendanceRecords = await Attendance.findAll({
+            where: { intake_module_id: intakeModuleId }
+        });
+
+        // Format the data to structure attendance by student and date
+        const dates = [...new Set(attendanceRecords.map(record => record.class_date))]; // Unique dates
+        const studentsData = students.map(student => {
+            const attendance = {};
+            dates.forEach(date => {
+                const record = attendanceRecords.find(
+                    r => r.student_id === student.student_id && r.class_date === date
+                );
+                attendance[date] = record ? (record.attendance_status === 'Present' ? 'Present' : 'Absent') : 'Absent';
+            });
+            return {
+                id: student.student_id,
+                name: student.name,
+                attendance
+            };
+        });
+
+        return { dates, students: studentsData };
     },
 
 
