@@ -31,7 +31,7 @@ const classService = {
         return !!conflict; // Return true if a conflict is found
     },
 
-    // Create a new class (Faculty Assistant)
+    // Create a new class (Admin)
     createClass: async (classData) => {
         const conflictExists = await classService.checkScheduleConflict(classData); // Corrected to use classData
         if (conflictExists) {
@@ -107,7 +107,7 @@ const classService = {
         return result;
     },
 
-    // Deletes a class by class_id (Faculty Assistant)
+    // Deletes a class by class_id (Admin)
     deleteClass: async (classId) => {
         const hasDependencies = await classService.checkDependencies(classId);
         if (hasDependencies) {
