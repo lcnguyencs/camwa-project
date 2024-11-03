@@ -1,18 +1,21 @@
 import express from 'express';
 import courseController from '../controllers/courseManagement.controller.js';
+import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const courseRouter = express.Router();
 
-// Create and manage courses
-courseRouter.post('/create', courseController.createCourse);
-courseRouter.put('/:courseId', courseController.updateCourse);
-courseRouter.delete('/:courseId', courseController.deleteCourse);
+// Create a course (Admin only)
+courseRouter.post('/create', verifyTokenAndRole(['admin']), courseController.createCourse); 
 
-// Assign lecturers and students to intake modules
-courseRouter.put('/:intakeModuleId/assign-lecturer', courseController.assignLecturerToIntakeModule);
-courseRouter.put('/:intakeModuleId/assign-students', courseController.assignStudentsToIntakeModule);
+// Update and delete courses (Admin/Faculty Assistant)
+courseRouter.put('/:courseId', verifyTokenAndRole(['admin', 'faculty_assistant']), courseController.updateCourse); 
+courseRouter.delete('/:courseId', verifyTokenAndRole(['admin']), courseController.deleteCourse); 
 
-// Create classes for intake modules
-courseRouter.post('/:intakeModuleId/classes', courseController.createClassesForIntakeModule);
+// Assign lecturers and students to intake modules (Faculty Assistant only)
+courseRouter.put('/:intakeModuleId/assign-lecturer', verifyTokenAndRole(['faculty_assistant']), courseController.assignLecturerToIntakeModule); 
+courseRouter.put('/:intakeModuleId/assign-students', verifyTokenAndRole(['faculty_assistant']), courseController.assignStudentsToIntakeModule); 
+
+// Create classes for intake modules (Faculty Assistant only)
+courseRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['faculty_assistant']), courseController.createClassesForIntakeModule); 
 
 export default courseRouter;

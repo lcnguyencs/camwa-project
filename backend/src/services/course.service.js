@@ -1,10 +1,13 @@
 import Course from '../models/Course.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
+import auditLogService from '../services/auditLog.service.js';
 
 const courseService = {
     // Create a new course (Admin only)
     createCourse: async (courseData) => {
+        const course = await Course.create(courseData);
+        await auditLogService.logAction(courseData.createdBy, 'createCourse', course);
         return await Course.create(courseData);
     },
 
@@ -39,10 +42,12 @@ const courseService = {
             throw new Error('Lecturer not found');
         }
         // Assign lecturer to the intake module
-        return await IntakeModule.update(
+        const result = await IntakeModule.update(
             { lecturer_id: lecturerId },
             { where: { intake_module_id: intakeModuleId } }
         );
+        await auditLogService.logAction(lecturerId, 'assignLecturer', { intakeModuleId, lecturerId });
+        return result;
     },
 
     // Assign students to an intake module (Faculty Assistant)
@@ -56,11 +61,12 @@ const courseService = {
             throw new Error('Intake module not found');
         }
         await intakeModule.addStudents(students);
+        await auditLogService.logAction('faculty_assistant', 'assignStudents', { intakeModuleId, studentIds });
         return intakeModule;
     },
 
     // Create classes for an intake module (Faculty Assistant)
-    createClassesForIntakeModule: async (intakeModuleId) => {
+    createClassesForIntakeModule: async (intakeModuleId, classCount = 15) => {
         const intakeModule = await IntakeModule.findByPk(intakeModuleId);
         if (!intakeModule) {
             throw new Error('Intake module not found');
@@ -70,6 +76,7 @@ const courseService = {
             classes.push({ intake_module_id: intakeModuleId, class_number: i });
         }
         await Class.bulkCreate(classes); // Assuming a Class model to store individual classes
+        await auditLogService.logAction('faculty_assistant', 'createClasses', { intakeModuleId, classCount });
         return classes;
     },
 

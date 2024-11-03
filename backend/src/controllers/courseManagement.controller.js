@@ -10,6 +10,7 @@ const courseManagement = {
             const resData = responseSuccess(result, 'Course created successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            console.error("Failed to create course:", error);
             const resError = responseError(error, 'Failed to create course');
             res.status(resError.code).json(resError);
         }
@@ -36,6 +37,7 @@ const courseManagement = {
             const resData = responseSuccess(result, 'Lecturer assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            console.error("Failed to assign lecturer to intake module:", error);
             const resError = responseError(error, 'Failed to assign lecturer to intake module');
             res.status(resError.code).json(resError);
         }
@@ -50,6 +52,7 @@ const courseManagement = {
             const resData = responseSuccess(result, 'Students assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            console.error("Failed to assign students to intake module:", error);
             const resError = responseError(error, 'Failed to assign students to intake module');
             res.status(resError.code).json(resError);
         }
@@ -63,6 +66,7 @@ const courseManagement = {
             const resData = responseSuccess(result, 'Classes created for intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            console.error("Failed to create classes for intake module:", error);
             const resError = responseError(error, 'Failed to create classes for intake module');
             res.status(resError.code).json(resError);
         }
