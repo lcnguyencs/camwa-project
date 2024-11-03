@@ -51,9 +51,15 @@ const authService = {
     return { accessToken, refreshToken, role: userRole };
   },
 
-  logOut: async () => {
-    // In a real application, you might also revoke refresh tokens in the database here
-    return { message: "User logged out successfully" };
+  logOut: async (uid) => {
+    try {
+      // Revoke the user's refresh token (Firebase-specific)
+      await admin.auth().revokeRefreshTokens(uid); 
+      return { message: "User logged out successfully" };
+    } catch (error) {
+      console.error("Failed to revoke tokens during logout:", error); 
+      throw new Error("Logout failed: Unable to revoke tokens");
+    }
   },
 
   refreshAccessToken: async (refreshToken) => {

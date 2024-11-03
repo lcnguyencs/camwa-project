@@ -5,6 +5,7 @@ export const authenticateJWT = async (req, res, next) => {
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
   if (!token) {
+    console.warn("Authorization token missing");
     return res.status(401).json({ message: 'Authorization token missing' });
   }
 
@@ -21,6 +22,7 @@ export const authenticateJWT = async (req, res, next) => {
 
     next();  // Continue to the next middleware or route handler
   } catch (error) {
+    console.error("Invalid token:", error);
     return res.status(401).json({ message: 'Invalid token', error: error.message });
   }
 };
