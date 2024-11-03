@@ -56,30 +56,34 @@ const attendanceService = {
 
     // Calculate attendance eligibility for a student based on 80% rule
     calculateEligibility: async (studentId, moduleId) => {
-        const totalClasses = await Class.count({
-            where: { module_id: moduleId }
-        });
-
+        const totalClasses = await Class.count({ where: { module_id: moduleId } });
+    
         if (totalClasses === 0) {
             return { attendancePercentage: 0, eligibilityStatus: 'No Classes Scheduled' };
         }
-
+    
         const attendedClasses = await Attendance.count({
             where: { student_id: studentId, intake_module_id: moduleId, attendance_status: 'present' }
         });
-
+    
         const attendancePercentage = (attendedClasses / totalClasses) * 100;
         const eligibilityStatus = attendancePercentage >= 80;
-
-        await ExamTaking.upsert({
-            student_id: studentId,
-            intake_module_id: moduleId,
-            exam_date: null,
-            is_eligible: eligibilityStatus
-        });
-
+    
+        try {
+            await ExamTaking.upsert({
+                student_id: studentId,
+                intake_module_id: moduleId,
+                exam_date: null,  // Set this to the actual exam date if known
+                is_eligible: eligibilityStatus
+            });
+        } catch (error) {
+            console.error('Error updating ExamTaking eligibility:', error);
+            throw new Error('Failed to update eligibility status');
+        }
+    
         return { attendancePercentage, eligibilityStatus: eligibilityStatus ? 'Eligible' : 'Not Eligible' };
     },
+    
 
 
     // Retrieve exam eligibility status for a student
