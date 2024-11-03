@@ -60,23 +60,27 @@ const attendanceService = {
             where: { module_id: moduleId }
         });
 
+        if (totalClasses === 0) {
+            return { attendancePercentage: 0, eligibilityStatus: 'No Classes Scheduled' };
+        }
+
         const attendedClasses = await Attendance.count({
-            where: { student_id: studentId, module_id: moduleId, status: 'present' }
+            where: { student_id: studentId, intake_module_id: moduleId, attendance_status: 'present' }
         });
 
         const attendancePercentage = (attendedClasses / totalClasses) * 100;
         const eligibilityStatus = attendancePercentage >= 80;
 
-        // Update or create an entry in ExamTaking with eligibility status
         await ExamTaking.upsert({
             student_id: studentId,
-            module_id: moduleId,
-            exam_date: null,  // Set this to the actual exam date if known
+            intake_module_id: moduleId,
+            exam_date: null,
             is_eligible: eligibilityStatus
         });
 
         return { attendancePercentage, eligibilityStatus: eligibilityStatus ? 'Eligible' : 'Not Eligible' };
     },
+
 
     // Retrieve exam eligibility status for a student
     viewExamEligibilityStatus: async (studentId, moduleId) => {
@@ -109,11 +113,16 @@ const attendanceService = {
             const request = await AttendanceRequest.findOne({ where: { request_id: requestId } });
             if (request) {
                 await Attendance.update(
-                    { status: 'present' },  // Assuming correction to mark as present
+                    { attendance_status: 'present' },  // Assuming correction to mark as present
                     { where: { student_id: request.student_id, module_id: request.module_id } }
                 );
             }
+            console.log(`Correction request ${requestId} approved and attendance updated.`);
+        } else {
+            console.log(`Correction request ${requestId} denied.`);
         }
+
+        
         return approvalStatus ? 'Correction Approved' : 'Correction Denied';
     }
 };

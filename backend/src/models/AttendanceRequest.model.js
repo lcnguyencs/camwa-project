@@ -4,7 +4,9 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 const AttendanceRequest = sequelize.define('AttendanceRequest', {
   request_id: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     allowNull: false, 
+    autoIncrement: true,
   },
   student_id: {
     type: DataTypes.STRING(20),

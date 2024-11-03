@@ -19,6 +19,9 @@ const attendanceManagement = {
     viewAttendance: async (req, res, next) => {
         try {
             const { classId, studentId } = req.query;
+            if (!classId && !studentId) {
+                return res.status(400).json({ message: 'Either classId or studentId must be provided' });
+            }
             let result;
             if (classId) {
                 result = await attendanceService.viewAttendanceByModule(classId);
@@ -32,6 +35,7 @@ const attendanceManagement = {
             res.status(resError.code).json(resError);
         }
     },
+    
 
     // Update Attendance (for corrections)
     updateAttendance: async (req, res, next) => {
@@ -52,7 +56,7 @@ const attendanceManagement = {
         try {
             const attendanceId = req.params.attendanceId;
             await attendanceService.deleteAttendance(attendanceId);
-            const resData = responseSuccess(result, 'Attendance record deleted successfully');
+            const resData = responseSuccess(null, 'Attendance record deleted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             const resError = responseError(error);
