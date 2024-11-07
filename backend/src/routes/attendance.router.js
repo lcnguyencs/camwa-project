@@ -1,4 +1,8 @@
+import express from 'express';
+import attendanceController from '../controllers/attendanceManagement.controller.js';
 import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
+
+const attendanceRouter = express.Router();
 
 // Create and manage attendance records (for Admin or Faculty Assistant)
 attendanceRouter.post('/create', verifyTokenAndRole(['admin', 'faculty_assistant']), attendanceController.createAttendance);
@@ -13,3 +17,5 @@ attendanceRouter.get('/eligibility/status', verifyTokenAndRole(['student', 'lect
 // Attendance correction requests
 attendanceRouter.post('/student/correction', verifyTokenAndRole(['student']), attendanceController.requestAttendanceCorrection);
 attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['admin', 'faculty_assistant']), attendanceController.handleCorrectionRequest);
+
+export default attendanceRouter;
