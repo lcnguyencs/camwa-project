@@ -2,19 +2,42 @@ import Notification from '../models/Notification.model.js';
 
 const notificationService = {
     // Create a new notification
-    createNotification: async (notificationData) => {
-        // Automatically add additional metadata if needed (e.g., timestamps, status)
-        notificationData.status = 'unread'; // default status
-        notificationData.not_date = new Date(); // set creation timestamp
-        return await Notification.create(notificationData);
+    createNotification: async (req, res, next) => {
+        try {
+            const notificationData = req.body;
+            
+            // Check if it’s an auto or manual notification
+            if (notificationData.auto) {
+                // Set specific fields for auto-generated notifications if required
+                notificationData.notification_type = notificationData.notification_type || 'system';
+                notificationData.content = `System notification: ${notificationData.content}`;
+            }
+    
+            const result = await notificationService.createNotification(notificationData);
+    
+            // Only send email if this is a manual notification or has a specified email
+            if (notificationData.receiver_email) {
+                await notificationService.sendNotificationEmail(
+                    notificationData.receiver_email,
+                    notificationData.content
+                );
+            }
+    
+            const resData = responseSuccess(result, 'Notification created successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error, 'Failed to create notification');
+            res.status(resError.code).json(resError);
+        }
     },
+    
 
 
     // View notifications by receiver (user) with ordering and status distinction
     viewNotificationsByReceiver: async (receiverId) => {
         return await Notification.findAll({
             where: { receiver_id: receiverId },
-            order: [['not_date', 'DESC']]
+            order: [['priority', 'DESC'], ['not_date', 'DESC']]
         });
     },
 
@@ -60,10 +83,21 @@ const notificationService = {
         return await Notification.update(updatedData, { where: { notification_id: notificationId } });
     },
 
+    checkDependencies: async (notificationId) => {
+        const notification = await Notification.findByPk(notificationId);
+        // Example dependency check: non-deletable if `is_critical` flag is true
+        return notification && notification.is_critical;
+    },
+    
     // Delete a notification by notification_id (allowed only by authorized users)
     deleteNotification: async (notificationId) => {
+        const hasDependencies = await notificationService.checkDependencies(notificationId);
+        if (hasDependencies) {
+            throw new Error('Cannot delete notification with critical dependencies');
+        }
         return await Notification.destroy({ where: { notification_id: notificationId } });
     },
+    
 
     // Send notification email to user based on notification data (assuming a mail service exists)
     sendNotificationEmail: async (receiverEmail, notificationContent) => {

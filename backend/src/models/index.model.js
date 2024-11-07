@@ -2,7 +2,7 @@ import Student from './Student.js';
 import Program from './Program.js';
 import Intake from './Intake.js';
 import ProgramRegistering from './ProgramRegistering.js';
-import IntakeModule from './IntakeModule.model.js'; // Changed from CourseModules
+import IntakeModule from './IntakeModule.model.js'; 
 import Semester from './Semester.js';
 import Class from './Class.js';
 import Exam from './Exam.js';

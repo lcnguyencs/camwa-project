@@ -65,7 +65,7 @@ const courseService = {
         return intakeModule;
     },
 
-    // Create classes for an intake module (Faculty Assistant)
+    // Create classes for an intake module (Admin)
     createClassesForIntakeModule: async (intakeModuleId, classCount = 15) => {
         const intakeModule = await IntakeModule.findByPk(intakeModuleId);
         if (!intakeModule) {
