@@ -78,7 +78,7 @@ const notificationService = {
 
     // Mark a notification as read and store the read timestamp
     markAsRead: async (notificationId) => {
-        return await Notification.update(
+        const result = await Notification.update(
             { 
                 status: 'read', 
                 read_timestamp: new Date() // store when the notification was read
@@ -87,6 +87,15 @@ const notificationService = {
                 where: { notification_id: notificationId } 
             }
         );
+
+        // Send an email to notify the action if required
+        await notificationService.sendNotificationEmail(
+            receiverEmail,
+            'Notification Marked as Read',
+            `The notification with ID ${notificationId} has been marked as read.`
+        );
+
+        return result;
     },
 
     // Update notification content (allowed only by authorized users like Faculty Assistant or Admin)
@@ -104,21 +113,25 @@ const notificationService = {
     deleteNotification: async (notificationId) => {
         const hasDependencies = await notificationService.checkDependencies(notificationId);
         if (hasDependencies) {
+            // Notify relevant personnel about a critical notification before deletion
+            await notificationService.sendNotificationEmail(
+                receiverEmail,
+                'Critical Notification Deletion Attempt',
+                `An attempt was made to delete a critical notification with ID ${notificationId}.`
+            );
             throw new Error('Cannot delete notification with critical dependencies');
         }
-        return await Notification.destroy({ where: { notification_id: notificationId } });
-    },
-    
+        const result = await Notification.destroy({ where: { notification_id: notificationId } });
+        
+        // Confirm deletion to relevant personnel
+        await notificationService.sendNotificationEmail(
+            receiverEmail,
+            'Notification Deleted',
+            `The notification with ID ${notificationId} has been successfully deleted.`
+        );
 
-    // Send notification email to user based on notification data (assuming a mail service exists)
-    sendNotificationEmail: async (receiverEmail, notificationContent) => {
-        // Assume there's a separate email service that handles sending emails
-        await emailService.sendEmail({
-            to: receiverEmail,
-            subject: 'New Notification',
-            text: notificationContent
-        });
-    }
+        return result;
+    },
 };
 
 export default notificationService;
