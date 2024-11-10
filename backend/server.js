@@ -1,4 +1,5 @@
 import express from 'express';
+import initSwagger from './src/common/swagger/init.swagger.js';
 import sequelize from './src/common/sequelize/connect.sequelize.js';  // Sequelize setup for database connection
 import rootRoutes from './src/routes/rootRoutes.js';  // Import the root routes
 import cors from 'cors';
@@ -16,6 +17,8 @@ app.use(express.json());  // Middleware to parse JSON bodies
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
+// Initialize Swagger
+initSwagger(app);
 
 // Mount the root routes at /api
 app.use('/api', rootRoutes);
