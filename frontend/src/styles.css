@@ -1,0 +1,222 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&display=swap");
+
+:root {
+  --vgu-dark-blue: #0d2240;
+  --vgu-cool-gray: #bdbbbb;
+  --vgu-dark-gray: #656663;
+  --vgu-flag-red: #ec1025;
+}
+* {
+  padding: 0;
+  margin: 0;
+}
+
+/* Alternatively, remove padding from specific text elements */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
+
+body {
+  font-family: "IBM Plex Sans" !important;
+}
+
+.page-container {
+  padding: 24px;
+}
+
+input,
+select,
+table,
+button {
+  font-family: "IBM Plex Sans", sans-serif !important;
+}
+
+/* Style for input, select and button */
+
+input[type="text"],
+select {
+  appearance: none;
+  border: 1px solid var(--vgu-cool-gray);
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 0.5rem;
+  color: #4a5568; /* Darker text color */
+  min-width: 150px;
+}
+.tabs {
+  display: flex;
+  gap: 16px;
+}
+
+button {
+  padding: 8px 12px;
+  appearance: none;
+  background-color: var(--vgu-dark-blue);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 20px;
+  &:hover {
+    background-color: #4a5568; /* Slightly lighter on hover */
+  }
+}
+
+.action-buttons button {
+  margin-right: 8px !important;
+  padding: 6px;
+  appearance: none;
+  background-color: var(--vgu-dark-blue);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px !important;
+  &:hover {
+    background-color: #4a5568;
+  }
+}
+
+.action-buttons button:nth-child(2) {
+  margin-right: 0 !important; /* Remove margin for the second button */
+}
+
+/* Style for table */
+table {
+  border-collapse: collapse;
+  margin-top: 16px;
+  width: auto;
+}
+
+table th {
+  font-size: 20px;
+}
+table th,
+table td {
+  width: auto;
+  border: 1px solid #e2e8f0; /* Light border color */
+  padding: 12px;
+  text-align: left;
+}
+
+table th {
+  background-color: #edf2f7; /* Light grey background for headers */
+  color: #2d3748; /* Dark text color */
+  font-weight: 600;
+}
+
+table tr:nth-child(even) {
+  background-color: #f7fafc; /* Light background color for even rows */
+}
+
+table tr:hover {
+  background-color: #63b3ed; /* Blue color for row hover */
+  color: white;
+}
+
+.modules-info {
+  margin-bottom: 40px;
+  padding-bottom: 24px; /* Add padding for spacing */
+  border-bottom: 2px solid #ccc; /* Thin line */
+}
+
+.modules-info h1 {
+  font-size: 80px;
+  color: var(--vgu-dark-blue);
+}
+
+.modules-info h2 {
+  font-size: 24px;
+  color: var(--vgu-cool-gray);
+}
+
+.class-info h1 {
+  font-size: 64px;
+  color: var(--vgu-dark-blue);
+  & h2 {
+    font-size: 24px;
+    color: var(--vgu-cool-gray);
+  }
+}
+
+.class-details {
+  display: flex;
+  gap: 64px;
+  color: var(--vgu-cool-gray);
+  font-weight: bold;
+  margin-bottom: 40px;
+  padding-bottom: 24px; /* Add padding for spacing */
+  border-bottom: 2px solid #ccc; /* Thin line */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 20px;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+#inviteModal,
+#removeModal {
+  max-width: 500px;
+  height: fit-content; /* Adjust the width as needed */
+  margin: 0 auto; /* Center horizontally */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-60%, -40%); /* To not block the buttons */
+  z-index: 1050; /* Ensure it appears above other content */
+  padding: 0px !important;
+}
+.send-btn {
+  background-color: var(--vgu-dark-blue);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #f56565;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.modal-dialog {
+  margin: 0;
+}
+.modal-content {
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header,
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 16px 0;
+}
+
+.modal-body {
+  padding: 1rem 0;
+}

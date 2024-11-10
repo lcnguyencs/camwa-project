@@ -1,62 +1,79 @@
 .sidebar {
-  background-color: #0a2846;
+  background-color: var(--vgu-dark-blue);
   color: #ffffff;
-  width: 250px;
+  width: 300px;
   height: 100vh;
-  padding: 20px;
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .profile-section {
-  text-align: center;
-  margin-bottom: 20px;
+  display: flex;
+  text-align: left;
+  padding-top: 24px;
+  align-items: center;
 }
 
 .profile-image {
   width: 80px;
   height: 80px;
   border-radius: 50%;
+  margin-right: 16px;
   margin-bottom: 10px;
 }
 
-h3 {
-  margin: 0;
-  font-size: 1.2em;
+.profile-info p.lecturer-name {
+  font-size: 20px;
 }
 
-p {
-  color: #9ba3af;
-  font-size: 0.9em;
+.profile-info p.job-title {
+  color: var(--vgu-cool-gray);
+  font-size: 14px;
+}
+
+.separator {
+  height: 2px;
+  background-color: #ffffff;
+  width: 100%;
+  margin: 24px 0;
 }
 
 .nav-links,
 .bottom-links {
   display: flex;
   flex-direction: column;
+  row-gap: 16px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 10px 0;
+  padding: 6px 6px;
   color: #ffffff;
   text-decoration: none;
   font-size: 1em;
 }
 
-.nav-item .icon {
-  font-size: 1.5em;
-  margin-right: 10px;
+.nav-item svg {
+  width: 36px;
+  height: 36px;
+  margin-right: 16px;
+}
+
+.nav-item h2 {
+  text-transform: uppercase;
 }
 
 .nav-item:hover {
-  background-color: #103559;
+  background-color: #ffffff;
+  color: var(--vgu-dark-blue);
   border-radius: 10px;
-  padding-left: 10px;
+  transition-duration: 300ms;
 }
 
 .bottom-links {
   margin-top: auto;
+  padding-bottom: 24px;
 }

@@ -1,15 +1,12 @@
-<nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
-  <div class="container">
-    <a class="navbar-brand">Angular Router</a>
-    <ul class="nav navbar-nav" routerLinkActive="active">
-      <li class="nav-item"><a class="nav-link" routerLink="home">Home</a></li>
-      <li class="nav-item"><a class="nav-link" routerLink="about">About</a></li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="courses">Courses</a>
-      </li>
-    </ul>
-  </div>
-  <app-sidebar> </app-sidebar>
-</nav>
+<main>
+  <app-sidebar></app-sidebar>
+  <section class="content">
+    <!-- <lecturer-class-view></lecturer-class-view> -->
+    <!-- <lecturer-module-view></lecturer-module-view>
 
-<!-- <router-outlet></router-outlet> -->
+
+
+    <!-- <faculty-assistant-module-view></faculty-assistant-module-view> -->
+    <router-outlet></router-outlet>
+  </section>
+</main>
