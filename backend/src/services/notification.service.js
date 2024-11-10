@@ -1,4 +1,5 @@
 import Notification from '../models/Notification.model.js';
+import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const notificationService = {
     // Create a new notification
@@ -29,6 +30,16 @@ const notificationService = {
             const resError = responseError(error, 'Failed to create notification');
             res.status(resError.code).json(resError);
         }
+    },
+
+    // Send notification email to user based on notification data
+    sendNotificationEmail: async (receiverEmail, notificationContent) => {
+        await sendMail({
+            to: receiverEmail,
+            subject: 'New Notification',
+            text: notificationContent,
+            html: `<b>${notificationContent}</b>`,
+        });
     },
     
 
