@@ -6,6 +6,7 @@ import classAPI from './class.swagger.js';
 import course from './course.swagger.js';
 import notification from './notification.swagger.js';
 
+
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
@@ -42,10 +43,10 @@ const swaggerOptions = {
             ...attendance,
         },
     },
-    apis: ['./routes/*.js'],
+    apis: [],
 };
 
-const swaggerSpec = swaggerJSDoc({ swaggerDefinition: swaggerOptions, apis: [] });
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 function initSwagger(app) {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

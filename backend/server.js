@@ -9,14 +9,9 @@ const app = express();  // Initialize the Express app
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-
 // Middleware
 app.use(express.json());  // Middleware to parse JSON bodies
 
-// Example API route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is working!' });
-});
 // Initialize Swagger
 initSwagger(app);
 
