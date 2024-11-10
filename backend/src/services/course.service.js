@@ -3,6 +3,7 @@ import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
 import IntakeModule from '../models/IntakeModules.model.js';
 import auditLogService from '../services/auditLogService.js';
+import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const courseService = {
     // Create a new course (Admin only)
@@ -48,6 +49,13 @@ const courseService = {
             { where: { intake_module_id: intakeModuleId } }
         );
         await auditLogService.logAction(lecturerId, 'assignLecturer', { intakeModuleId, lecturerId });
+        // Send email notification to lecturer
+        await sendMail({
+            to: 'lecturer@example.com',  // Replace with lecturer's email
+            subject: 'You Have Been Assigned to a New Course',
+            text: `You have been assigned to module ${intakeModuleId}.`,
+            html: `<p>You have been assigned to module <b>${intakeModuleId}</b>.</p>`
+        });
         return result;
     },
 
@@ -63,6 +71,13 @@ const courseService = {
         }
         await intakeModule.addStudents(students);
         await auditLogService.logAction('faculty_assistant', 'assignStudents', { intakeModuleId, studentIds });
+        // Send email notification to students
+        await sendMail({
+            to: 'student@example.com',  // Replace with students' emails
+            subject: 'You Have Been Enrolled in a New Course',
+            text: `You have been enrolled in module ${intakeModuleId}.`,
+            html: `<p>You have been enrolled in module <b>${intakeModuleId}</b>.</p>`
+        });
         return intakeModule;
     },
 

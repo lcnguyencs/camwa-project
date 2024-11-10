@@ -2,6 +2,7 @@ import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
 import Class from '../models/Class.model.js';
 import ExamTaking from '../models/ExamTaking.model.js';
+import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const attendanceService = {
     // Create a new attendance request
@@ -54,36 +55,49 @@ const attendanceService = {
         return await Attendance.destroy({ where: { attendance_id: attendanceId } });
     },
 
-    // Calculate attendance eligibility for a student based on 80% rule
-    calculateEligibility: async (studentId, moduleId) => {
-        const totalClasses = await Class.count({ where: { module_id: moduleId } });
-    
-        if (totalClasses === 0) {
-            return { attendancePercentage: 0, eligibilityStatus: 'No Classes Scheduled' };
-        }
-    
-        const attendedClasses = await Attendance.count({
-            where: { student_id: studentId, intake_module_id: moduleId, attendance_status: 'present' }
-        });
-    
-        const attendancePercentage = (attendedClasses / totalClasses) * 100;
-        const eligibilityStatus = attendancePercentage >= 80;
-    
+    // Calculate attendance eligibility for a student based on the 80% rule
+    calculateEligibility: async (studentId, moduleId, examDate = null) => {
         try {
+            // Count total classes for the given module
+            const totalClasses = await Class.count({ where: { module_id: moduleId } });
+
+            // If there are no classes scheduled, return a default response
+            if (totalClasses === 0) {
+                return { attendancePercentage: 0, eligibilityStatus: 'No Classes Scheduled' };
+            }
+
+            // Count the number of classes the student attended
+            const attendedClasses = await Attendance.count({
+                where: {
+                    student_id: studentId,
+                    intake_module_id: moduleId,
+                    attendance_status: 'present'
+                }
+            });
+
+            // Calculate attendance percentage
+            const attendancePercentage = (attendedClasses / totalClasses) * 100;
+
+            // Determine eligibility based on the 80% rule
+            const isEligible = attendancePercentage >= 80;
+            const eligibilityStatus = isEligible ? 'Eligible' : 'Not Eligible';
+
+            // Update or insert exam eligibility in the ExamTaking table
             await ExamTaking.upsert({
                 student_id: studentId,
                 intake_module_id: moduleId,
-                exam_date: null,  // Set this to the actual exam date if known
-                is_eligible: eligibilityStatus
+                exam_date: examDate,  // Use provided exam date or keep it null if unknown
+                is_eligible: isEligible
             });
+
+            return { attendancePercentage, eligibilityStatus };
         } catch (error) {
-            console.error('Error updating ExamTaking eligibility:', error);
-            throw new Error('Failed to update eligibility status');
+            console.error('Error calculating eligibility:', error);
+            throw new Error('Failed to calculate eligibility');
         }
-    
-        return { attendancePercentage, eligibilityStatus: eligibilityStatus ? 'Eligible' : 'Not Eligible' };
     },
-    
+
+
 
 
     // Retrieve exam eligibility status for a student
@@ -96,12 +110,22 @@ const attendanceService = {
 
     // Handle attendance discrepancy - request correction
     requestAttendanceCorrection: async (studentId, moduleId, requestDetails) => {
-        return await AttendanceRequest.create({
+        const request = await AttendanceRequest.create({
             student_id: studentId,
             module_id: moduleId,
             status: 'pending',
             ...requestDetails
         });
+
+        // Send email notification to student about the correction request submission
+        await sendMail({
+            to: 'student@example.com', // Replace with student's email
+            subject: 'Attendance Correction Request Submitted',
+            text: `Your attendance correction request for module ${moduleId} has been submitted successfully.`,
+            html: `<p>Your attendance correction request for module ${moduleId} has been submitted successfully.</p>`
+        });
+
+        return request;
     },
 
     // Approve or deny attendance correction
@@ -126,7 +150,18 @@ const attendanceService = {
             console.log(`Correction request ${requestId} denied.`);
         }
 
-        
+        const request = await AttendanceRequest.findOne({ where: { request_id: requestId } });
+        if (request) {
+            // Send email notification about the correction decision
+            await sendMail({
+                to: 'student@example.com',  // Replace with student's email
+                subject: `Attendance Correction ${approvalStatus ? 'Approved' : 'Denied'}`,
+                text: `Your attendance correction request for module ${request.module_id} has been ${approvalStatus ? 'approved' : 'denied'}.`,
+                html: `<p>Your attendance correction request for module ${request.module_id} has been ${approvalStatus ? 'approved' : 'denied'}.</p>`
+            });
+        }
+
+
         return approvalStatus ? 'Correction Approved' : 'Correction Denied';
     }
 };

@@ -3,6 +3,7 @@ import admin from '../config/firebaseConfig.js';
 import { generateTokens, verifyRefreshToken } from '../config/jwtConfig.js';
 import Iam from '../models/Iam.model.js';
 import { UnauthorizedError, NotFoundError } from '../common/helpers/error.helper.js';
+import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const authService = {
   register: async (userData) => {
@@ -20,6 +21,15 @@ const authService = {
       password: hashedPassword,
       role: role || 'student',
     });
+
+    // Send email notification for account creation
+    await sendMail({
+      to: newUser.email,
+      subject: 'Welcome to Our Platform',
+      text: `Hello ${newUser.username}, your account has been created successfully.`,
+      html: `<p>Hello ${newUser.username}, your account has been created successfully.</p>`
+    });
+
 
     return newUser;
   },
@@ -54,10 +64,10 @@ const authService = {
   logOut: async (uid) => {
     try {
       // Revoke the user's refresh token (Firebase-specific)
-      await admin.auth().revokeRefreshTokens(uid); 
+      await admin.auth().revokeRefreshTokens(uid);
       return { message: "User logged out successfully" };
     } catch (error) {
-      console.error("Failed to revoke tokens during logout:", error); 
+      console.error("Failed to revoke tokens during logout:", error);
       throw new Error("Logout failed: Unable to revoke tokens");
     }
   },

@@ -4,6 +4,7 @@ import Attendance from '../models/Attendance.model.js';
 import NotificationService from '../services/notification.service.js';
 import Student from '../models/Student.model.js';
 import sequelize from '../common/sequelize/connect.sequelize.js'; // Import sequelize for Op
+import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const { Op } = sequelize;
 
@@ -46,6 +47,14 @@ const classService = {
         } catch (notificationError) {
             console.error('Failed to send class creation notification:', notificationError);
         }
+
+        // Send email notification for class creation
+        await sendMail({
+            to: 'student@example.com', // Replace with list of student emails
+            subject: 'New Class Created',
+            text: `A new class ${newClass.className} has been scheduled.`,
+            html: `<p>A new class <b>${newClass.className}</b> has been scheduled.</p>`
+        });
 
         return newClass;
     },
@@ -96,13 +105,14 @@ const classService = {
         }
 
         const result = await Class.update(updatedData, { where: { class_id: classId } });
-        if (result[0] > 0) {
-            // Notify students and lecturer about the class update
-            try {
-                await NotificationService.sendClassUpdateNotification(classId);
-            } catch (notificationError) {
-                console.error('Failed to send class update notification:', notificationError);
-            }
+        if (result) {
+            // Send email notification for class update
+            await sendMail({
+                to: 'student@example.com', // Replace with list of student emails
+                subject: 'Class Updated',
+                text: `Class ${updatedData.className} has been updated.`,
+                html: `<p>Class <b>${updatedData.className}</b> has been updated.</p>`
+            });
         }
         return result;
     },
@@ -115,13 +125,14 @@ const classService = {
         }
 
         const result = await Class.destroy({ where: { class_id: classId } });
-        if (result > 0) {
-            // Notify students and lecturer about the class deletion
-            try {
-                await NotificationService.sendClassDeletionNotification(classId);
-            } catch (notificationError) {
-                console.error('Failed to send class deletion notification:', notificationError);
-            }
+        if (result) {
+            // Send email notification for class deletion
+            await sendMail({
+                to: 'student@example.com', // Replace with list of student emails
+                subject: 'Class Canceled',
+                text: `Class ${classId} has been canceled.`,
+                html: `<p>Class <b>${classId}</b> has been canceled.</p>`
+            });
         }
         return result;
     },
