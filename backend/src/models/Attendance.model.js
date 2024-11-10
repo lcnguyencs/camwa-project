@@ -11,9 +11,13 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
   },
-  module_id: {
+  intake_module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'Module', key: 'module_id' },
+    references: { model: 'IntakeModule', key: 'intake_module_id' },
+  },
+  class_id: {
+    type: DataTypes.STRING(36),
+    references: { model: 'Class', key: 'class_id' },
   },
   class_date: {
     type: DataTypes.DATE,
@@ -21,9 +25,18 @@ const Attendance = sequelize.define('Attendance', {
   attendance_status: {
     type: DataTypes.STRING(10),
   },
+  is_deleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
 }, {
   tableName: 'attendance',
   timestamps: false,
+  indexes: [
+    { fields: ['student_id'] },
+    { fields: ['intake_module_id'] },
+    { fields: ['class_id'] }
+  ]
 });
 
 export default Attendance;

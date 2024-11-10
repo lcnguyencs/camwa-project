@@ -2,8 +2,7 @@ import Student from './Student.js';
 import Program from './Program.js';
 import Intake from './Intake.js';
 import ProgramRegistering from './ProgramRegistering.js';
-import Module from './Module.js';
-import ProgramModules from './ProgramModules.js';
+import IntakeModule from './IntakeModule.model.js'; 
 import Semester from './Semester.js';
 import Class from './Class.js';
 import Exam from './Exam.js';
@@ -13,66 +12,112 @@ import Iam from './Iam.js';
 import Notification from './Notification.js';
 import AttendanceRequest from './AttendanceRequest.js';
 import ExamTaking from './ExamTaking.js';
+import Course from './Course.js';
 
 // Define Associations
+
+// 1. Program and Student Relationship (Many Students belong to one Program)
 Program.hasMany(Student, { foreignKey: 'program_id' });
 Student.belongsTo(Program, { foreignKey: 'program_id' });
 
+// 2. Intake and Student Relationship (Many Students belong to one Intake)
 Intake.hasMany(Student, { foreignKey: 'intake' });
 Student.belongsTo(Intake, { foreignKey: 'intake' });
 
-Student.hasMany(ProgramRegistering, { foreignKey: 'student_id' });
-ProgramRegistering.belongsTo(Student, { foreignKey: 'student_id' });
+// 3. Program and Course Relationship (A Program has many Courses)
+Program.hasMany(Course, { foreignKey: 'program_id' });
+Course.belongsTo(Program, { foreignKey: 'program_id' });
 
-Program.hasMany(ProgramRegistering, { foreignKey: 'program_id' });
-ProgramRegistering.belongsTo(Program, { foreignKey: 'program_id' });
+// 4. Course and IntakeModule Relationship (A Course has many IntakeModules)
+Course.hasMany(IntakeModule, { foreignKey: 'course_id' });
+IntakeModule.belongsTo(Course, { foreignKey: 'course_id' });
 
-Module.hasMany(Exam, { foreignKey: 'module_id' });
-Exam.belongsTo(Module, { foreignKey: 'module_id' });
+// 5. Intake and IntakeModule Relationship (An Intake has many IntakeModules)
+Intake.hasMany(IntakeModule, { foreignKey: 'intake_id' });
+IntakeModule.belongsTo(Intake, { foreignKey: 'intake_id' });
 
-Module.hasMany(ProgramModules, { foreignKey: 'module_id' });
-ProgramModules.belongsTo(Module, { foreignKey: 'module_id' });
+// 6. Semester and IntakeModule Relationship (A Semester has many IntakeModules)
+Semester.hasMany(IntakeModule, { foreignKey: 'semester_id' });
+IntakeModule.belongsTo(Semester, { foreignKey: 'semester_id' });
 
-Semester.hasMany(ProgramModules, { foreignKey: 'sem_id' });
-ProgramModules.belongsTo(Semester, { foreignKey: 'sem_id' });
+// 7. Lecturer and IntakeModule Relationship (A Lecturer teaches many IntakeModules)
+Lecturer.hasMany(IntakeModule, { foreignKey: 'lecturer_id' });
+IntakeModule.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 
+// 8. Lecturer and Class Relationship (A Lecturer teaches many Classes)
 Lecturer.hasMany(Class, { foreignKey: 'lecturer_id' });
 Class.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 
-Lecturer.hasMany(Module, { foreignKey: 'lecturer_id' });
-Module.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
-
+// 9. Student and Attendance Relationship (A Student has many Attendance records)
 Student.hasMany(Attendance, { foreignKey: 'student_id' });
 Attendance.belongsTo(Student, { foreignKey: 'student_id' });
 
-Module.hasMany(Attendance, { foreignKey: 'module_id' });
-Attendance.belongsTo(Module, { foreignKey: 'module_id' });
+// 10. IntakeModule and Attendance Relationship (An IntakeModule has many Attendance records)
+IntakeModule.hasMany(Attendance, { foreignKey: 'intake_module_id' });
+Attendance.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
 
-Iam.hasMany(Notification, { foreignKey: 'sender_id' });
-Notification.belongsTo(Iam, { foreignKey: 'sender_id' });
-
-Student.hasMany(Notification, { foreignKey: 'receiver_id' });
-Notification.belongsTo(Student, { foreignKey: 'receiver_id' });
-
-Iam.hasMany(AttendanceRequest, { foreignKey: 'lecturer_id' });
-AttendanceRequest.belongsTo(Iam, { foreignKey: 'lecturer_id' });
-
-Student.hasMany(AttendanceRequest, { foreignKey: 'student_id' });
-AttendanceRequest.belongsTo(Student, { foreignKey: 'student_id' });
-
+// 11. Student and ExamTaking Relationship (A Student takes many exams recorded in ExamTaking)
 Student.hasMany(ExamTaking, { foreignKey: 'student_id' });
 ExamTaking.belongsTo(Student, { foreignKey: 'student_id' });
 
-Module.hasMany(ExamTaking, { foreignKey: 'module_id' });
-ExamTaking.belongsTo(Module, { foreignKey: 'module_id' });
+// 12. IntakeModule and ExamTaking Relationship (An IntakeModule has many ExamTaking records)
+IntakeModule.hasMany(ExamTaking, { foreignKey: 'intake_module_id' });
+ExamTaking.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+
+// 13. IntakeModule and Class Relationship (An IntakeModule has many Classes)
+IntakeModule.hasMany(Class, { foreignKey: 'intake_module_id' });
+Class.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+
+// 14. Iam and Notification Relationship (An Iam entity sends many Notifications)
+Iam.hasMany(Notification, { foreignKey: 'sender_id' });
+Notification.belongsTo(Iam, { foreignKey: 'sender_id' });
+
+// 15. Student and Notification Relationship (A Student receives many Notifications)
+Student.hasMany(Notification, { foreignKey: 'receiver_id' });
+Notification.belongsTo(Student, { foreignKey: 'receiver_id' });
+
+// 16. Iam and AttendanceRequest Relationship (An Iam entity processes many Attendance Requests)
+Iam.hasMany(AttendanceRequest, { foreignKey: 'lecturer_id' });
+AttendanceRequest.belongsTo(Iam, { foreignKey: 'lecturer_id' });
+
+// 17. Student and AttendanceRequest Relationship (A Student makes many Attendance Requests)
+Student.hasMany(AttendanceRequest, { foreignKey: 'student_id' });
+AttendanceRequest.belongsTo(Student, { foreignKey: 'student_id' });
+
+// 18. Program and Student (Many-to-Many through ProgramRegistering) - Represents student enrollment in programs
+Program.belongsToMany(Student, {
+  through: ProgramRegistering,
+  foreignKey: 'program_id',
+  otherKey: 'student_id',
+  as: 'students'
+});
+Student.belongsToMany(Program, {
+  through: ProgramRegistering,
+  foreignKey: 'student_id',
+  otherKey: 'program_id',
+  as: 'programs'
+});
+
+// 19. IntakeModule and Student (Many-to-Many through ModuleEnroll) - Represents student enrollment in intake modules
+IntakeModule.belongsToMany(Student, {
+  through: 'ModuleEnroll', // Replace with actual model if defined
+  foreignKey: 'intake_module_id',
+  otherKey: 'student_id',
+  as: 'students'
+});
+Student.belongsToMany(IntakeModule, {
+  through: 'ModuleEnroll', // Replace with actual model if defined
+  foreignKey: 'student_id',
+  otherKey: 'intake_module_id',
+  as: 'intakeModules'
+});
 
 export {
   Student,
   Program,
   Intake,
   ProgramRegistering,
-  Module,
-  ProgramModules,
+  IntakeModule,
   Semester,
   Class,
   Exam,
@@ -82,4 +127,5 @@ export {
   Notification,
   AttendanceRequest,
   ExamTaking,
+  Course,
 };

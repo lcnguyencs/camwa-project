@@ -15,10 +15,10 @@ console.log(`Database Port: ${process.env.DB_PORT}`);
 // Initialize Sequelize with environment variables
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    port: Number(process.env.DB_PORT) || 5432, // Ensure port is a number, with default fallback
     dialect: 'postgres',
-    // Optionally disable logging in production
-    logging: process.env.NODE_ENV !== 'production',
+    // Refined logging option
+    logging: process.env.NODE_ENV !== 'production' ? console.log : false,
 });
 
 // Test the database connection
@@ -29,6 +29,7 @@ sequelize
     })
     .catch(err => {
         console.error('Error connecting to the database:', err);
+        process.exit(1); // Exit if the connection fails
     });
 
 export default sequelize;
