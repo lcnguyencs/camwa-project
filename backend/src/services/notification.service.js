@@ -9,17 +9,18 @@ const notificationService = {
             
             // Check if it’s an auto or manual notification
             if (notificationData.auto) {
-                // Set specific fields for auto-generated notifications if required
                 notificationData.notification_type = notificationData.notification_type || 'system';
                 notificationData.content = `System notification: ${notificationData.content}`;
             }
     
-            const result = await notificationService.createNotification(notificationData);
+            // Directly create notification in the database
+            const result = await Notification.create(notificationData);
     
             // Only send email if this is a manual notification or has a specified email
             if (notificationData.receiver_email) {
                 await notificationService.sendNotificationEmail(
                     notificationData.receiver_email,
+                    'New Notification Created',
                     notificationData.content
                 );
             }
@@ -33,16 +34,14 @@ const notificationService = {
     },
 
     // Send notification email to user based on notification data
-    sendNotificationEmail: async (receiverEmail, notificationContent) => {
+    sendNotificationEmail: async (receiverEmail, subject, content) => {
         await sendMail({
             to: receiverEmail,
-            subject: 'New Notification',
-            text: notificationContent,
-            html: `<b>${notificationContent}</b>`,
+            subject,
+            text: content,
+            html: `<b>${content}</b>`,
         });
     },
-    
-
 
     // View notifications by receiver (user) with ordering and status distinction
     viewNotificationsByReceiver: async (receiverId) => {
@@ -78,22 +77,25 @@ const notificationService = {
 
     // Mark a notification as read and store the read timestamp
     markAsRead: async (notificationId) => {
+        // Fetch notification to get receiverEmail
+        const notification = await Notification.findByPk(notificationId);
         const result = await Notification.update(
             { 
                 status: 'read', 
-                read_timestamp: new Date() // store when the notification was read
+                read_timestamp: new Date()
             }, 
             { 
                 where: { notification_id: notificationId } 
             }
         );
 
-        // Send an email to notify the action if required
-        await notificationService.sendNotificationEmail(
-            receiverEmail,
-            'Notification Marked as Read',
-            `The notification with ID ${notificationId} has been marked as read.`
-        );
+        if (notification && notification.receiver_email) {
+            await notificationService.sendNotificationEmail(
+                notification.receiver_email,
+                'Notification Marked as Read',
+                `The notification with ID ${notificationId} has been marked as read.`
+            );
+        }
 
         return result;
     },
@@ -111,24 +113,27 @@ const notificationService = {
     
     // Delete a notification by notification_id (allowed only by authorized users)
     deleteNotification: async (notificationId) => {
+        const notification = await Notification.findByPk(notificationId);
         const hasDependencies = await notificationService.checkDependencies(notificationId);
-        if (hasDependencies) {
-            // Notify relevant personnel about a critical notification before deletion
+        
+        if (hasDependencies && notification && notification.receiver_email) {
             await notificationService.sendNotificationEmail(
-                receiverEmail,
+                notification.receiver_email,
                 'Critical Notification Deletion Attempt',
                 `An attempt was made to delete a critical notification with ID ${notificationId}.`
             );
             throw new Error('Cannot delete notification with critical dependencies');
         }
+        
         const result = await Notification.destroy({ where: { notification_id: notificationId } });
         
-        // Confirm deletion to relevant personnel
-        await notificationService.sendNotificationEmail(
-            receiverEmail,
-            'Notification Deleted',
-            `The notification with ID ${notificationId} has been successfully deleted.`
-        );
+        if (notification && notification.receiver_email) {
+            await notificationService.sendNotificationEmail(
+                notification.receiver_email,
+                'Notification Deleted',
+                `The notification with ID ${notificationId} has been successfully deleted.`
+            );
+        }
 
         return result;
     },
