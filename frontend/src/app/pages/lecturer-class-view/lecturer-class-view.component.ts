@@ -1,5 +1,7 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
+
+import "bootstrap";
 @Component({
   selector: "lecturer-class-view",
   standalone: true,
@@ -13,14 +15,14 @@ export class LecturerClassViewComponent {
   showRemoveModal: boolean = false;
   // Define the scheduleData array
   scheduleData = [
-    { date: "01/05/2020", time: "9:00 - 10:30" },
-    { date: "01/05/2020", time: "1:00 - 2:30" },
-    { date: "02/05/2020", time: "9:00 - 10:30" },
-    { date: "02/05/2020", time: "1:00 - 2:30" },
-    { date: "03/05/2020", time: "9:00 - 10:30" },
-    { date: "03/05/2020", time: "1:00 - 2:30" },
-    { date: "04/05/2020", time: "9:00 - 10:30" },
-    { date: "04/05/2020", time: "1:00 - 2:30" },
+    { date: "01/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "01/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "02/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "02/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "03/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "03/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "04/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "04/05/2020", startTime: "1:00", endTime: "2:30" },
   ];
 
   memberList = [
@@ -58,14 +60,16 @@ export class LecturerClassViewComponent {
     this.activeTab = tab;
   }
 
+  selectedItem: any;
   // Define the viewItem method
+
   viewItem(item: any) {
-    console.log("Viewing item:", item);
+    this.selectedItem = item;
   }
 
   // Define the editItem method
   editItem(item: any) {
-    console.log("Editing item:", item);
+    this.selectedItem = item;
   }
 
   close() {

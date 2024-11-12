@@ -172,35 +172,22 @@ label {
   justify-content: space-between;
 }
 
-#inviteModal,
-#removeModal {
+.modal {
   max-width: 500px;
   height: fit-content; /* Adjust the width as needed */
   margin: 0 auto; /* Center horizontally */
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-60%, -40%); /* To not block the buttons */
+  transform: translate(-50%, -40%); /* To not block the buttons */
   z-index: 1050; /* Ensure it appears above other content */
   padding: 0px !important;
 }
-.send-btn {
-  background-color: var(--vgu-dark-blue);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
+
+.modal:hover {
+  color: var(--vgu-dark-blue);
 }
 
-.cancel-btn {
-  background-color: #f56565;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
 .modal-dialog {
   margin: 0;
 }
@@ -212,11 +199,33 @@ label {
 .modal-header,
 .modal-footer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start;
   padding: 16px 16px 16px 0;
 }
 
 .modal-body {
   padding: 1rem 0;
+}
+
+.modal-body p {
+  font-weight: normal;
+}
+
+.modal-footer .send-btn {
+  background-color: var(--vgu-dark-blue);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-footer .cancel-btn {
+  background-color: #f56565;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
 }

@@ -57,7 +57,7 @@
         class="modal fade"
         id="inviteModal"
         role="dialog"
-        aria-labelledby="exampleModalLabel"
+        aria-labelledby="inviteModalLabel"
         aria-hidden="true"
       >
         <div class="modal-dialog" role="document">
@@ -172,10 +172,110 @@
         >
           <td>{{ i + 1 }}</td>
           <td>{{ item.date }}</td>
-          <td>{{ item.time }}</td>
-          <td class="action-buttons">
-            <button (click)="viewItem(item)">View</button>
-            <button (click)="editItem(item)">Edit</button>
+          <td>{{ item.startTime }} - {{ item.endTime }}</td>
+
+          <td class="action-buttons d-flex">
+            <!-- view the class detail on specific day -->
+            <div class="view-class">
+              <button
+                data-toggle="modal"
+                data-target="#viewItemModal"
+                (click)="viewItem(item)"
+              >
+                View
+              </button>
+              <div
+                class="modal fade"
+                id="viewItemModal"
+                role="dialog"
+                aria-labelledby="viewItemModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title" id="viewItemModalLabel">
+                        Class detail
+                      </h3>
+                    </div>
+                    <div class="modal-body">
+                      <p>Date: {{ selectedItem?.date }}</p>
+                      <p>
+                        Time: {{ selectedItem?.startTime }} -
+                        {{ selectedItem?.endTime }}
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="cancel-btn" data-dismiss="modal">
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit the class detail on specific day -->
+            <div class="edit-class">
+              <button
+                data-toggle="modal"
+                data-target="#editItemModal"
+                (click)="editItem(item)"
+              >
+                Edit
+              </button>
+              <div
+                class="modal fade"
+                id="editItemModal"
+                role="dialog"
+                aria-labelledby="editItemModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title" id="viewItemModalLabel">
+                        Edit class detail
+                      </h3>
+                    </div>
+                    <div class="modal-body">
+                      <form>
+                        <label for="classDate">Select a date</label>
+                        <input
+                          [placeholder]="selectedItem?.date"
+                          type="date"
+                          id="classDate"
+                          value="selectedItem?.date"
+                        />
+
+                        <div class="d-flex">
+                          <div class="fromTime">
+                            <label for="classTime">From </label>
+                            <input type="time" id="classTime" />
+                          </div>
+                          <div class="toTime">
+                            <label for="classTime">To</label>
+                            <input type="time" id="classTime" />
+                          </div>
+                        </div>
+
+                        <label for="reason">Reason</label>
+                        <input type="text" id="reason" />
+                      </form>
+                    </div>
+
+                    <div class="modal-footer">
+                      <div class="action-buttons">
+                        <button type="submit" class="send-btn">Save</button>
+                        <button class="cancel-btn" data-dismiss="modal">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>

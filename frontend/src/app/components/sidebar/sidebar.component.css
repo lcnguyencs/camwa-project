@@ -67,8 +67,8 @@
 }
 
 .nav-item:hover {
-  background-color: #ffffff;
-  color: var(--vgu-dark-blue);
+  background-color: gray;
+  color: #ffffff;
   border-radius: 10px;
   transition-duration: 300ms;
 }
