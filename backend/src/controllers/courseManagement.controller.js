@@ -1,5 +1,6 @@
 import courseService from "../services/course.service.js";
 import { responseError, responseSuccess } from "../common/helpers/response.helper.js";
+import ExcelJS from 'exceljs';
 
 const courseManagement = {
     // Create Course (Admin only)
@@ -10,6 +11,7 @@ const courseManagement = {
             const resData = responseSuccess(result, 'Course created successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            console.error("Failed to create course:", error);
             const resError = responseError(error, 'Failed to create course');
             res.status(resError.code).json(resError);
         }
@@ -27,56 +29,94 @@ const courseManagement = {
         }
     },
 
-    // View Courses by Lecturer (Lecturer-specific view)
-    viewCoursesByLecturer: async (req, res, next) => {
+    // Assign Lecturer to Intake Module (Faculty Assistant only)
+    assignLecturerToIntakeModule: async (req, res, next) => {
         try {
-            const lecturerId = req.params.lecturerId;
-            const result = await courseService.viewCoursesByLecturer(lecturerId);
-            const resData = responseSuccess(result, 'Courses retrieved successfully for the lecturer');
-            res.status(resData.code).json(resData);
-        } catch (error) {
-            const resError = responseError(error, 'Failed to retrieve courses for the lecturer');
-            res.status(resError.code).json(resError);
-        }
-    },
-
-    // View Courses by Student (Student-specific view)
-    viewCoursesByStudent: async (req, res, next) => {
-        try {
-            const studentId = req.params.studentId;
-            const result = await courseService.viewCoursesForStudent(studentId);
-            const resData = responseSuccess(result, 'Courses retrieved successfully for the student');
-            res.status(resData.code).json(resData);
-        } catch (error) {
-            const resError = responseError(error, 'Failed to retrieve courses for the student');
-            res.status(resError.code).json(resError);
-        }
-    },
-
-    // Assign Lecturer to Course (Faculty Assistant only)
-    assignLecturerToCourse: async (req, res, next) => {
-        try {
-            const courseId = req.params.courseId;
+            const intakeModuleId = req.params.intakeModuleId;
             const lecturerId = req.body.lecturerId;
-            const result = await courseService.assignLecturerToCourse(courseId, lecturerId);
-            const resData = responseSuccess(result, 'Lecturer assigned to course successfully');
+            const result = await courseService.assignLecturerToIntakeModule(intakeModuleId, lecturerId);
+            const resData = responseSuccess(result, 'Lecturer assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error, 'Failed to assign lecturer to course');
+            console.error("Failed to assign lecturer to intake module:", error);
+            const resError = responseError(error, 'Failed to assign lecturer to intake module');
             res.status(resError.code).json(resError);
         }
     },
 
-    // Assign Students to Course (Faculty Assistant only)
-    assignStudentsToCourse: async (req, res, next) => {
+    // Assign Students to Intake Module (Faculty Assistant only)
+    assignStudentsToIntakeModule: async (req, res, next) => {
         try {
-            const courseId = req.params.courseId;
-            const studentIds = req.body.studentIds; // Array of student IDs
-            const result = await courseService.assignStudentsToCourse(courseId, studentIds);
-            const resData = responseSuccess(result, 'Students assigned to course successfully');
+            const intakeModuleId = req.params.intakeModuleId;
+            const studentIds = req.body.studentIds;
+            const result = await courseService.assignStudentsToIntakeModule(intakeModuleId, studentIds);
+            const resData = responseSuccess(result, 'Students assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error, 'Failed to assign students to course');
+            console.error("Failed to assign students to intake module:", error);
+            const resError = responseError(error, 'Failed to assign students to intake module');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Create Classes for Intake Module (Faculty Assistant)
+    createClassesForIntakeModule: async (req, res, next) => {
+        try {
+            const intakeModuleId = req.params.intakeModuleId;
+            const result = await courseService.createClassesForIntakeModule(intakeModuleId);
+            const resData = responseSuccess(result, 'Classes created for intake module successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            console.error("Failed to create classes for intake module:", error);
+            const resError = responseError(error, 'Failed to create classes for intake module');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Export Intake Module Report (Faculty Assistant only)
+    exportIntakeModuleReport: async (req, res, next) => {
+        try {
+            const intakeModuleId = req.params.intakeModuleId;
+            const reportData = await courseService.getIntakeModuleAnalytics(intakeModuleId);
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Intake Module Report');
+
+            // Set up the header row
+            worksheet.columns = [
+                { header: 'No.', key: 'no', width: 5 },
+                { header: 'Student Name', key: 'studentName', width: 30 },
+                { header: 'Student ID', key: 'studentId', width: 15 },
+                // Add dynamic columns for each attendance date
+                ...reportData.dates.map(date => ({ header: date, key: date, width: 15 }))
+            ];
+
+            // Fill in the rows
+            reportData.students.forEach((student, index) => {
+                const row = {
+                    no: index + 1,
+                    studentName: student.name,
+                    studentId: student.id,
+                    ...student.attendance // Spread attendance data with date keys
+                };
+                worksheet.addRow(row);
+            });
+
+            // Set the response headers and send the Excel file
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=intake_module_report.xlsx'
+            );
+
+            await workbook.xlsx.write(res);
+            res.end();
+        } catch (error) {
+            console.error("Failed to export intake module report:", error);
+            const resError = responseError(error, 'Failed to export intake module report');
             res.status(resError.code).json(resError);
         }
     },

@@ -1,23 +1,23 @@
 import express from 'express';
+import initSwagger from './src/common/swagger/init.swagger.js';
 import sequelize from './src/common/sequelize/connect.sequelize.js';  // Sequelize setup for database connection
 import rootRoutes from './src/routes/rootRoutes.js';  // Import the root routes
 import cors from 'cors';
+import { handlerError } from './src/common/helpers/error.helper.js';
 
 const app = express();  // Initialize the Express app
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-
 // Middleware
 app.use(express.json());  // Middleware to parse JSON bodies
 
-// Example API route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is working!' });
-});
+// Initialize Swagger
+initSwagger(app);
 
-// Routes
-app.use(rootRoutes);
+// Mount the root routes at /api
+app.use('/api', rootRoutes);
+app.use(handlerError);
 
 // Start the server only after syncing with the database
 sequelize.sync().then(() => {

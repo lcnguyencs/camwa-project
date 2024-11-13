@@ -1,32 +1,24 @@
 import express from 'express';
 import courseController from '../controllers/courseManagement.controller.js';
+import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const courseRouter = express.Router();
 
-// Admin creates a course
-courseRouter.post('/admin/create-courses', courseController.createCourse);
+// Create a course (Admin only)
+courseRouter.post('/create', verifyTokenAndRole(['admin']), courseController.createCourse); 
 
-// Faculty Assistant assigns lecturer to a course
-courseRouter.put('/faculty-assistant/:courseId/assign-lecturer', courseController.assignLecturerToCourse);
+// Update and delete courses (Admin/Faculty Assistant)
+courseRouter.put('/:courseId', verifyTokenAndRole(['admin', 'faculty_assistant']), courseController.updateCourse); 
+courseRouter.delete('/:courseId', verifyTokenAndRole(['admin']), courseController.deleteCourse); 
 
-// Faculty Assistant assigns students to a course
-courseRouter.put('/faculty-assistant/:courseId/assign-students', courseController.assignStudentsToCourse);
+// Assign lecturers and students to intake modules (Faculty Assistant only)
+courseRouter.put('/:intakeModuleId/assign-lecturer', verifyTokenAndRole(['faculty_assistant']), courseController.assignLecturerToIntakeModule); 
+courseRouter.put('/:intakeModuleId/assign-students', verifyTokenAndRole(['faculty_assistant']), courseController.assignStudentsToIntakeModule); 
 
-// General route to view all courses (for Admin/Faculty Assistant)
-courseRouter.get('/admin/courses-view', courseController.viewCourses);
-courseRouter.get('/faculty-assistant/courses-view', courseController.viewCourses);
+// Create classes for intake modules (Faculty Assistant only)
+courseRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['faculty_assistant']), courseController.createClassesForIntakeModule); 
 
-// Lecturer views assigned courses
-courseRouter.get('/lecturer/:lecturerId/courses-view', courseController.viewCoursesByLecturer);
-
-// Student views enrolled courses
-courseRouter.get('/student/:studentId/courses-view', courseController.viewCoursesByStudent);
-
-// Admin/Faculty Assistant updates a course
-courseRouter.put('/admin/:courseId/courses-update', courseController.updateCourse);
-courseRouter.put('/faculty-assistant/:courseId/courses-update', courseController.updateCourse);
-
-// Admin deletes a course
-courseRouter.delete('/admin/:courseId/courses-delete', courseController.deleteCourse);
+// Export Intake Module Report (Faculty Assistant only)
+courseRouter.get('/:intakeModuleId/export-report', verifyTokenAndRole(['faculty_assistant']), courseController.exportIntakeModuleReport);
 
 export default courseRouter;

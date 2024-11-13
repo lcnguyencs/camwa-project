@@ -10,17 +10,26 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
   student_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
+    allowNull: false,
   },
-  module_id: {
+  class_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'Module', key: 'module_id' },
+    allowNull: false,
+    references: { model: 'Class', key: 'class_id' },
+  },
+  intake_module_id: {
+    type: DataTypes.STRING(36),
+    allowNull: false,
+    references: { model: 'IntakeModule', key: 'intake_module_id' },
   },
   lecturer_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Lecture', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'staff_id' },
   },
   request_date: {
     type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
   },
   status: {
     type: DataTypes.STRING(10),
@@ -32,6 +41,11 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
 }, {
   tableName: 'attendance_request',
   timestamps: false,
+  indexes: [
+    { unique: true, fields: ['class_id', 'intake_module_id', 'student_id'], name: 'unique_attendance_request_index' },
+    { fields: ['student_id'] },  
+    { fields: ['request_date'] },
+  ]
 });
 
 export default AttendanceRequest;
