@@ -20,6 +20,10 @@ const Student = sequelize.define('Student', {
     type: DataTypes.DATE,
     references: { model: 'intake', key: 'year' },
   },
+  acc_id: {
+    type: DataTypes.STRING(100),
+    references: { model: 'iam', key: 'acc_id' },
+  }
 }, {
   tableName: 'student',
   timestamps: false,
