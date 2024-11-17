@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
-
 import "bootstrap";
+
+type TabType = "classSchedule" | "classMembers" | "moduleReport";
 @Component({
   selector: "lecturer-class-view",
   standalone: true,
@@ -10,7 +11,8 @@ import "bootstrap";
   styleUrl: "./lecturer-class-view.component.css",
 })
 export class LecturerClassViewComponent {
-  activeTab: string = "schedule"; // Default active tab
+  activeTab: TabType = "classSchedule"; // Default active tab
+
   showInviteModal: boolean = false;
   showRemoveModal: boolean = false;
   // Define the scheduleData array
@@ -22,7 +24,87 @@ export class LecturerClassViewComponent {
     { date: "03/05/2020", startTime: "9:00", endTime: "10:30" },
     { date: "03/05/2020", startTime: "1:00", endTime: "2:30" },
     { date: "04/05/2020", startTime: "9:00", endTime: "10:30" },
-    { date: "04/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "03/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "04/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "03/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "04/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "03/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "04/05/2020", startTime: "9:00", endTime: "10:30" },
+    { date: "03/05/2020", startTime: "1:00", endTime: "2:30" },
+    { date: "04/05/2020", startTime: "9:00", endTime: "10:30" },
+  ];
+
+  studentList = [
+    {
+      name: "Student 1",
+      id: 14841,
+      status: "A", // A for Absent
+    },
+    {
+      name: "Student 2",
+      id: 17456,
+      status: "P", // P for Present
+    },
+    {
+      name: "Student 3",
+      id: 11134,
+      status: "P",
+    },
+    {
+      name: "Student 4",
+      id: 11045,
+      status: "A",
+    },
+    {
+      name: "Student 5",
+      id: 20045,
+      status: "P",
+    },
+    {
+      name: "Student 6",
+      id: "44493",
+      status: "A",
+    },
+    {
+      name: "Student 5",
+      id: 20045,
+      status: "P",
+    },
+    {
+      name: "Student 6",
+      id: "44493",
+      status: "A",
+    },
+    {
+      name: "Student 5",
+      id: 20045,
+      status: "P",
+    },
+    {
+      name: "Student 6",
+      id: "44493",
+      status: "A",
+    },
+    {
+      name: "Student 5",
+      id: 20045,
+      status: "P",
+    },
+    {
+      name: "Student 6",
+      id: "44493",
+      status: "A",
+    },
+    {
+      name: "Student 5",
+      id: 20045,
+      status: "P",
+    },
+    {
+      name: "Student 6",
+      id: "44493",
+      status: "A",
+    },
   ];
 
   memberList = [
@@ -54,10 +136,31 @@ export class LecturerClassViewComponent {
       role: "Student",
       eligibility: "Ineligible",
     },
+    {
+      no: 4,
+      fullName: "student 3",
+      id: "14844",
+      role: "Student",
+      eligibility: "Ineligible",
+    },
+    {
+      no: 5,
+      fullName: "student 3",
+      id: "14844",
+      role: "Student",
+      eligibility: "Eligible",
+    },
+    {
+      no: 6,
+      fullName: "student 3",
+      id: "14844",
+      role: "Student",
+      eligibility: "Eligible",
+    },
   ];
 
   setActiveTab(tab: string) {
-    this.activeTab = tab;
+    this.activeTab = tab as TabType;
   }
 
   selectedItem: any;

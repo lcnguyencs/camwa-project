@@ -2,11 +2,14 @@
   background-color: var(--vgu-dark-blue);
   color: #ffffff;
   width: 300px;
-  height: 100vh;
+  height: 100vh; /* Set to viewport height */
   padding: 0 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: fixed; /* Fix the sidebar position */
+  left: 0;
+  top: 0;
 }
 
 .profile-section {
@@ -50,7 +53,7 @@
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 6px 6px;
+  padding: 8px;
   color: #ffffff;
   text-decoration: none;
   font-size: 1em;
@@ -67,7 +70,7 @@
 }
 
 .nav-item:hover {
-  background-color: gray;
+  background-color: var(--vgu-light-blue);
   color: #ffffff;
   border-radius: 10px;
   transition-duration: 300ms;

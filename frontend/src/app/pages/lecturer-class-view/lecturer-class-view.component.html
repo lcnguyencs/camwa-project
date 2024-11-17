@@ -21,15 +21,15 @@
   <div class="tabs">
     <button
       class="tab"
-      [class.active]="activeTab === 'schedule'"
-      (click)="setActiveTab('schedule')"
+      [class.active]="activeTab === 'classSchedule'"
+      (click)="setActiveTab('classSchedule')"
     >
       Schedule
     </button>
     <button
       class="tab"
-      [class.active]="activeTab === 'members'"
-      (click)="setActiveTab('members')"
+      [class.active]="activeTab === 'classMembers'"
+      (click)="setActiveTab('classMembers')"
     >
       Members
     </button>
@@ -41,7 +41,7 @@
       Module report
     </button>
 
-    <!-- Remove members -->
+    <!-- Invite members -->
     <div class="invite-member">
       <button
         type="button"
@@ -155,135 +155,205 @@
   </div>
 
   <!-- Schedule tab -->
-  <div *ngIf="activeTab === 'schedule'">
-    <table>
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let item of scheduleData; let i = index"
-          [class.highlight]="i === 2"
-        >
-          <td>{{ i + 1 }}</td>
-          <td>{{ item.date }}</td>
-          <td>{{ item.startTime }} - {{ item.endTime }}</td>
+  <div *ngIf="activeTab === 'classSchedule'">
+    <div class="row">
+      <div class="col-md-5">
+        <table>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let item of scheduleData; let i = index"
+              [class.highlight]="i === 2"
+            >
+              <td>{{ i + 1 }}</td>
+              <td>{{ item.date }}</td>
+              <td>{{ item.startTime }} - {{ item.endTime }}</td>
 
-          <td class="action-buttons d-flex">
-            <!-- view the class detail on specific day -->
-            <div class="view-class">
-              <button
-                data-toggle="modal"
-                data-target="#viewItemModal"
-                (click)="viewItem(item)"
-              >
-                View
-              </button>
-              <div
-                class="modal fade"
-                id="viewItemModal"
-                role="dialog"
-                aria-labelledby="viewItemModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h3 class="modal-title" id="viewItemModalLabel">
-                        Class detail
-                      </h3>
-                    </div>
-                    <div class="modal-body">
-                      <p>Date: {{ selectedItem?.date }}</p>
-                      <p>
-                        Time: {{ selectedItem?.startTime }} -
-                        {{ selectedItem?.endTime }}
-                      </p>
-                    </div>
-                    <div class="modal-footer">
-                      <button class="cancel-btn" data-dismiss="modal">
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <td class="action-buttons d-flex">
+                <!-- view the class detail on specific day -->
+                <button (click)="viewItem(item)">View</button>
+
+                <!-- Edit the class detail on specific day -->
+                <button (click)="editItem(item)">Edit</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-7 border-left">
+        <div class="class-details-container" *ngIf="selectedItem">
+          <div class="header">
+            <h1>Class detail</h1>
+            <div class="class-info">
+              <p>Date: {{ selectedItem?.date }}</p>
+              <p>
+                Time: {{ selectedItem?.startTime }} -
+                {{ selectedItem?.endTime }}
+              </p>
+            </div>
+          </div>
+
+          <div class="content">
+            <!-- Search bar -->
+            <div class="search-container">
+              <input type="number" placeholder="Search student ID" />
             </div>
 
-            <!-- Edit the class detail on specific day -->
-            <div class="edit-class">
-              <button
-                data-toggle="modal"
-                data-target="#editItemModal"
-                (click)="editItem(item)"
-              >
-                Edit
-              </button>
-              <div
-                class="modal fade"
-                id="editItemModal"
-                role="dialog"
-                aria-labelledby="editItemModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h3 class="modal-title" id="viewItemModalLabel">
-                        Edit class detail
-                      </h3>
-                    </div>
-                    <div class="modal-body">
-                      <form>
-                        <label for="classDate">Select a date</label>
-                        <input
-                          [placeholder]="selectedItem?.date"
-                          type="date"
-                          id="classDate"
-                          value="selectedItem?.date"
-                        />
+            <!-- Attendance table -->
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Student name</th>
+                    <th>Student ID</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let student of studentList; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.id }}</td>
+                    <td class="text-center">
+                      <span
+                        [class.present]="student.status === 'P'"
+                        [class.absent]="student.status === 'A'"
+                        class="status-badge"
+                      >
+                        {{ student.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <button
+                          type="button"
+                          class="tab"
+                          data-toggle="modal"
+                          data-target="#editModal"
+                        >
+                          Edit
+                        </button>
 
-                        <div class="d-flex">
-                          <div class="fromTime">
-                            <label for="classTime">From </label>
-                            <input type="time" id="classTime" />
-                          </div>
-                          <div class="toTime">
-                            <label for="classTime">To</label>
-                            <input type="time" id="classTime" />
+                        <!-- Modal content -->
+                        <div
+                          class="modal fade"
+                          id="editModal"
+                          role="dialog"
+                          aria-labelledby="editModalLabel"
+                          aria-hidden="true"
+                        >
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h3 class="modal-title" id="editModalLabel">
+                                  Edit attendance
+                                </h3>
+                              </div>
+                              <!-- <div class="modal-body">
+                                <form>
+                                  <label for="role">Role</label>
+                                  <select id="role">
+                                    <option>Lecturer</option>
+                                    <option>Student</option>
+                                  </select>
+
+                                  <label for="fullName">Full name</label>
+                                  <input
+                                    type="text"
+                                    id="fullName"
+                                    value="Ngoc Tran Hong"
+                                  />
+
+                                  <label for="memberId">Member ID</label>
+                                  <input
+                                    type="text"
+                                    id="memberId"
+                                    value="14841"
+                                  />
+
+                                  <label for="email">Email</label>
+                                  <input
+                                    type="email"
+                                    id="email"
+                                    value="ngoctranhong@vgu.edu.vn"
+                                  />
+                                </form>
+                              </div> -->
+                              <div class="modal-body">
+                                <form>
+                                  <div class="form-group">
+                                    <label for="studentId">Student ID</label>
+                                    <input
+                                      type="number"
+                                      id="studentId"
+                                      value=""
+                                      class="form-control"
+                                    />
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="program">Program</label>
+                                    <select id="program" class="form-control">
+                                      <option selected>CSE</option>
+                                      <option>BBA</option>
+                                      <option>MEN</option>
+                                    </select>
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select id="status" class="form-control">
+                                      <option>Present</option>
+                                      <option selected>Absent</option>
+                                    </select>
+                                  </div>
+
+                                  <div class="form-group">
+                                    <label for="reasons">Reasons</label>
+                                    <select id="reasons" class="form-control">
+                                      <option selected>False attendance</option>
+                                      <option>Medical leave</option>
+                                      <option>Other</option>
+                                    </select>
+                                  </div>
+                                </form>
+                              </div>
+
+                              <div class="modal-footer">
+                                <button type="submit" class="send-btn">
+                                  Save
+                                </button>
+                                <button class="cancel-btn" data-dismiss="modal">
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
-
-                        <label for="reason">Reason</label>
-                        <input type="text" id="reason" />
-                      </form>
-                    </div>
-
-                    <div class="modal-footer">
-                      <div class="action-buttons">
-                        <button type="submit" class="send-btn">Save</button>
-                        <button class="cancel-btn" data-dismiss="modal">
-                          Cancel
-                        </button>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!-- Members tab  -->
-  <div *ngIf="activeTab === 'members'">
+    <!-- Members tab  -->
+  </div>
+  <div *ngIf="activeTab === 'classMembers'">
     <table>
       <thead>
         <tr>

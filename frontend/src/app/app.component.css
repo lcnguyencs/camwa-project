@@ -1,3 +1,11 @@
-main {
+.app-container {
   display: flex;
+}
+
+.main-content {
+  margin-left: 300px;
+  /* Same as sidebar width */
+  width: calc(100% - 300px);
+  min-height: 100vh;
+  overflow-y: auto;
 }
