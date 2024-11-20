@@ -1,0 +1,113 @@
+input,
+select {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* .search-container {
+  width: 50%;
+  input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+} */
+
+/* .table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+} */
+.table-wrapper {
+  /* flex: 1; */
+  height: 80vh;
+  overflow: hidden;
+  position: relative;
+
+  .table {
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: white;
+
+      th {
+        background: white;
+        border-bottom: 2px solid #dee2e6;
+      }
+    }
+
+    tbody {
+      display: block;
+      overflow-y: auto;
+      height: 70vh;
+    }
+
+    thead,
+    tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    th:first-child,    /* Or use th:nth-child(1) */
+    td:first-child {
+      width: 60px; /* Fixed width */
+      min-width: 60px; /* Ensures minimum width */
+      max-width: 60px; /* Ensures maximum width */
+    }
+  }
+}
+
+.class-details-container {
+  background: #fff;
+  height: 100%;
+
+  .header {
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    .class-info {
+      p {
+        margin-bottom: 5px;
+        color: #666;
+      }
+    }
+  }
+
+  .search-container {
+    width: 50%;
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+
+    &.present {
+      background-color: #e6ffe6;
+      color: #008000;
+    }
+
+    &.absent {
+      background-color: #ffe6e6;
+      color: #ff0000;
+    }
+  }
+}

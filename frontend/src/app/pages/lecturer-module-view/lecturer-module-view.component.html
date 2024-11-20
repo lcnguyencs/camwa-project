@@ -1,0 +1,48 @@
+<div class="page-container">
+  <div class="modules-info">
+    <h1>Modules</h1>
+    <h2>Winter Semester, 2024</h2>
+  </div>
+
+  <div class="search-filters">
+    <input type="text" placeholder="Module name" />
+    <select>
+      <option value="" disabled selected hidden>Program</option>
+      <option value="CSE">CSE</option>
+      <option value="ITS">ITS</option>
+      <!-- Add more options here -->
+    </select>
+    <select>
+      <option value="" disabled selected hidden>Semester</option>
+      <option value="WS 2024">WS 2024</option>
+      <!-- Add more options here -->
+    </select>
+    <select>
+      <option value="" disabled selected hidden>Intake</option>
+      <option value="2020">2020</option>
+      <!-- Add more options here -->
+    </select>
+    <button>Search</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>m.ID</th>
+        <th>Module</th>
+        <th>Program</th>
+        <th>Semester</th>
+        <th>Intake</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let module of modules">
+        <td>{{ module.id }}</td>
+        <td>{{ module.name }}</td>
+        <td>{{ module.program }}</td>
+        <td>{{ module.semester }}</td>
+        <td>{{ module.intake }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
