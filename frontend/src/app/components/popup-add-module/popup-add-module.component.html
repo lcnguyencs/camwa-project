@@ -1,0 +1,72 @@
+<div class="popup-overlay" (click)="closePopup()"></div>
+<div class="popup-content">
+  <h2>Add Module</h2>
+  <form (ngSubmit)="onSubmit()">
+    <!-- Textfield for Module Name -->
+    <div class="form-group">
+      <label for="moduleName">Module Name</label>
+      <input
+        type="text"
+        id="moduleName"
+        name="moduleName"
+        ngModel
+        required
+        class="form-control"
+      />
+    </div>
+
+    <!-- Dropdown for Program -->
+    <div class="form-group">
+      <label for="program">Program</label>
+      <select id="program" name="program" ngModel required class="form-control">
+        <option *ngFor="let program of programs" [value]="program">
+          {{ program }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Dropdown for Intake -->
+    <div class="form-group">
+      <label for="intake">Intake</label>
+      <select id="intake" name="intake" ngModel required class="form-control">
+        <option *ngFor="let intake of intakes" [value]="intake">
+          {{ intake }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Semester Dropdowns -->
+    <div class="form-group semester-group">
+      <label for="semester">Semester</label>
+      <select
+        id="semester"
+        name="semester"
+        ngModel
+        required
+        class="form-control"
+      >
+        <option value="WS">WS</option>
+        <option value="SS">SS</option>
+      </select>
+      <select
+        id="semesterYear"
+        name="semesterYear"
+        ngModel
+        required
+        class="form-control"
+      >
+        <option *ngFor="let year of semesterYears" [value]="year">
+          {{ year }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button type="submit" class="btn-save">Save</button>
+      <button type="button" class="btn-cancel" (click)="closePopup()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

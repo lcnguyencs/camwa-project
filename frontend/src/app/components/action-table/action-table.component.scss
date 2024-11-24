@@ -1,0 +1,85 @@
+.table-container {
+  max-height: calc(50px + 10 * 40px); /* Chiều cao tối đa (1 hàng tiêu đề + 10 hàng dữ liệu) */
+  max-width: 1200px; /* Chiều rộng tối đa */
+  overflow: auto; /* Cuộn cả ngang và dọc */
+  border: 2px solid #ccc; /* Đường viền bảng */
+  border-radius: 10px; /* Bo góc bảng */
+  position: relative;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  position: sticky;
+  top: 0; /* Cố định hàng tiêu đề trên cùng */
+  z-index: 2; /* Ưu tiên hơn nội dung */
+  background-color: #f7f7f7;
+  margin: 0; /* Xóa bất kỳ khoảng margin thừa */
+  padding: 0; /* Xóa bất kỳ khoảng padding thừa */
+}
+
+thead th {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #ccc;
+}
+
+/* Tiêu đề và nội dung cột hành động */
+thead th.action-column-header {
+  position: sticky;
+  top: 0; /* Cố định tiêu đề cột action ở trên cùng */
+  right: 0; /* Cố định cột action ở bên phải */
+  z-index: 3; /* Đảm bảo tiêu đề cột action luôn nổi trên */
+  background-color: #f7f7f7; /* Cùng màu với hàng tiêu đề */
+}
+
+tbody td.action-column {
+  position: sticky;
+  right: 0; /* Cố định cột hành động ở bên phải */
+  z-index: 1; /* Nội dung của cột action nằm dưới tiêu đề */
+  background-color: white;
+}
+
+tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+tbody td {
+  padding: 10px;
+  text-align: left;
+}
+
+tbody tr:hover {
+  background-color: #f5f5f5; /* Hiệu ứng hover */
+}
+
+/* Cột hành động */
+.action-column {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.action-column button {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.action-column button.edit-btn {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.action-column button.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.action-column button:hover {
+  opacity: 0.9;
+}
