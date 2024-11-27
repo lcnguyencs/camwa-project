@@ -121,10 +121,10 @@ table th {
   font-weight: 600;
 }
 
-table tr:hover {
-  background-color: #63b3ed; /* Blue color for row hover */
+/* table tr:hover {
+  background-color: #63b3ed; 
   color: white;
-}
+} */
 
 .modules-info {
   margin-bottom: 40px;

@@ -1,0 +1,26 @@
+<div class="account-page">
+    <h1>Account</h1>
+    <div style="margin-left:20px">
+    <button class="create-btn" (click)="onCreateAccount()">+ Create Account</button>
+    </div>
+  
+    <!-- Form tìm kiếm và bảng sẽ hiển thị ở đây -->
+  
+    <div class="search-bar">
+      <input type="text" placeholder="Account name"  style="border-radius: 10px; border: 1px solid #ccc; margin-left: 20px" />
+      <button class="search-btn" (click)="onSearch()">
+        <i class="icon-search"></i> Search
+      </button>
+    </div>
+  <div style="margin-left: 20px">
+    <app-action-table
+    [columns]="columns"
+    [data]="tableData"
+      [showEditButton]="true"
+      [showDeleteButton]="true"
+      (edit)="onEditAccount()"
+      (delete)="onDelete($event)">
+    </app-action-table>
+</div>
+  </div>
+  

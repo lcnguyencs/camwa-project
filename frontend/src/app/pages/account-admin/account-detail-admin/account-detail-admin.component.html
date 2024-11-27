@@ -1,0 +1,62 @@
+<div class="account-detail-container">
+    <h2>Account Detail</h2>
+  
+    <div class="input-group">
+      <label>Account Name:</label>
+      <input type="text" placeholder="Enter Account Name">
+    </div>
+  
+    <div class="input-group">
+      <label>Role:</label>
+      <select >
+        <option value="student">Student</option>
+        <option value="lecturer">Lecturer</option>
+        <option value="falcutyAssistant">Falcuty Assistant</option>
+      </select>
+    </div>
+  
+    <div class="input-group">
+      <label>ID:</label>
+      <input type="text" placeholder="Enter ID">
+    </div>
+  
+    <div class="input-group">
+      <label>Email:</label>
+      <input type="email" placeholder="Enter Email">
+    </div>
+  
+    <div class="input-group">
+      <label>Major:</label>
+      <select>
+        <option value="CSE">CSE</option>
+        <option value="ECE">ECE</option>
+        <option value="MEN">MEN</option>
+        <option value="BBA">BBA</option>
+        <option value="BFA">BFA</option>
+        <option value="ARC">ARC</option>
+      </select>
+    </div>
+  
+    <div class="input-group">
+      <label>Intake:</label>
+      <select >
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
+  
+    <!-- Buttons -->
+    <div class="button-group">
+        <button (click)="updateAccount()">Update</button>
+        <button (click)="createAccount()">Create</button>
+        <button (click)="deleteAccount()">Delete</button>
+        <button (click)="viewCourse()">View Course </button>
+    </div>
+  </div>
+  

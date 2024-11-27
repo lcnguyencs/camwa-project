@@ -1,0 +1,85 @@
+.account-page {
+    font-family: 'IBM Plex Sans', sans-serif;
+  
+    h1 {
+      font-size: 60 px;
+      font-weight: bold;
+      padding: 10px 0;
+      margin: 0 20px;
+    }
+  
+    .create-btn {
+      font-size: 16px;
+      background-color: #0d2240;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+  
+      .select-wrapper {
+        position: relative;
+        width: 200px;
+  
+        select,
+        input,
+        .search-btn {
+          padding: 8px 30px 8px 10px;
+          border: 1px solid #ccc;
+          border-radius: 10px; /* Bo tròn góc các trường tìm kiếm */
+          width: 100%;
+        }
+  
+        select {
+          background-color: white;
+        }
+  
+        .clear-btn {
+          position: absolute;
+          top: 50%;
+          right: 10px;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #ccc;
+          font-size: 18px;
+        }
+  
+        .clear-btn:hover {
+          color: #0d2240;
+        }
+      }
+  
+      .search-btn {
+        display: flex;
+        align-items: center;
+        background-color: #0d2240;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 10px; /* Bo tròn góc nút Search */
+  
+        i.icon-search {
+          margin-right: 5px;
+        }
+  
+        &:hover {
+          background-color: #0056b3; /* Màu nền khi hover */
+        }
+      }
+    }
+  }
+  
