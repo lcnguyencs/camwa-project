@@ -43,6 +43,10 @@ const courseService = {
         if (!lecturer) {
             throw new Error('Lecturer not found');
         }
+
+        // Get the lecturer's email
+        const lecturerEmail = lecturer.email;
+        
         // Assign lecturer to the intake module
         const result = await IntakeModule.update(
             { lecturer_id: lecturerId },
@@ -51,7 +55,7 @@ const courseService = {
         await auditLogService.logAction(lecturerId, 'assignLecturer', { intakeModuleId, lecturerId });
         // Send email notification to lecturer
         await sendMail({
-            to: 'lecturer@example.com',  // Replace with lecturer's email
+            to: 'lecturer@vgu.edu.vn',  
             subject: 'You Have Been Assigned to a New Course',
             text: `You have been assigned to module ${intakeModuleId}.`,
             html: `<p>You have been assigned to module <b>${intakeModuleId}</b>.</p>`
