@@ -23,7 +23,7 @@ const Class = sequelize.define('Class', {
   lecturer_id: {
     type: DataTypes.STRING(20),
     allowNull: true,
-    references: { model: 'Lecture', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'staff_id' },
   },
 }, {
   tableName: 'class',

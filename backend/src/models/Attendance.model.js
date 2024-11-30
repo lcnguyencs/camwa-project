@@ -13,7 +13,7 @@ const Attendance = sequelize.define('Attendance', {
   },
   intake_module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'IntakeModule', key: 'intake_module_id' },
+    references: { model: 'IntakeModules', key: 'intake_module_id' },
   },
   class_id: {
     type: DataTypes.STRING(36),

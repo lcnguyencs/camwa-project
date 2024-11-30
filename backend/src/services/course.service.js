@@ -10,7 +10,7 @@ const courseService = {
     createCourse: async (courseData) => {
         const course = await Course.create(courseData);
         await auditLogService.logAction(courseData.createdBy, 'createCourse', course);
-        return await Course.create(courseData);
+        return course;
     },
 
     // View all courses (Admin/Faculty Assistant)
