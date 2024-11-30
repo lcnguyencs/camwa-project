@@ -17,12 +17,12 @@ const Student = sequelize.define('Student', {
     references: { model: 'Program', key: 'program_id' },
   },
   intake: {
-    type: DataTypes.DATE,
+    type: DataTypes.INTEGER,
     references: { model: 'Intake', key: 'year' },
   },
   acc_id: {
     type: DataTypes.STRING(100),
-    references: { model: 'IAM', key: 'acc_id' },
+    references: { model: 'Iam', key: 'acc_id' },
   }
 }, {
   tableName: 'student',

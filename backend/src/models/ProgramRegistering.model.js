@@ -13,7 +13,7 @@ const ProgramRegistering = sequelize.define('ProgramRegistering', {
     allowNull: false,
   },
   intake: {
-    type: DataTypes.DATE,
+    type: DataTypes.INTEGER,
     references: { model: 'Intake', key: 'year' },
   },
 }, {
