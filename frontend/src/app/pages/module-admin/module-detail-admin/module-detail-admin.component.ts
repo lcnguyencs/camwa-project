@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { ActionTableComponent } from 'src/app/components/action-table/action-table.component';
 import { CommonModule } from '@angular/common';
+import { PopupAttendanceComponent } from 'src/app/components/popup-attendance/popup-attendance.component';
 
 @Component({
   selector: 'app-module-detail-admin',
   standalone: true, 
-  imports: [CommonModule, ActionTableComponent],
+  imports: [CommonModule, ActionTableComponent, PopupAttendanceComponent],
   templateUrl: './module-detail-admin.component.html',
   styleUrls: ['./module-detail-admin.component.scss'],
 })
@@ -53,7 +54,26 @@ export class ModuleDetailAdminComponent {
     { date: '4/8/2024', time: '9:00-10:30', attendance: '9/10' },
     { date: '4/8/2024', time: '13:30-15:00', attendance: '10/10' },
   ];
-
+  attendanceStudents = [
+    { name: 'NguyenVanA', id: '00001', status: 'Present' },
+    { name: 'NguyenVanB', id: '00002', status: 'Present' },
+    { name: 'NguyenVanC', id: '00003', status: 'Absent' },
+    { name: 'NguyenVanD', id: '00004', status: 'Absent' },
+    { name: 'NguyenVanE', id: '00005', status: 'Absent' },
+  ];
+  
+  popupData: { date: string; time: string; students: any[] } | null = null;
+  
+  editAttendance(attendance: any) {
+    this.popupData = {
+      date: attendance.date,
+      time: attendance.time,
+      students: this.attendanceStudents,
+    };
+  }
+  closePopup() {
+    this.popupData = null;
+  }
   showSection(section: string) {
     this.activeSection = section;
   }
@@ -86,7 +106,4 @@ export class ModuleDetailAdminComponent {
     console.log('Searching attendance for date:', this.attendanceDate);
   }
 
-  editAttendance(attendance: any) {
-    console.log('Editing attendance:', attendance);
-  }
 }

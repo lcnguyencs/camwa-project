@@ -1,16 +1,20 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActionTableComponent } from 'src/app/components/action-table/action-table.component'; // Import ActionTableComponent
-
+import { CommonModule } from '@angular/common'; // Import CommonModule
 @Component({
   selector: 'app-account-admin',
   standalone: true, // Đánh dấu đây là standalone component
-  imports: [ActionTableComponent], // Import các module và component cần thiết
+  imports: [CommonModule, ActionTableComponent], // Import các module và component cần thiết
   templateUrl: './account-admin.component.html',
   styleUrls: ['./account-admin.component.scss']
 })
 export class AccountAdminComponent {
   accountName = '';
+  majors = ['CSE', 'MEN', 'BFA', 'BBA', 'ARC', 'ECE'];
+  roles = ['Faculty', 'Lecturer', 'Student', ];
+  intakes = ['2017', '2018', '2019', '2020', '2021', '2022'];
+
   columns = [
     { field: 'id', header: 'ID' },
     { field: 'name', header: 'Name' },

@@ -1,78 +1,85 @@
 <div class="module-detail">
-    <h1>Module Detail</h1>
-  
-    <div class="buttons">
-      <button (click)="showSection('information')">Information</button>
-      <button (click)="showSection('studentList')">Student List</button>
-      <button (click)="showSection('attendance')">Attendance</button>
-    </div>
-  
-    <div *ngIf="activeSection === 'information'" class="section information">
-      <h2>Information</h2>
-      <div class="form-group row">
-        <div class="field">
-          <label>Module:</label>
-          <input type="text" />
-        </div>
-        <div class="field">
-          <label>Lecturer:</label>
-          <select>
-            <option *ngFor="let lecturer of lecturers" [value]="lecturer">{{ lecturer }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Intake:</label>
-          <select>
-            <option *ngFor="let year of intakes" [value]="year">{{ year }}</option>
-          </select>
-        </div>
+  <h1>Module Detail</h1>
+
+  <div class="buttons">
+    <button (click)="showSection('information')">Information</button>
+    <button (click)="showSection('studentList')">Student List</button>
+    <button (click)="showSection('attendance')">Attendance</button>
+  </div>
+
+  <div *ngIf="activeSection === 'information'" class="section information">
+    <h2>Information</h2>
+    <div class="form-group row">
+      <div class="field">
+        <label>Module:</label>
+        <input type="text" />
       </div>
-  
-      <div class="form-group row">
-        <div class="field">
-          <label>Program:</label>
-          <select>
-            <option *ngFor="let prog of programs" [value]="prog">{{ prog }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Semester:</label>
-          <select>
-            <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Year:</label>
-          <select>
-            <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
-          </select>
-        </div>
+      <div class="field">
+        <label>Lecturer:</label>
+        <select>
+          <option *ngFor="let lecturer of lecturers" [value]="lecturer">
+            {{ lecturer }}
+          </option>
+        </select>
       </div>
-  
-      <div class="form-group row">
-        <div class="field">
-          <label>Begin Date:</label>
-          <input type="date"  />
-        </div>
-        <div class="field">
-          <label>End Date:</label>
-          <input type="date"  />
-        </div>
-      </div>
-  
-      <div class="actions">
-        <button (click)="updateModule()">Update</button>
-        <button (click)="deleteModule()">Delete</button>
+      <div class="field">
+        <label>Intake:</label>
+        <select>
+          <option *ngFor="let year of intakes" [value]="year">
+            {{ year }}
+          </option>
+        </select>
       </div>
     </div>
-  
-    <div *ngIf="activeSection === 'studentList'" class="section student-list">
-      <h2>Student List</h2>
-      <div class="search-add">
-        <input type="text" placeholder="Student ID"  />
-        <button (click)="searchStudent()">Search</button>
-        <button (click)="addStudent()">Add</button>
+
+    <div class="form-group row">
+      <div class="field">
+        <label>Program:</label>
+        <select>
+          <option *ngFor="let prog of programs" [value]="prog">
+            {{ prog }}
+          </option>
+        </select>
       </div>
+      <div class="field">
+        <label>Semester:</label>
+        <select>
+          <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Year:</label>
+        <select>
+          <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="field">
+        <label>Begin Date:</label>
+        <input type="date" />
+      </div>
+      <div class="field">
+        <label>End Date:</label>
+        <input type="date" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button (click)="updateModule()">Update</button>
+      <button (click)="deleteModule()">Delete</button>
+    </div>
+  </div>
+
+  <div *ngIf="activeSection === 'studentList'" class="section student-list">
+    <h2>Student List</h2>
+    <div class="search-add">
+      <input type="text" placeholder="Student ID" />
+      <button (click)="searchStudent()">Search</button>
+      <button (click)="addStudent()">Add</button>
+    </div>
+    <div style="margin-left: 20px">
       <app-action-table
         [columns]="studentColumns"
         [data]="studentData"
@@ -80,13 +87,15 @@
         (delete)="deleteStudent($event)"
       ></app-action-table>
     </div>
-  
-    <div *ngIf="activeSection === 'attendance'" class="section attendance">
-      <h2>Attendance</h2>
-      <div class="search">
-        <input type="date"  />
-        <button (click)="searchAttendance()">Search</button>
-      </div>
+  </div>
+
+  <div *ngIf="activeSection === 'attendance'" class="section attendance">
+    <h2>Attendance</h2>
+    <div class="search">
+      <input type="date" />
+      <button (click)="searchAttendance()">Search</button>
+    </div>
+    <div style="margin-left: 20px">
       <app-action-table
         [columns]="attendanceColumns"
         [data]="attendanceData"
@@ -94,5 +103,13 @@
         (edit)="editAttendance($event)"
       ></app-action-table>
     </div>
+    <div *ngIf="popupData" class="popup">
+      <app-popup-attendance
+        [date]="popupData.date"
+        [time]="popupData.time"
+        [students]="popupData.students"
+        (close)="closePopup()"
+      ></app-popup-attendance>
+    </div>
   </div>
-  
+</div>
