@@ -1,24 +1,31 @@
 <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th *ngFor="let column of columns">{{ column.header }}</th>
-          <th class="action-column-header">Actions</th> <!-- Tiêu đề cột hành động -->
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of data">
-          <td *ngFor="let column of columns">{{ row[column.field] }}</td>
-          <td class="action-column">
-            <button class="edit-btn" (click)="edit.emit(row)">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="delete-btn" (click)="delete.emit(row)">
-              <i class="fas fa-trash-alt"></i> Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let column of columns">{{ column.header }}</th>
+        <th *ngIf="hasActionColumn" class="action-column-header">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of data">
+        <td *ngFor="let column of columns">{{ row[column.field] }}</td>
+        <td *ngIf="hasActionColumn" class="action-column">
+          <button
+            *ngIf="showEditButton"
+            class="edit-btn"
+            (click)="onEdit(row)"
+          >
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button
+            *ngIf="showDeleteButton"
+            class="delete-btn"
+            (click)="onDelete(row)"
+          >
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

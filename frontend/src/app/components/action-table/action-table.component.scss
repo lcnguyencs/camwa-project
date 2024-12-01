@@ -1,9 +1,9 @@
 .table-container {
-  max-height: calc(50px + 10 * 40px); /* Chiều cao tối đa (1 hàng tiêu đề + 10 hàng dữ liệu) */
-  max-width: 1200px; /* Chiều rộng tối đa */
-  overflow: auto; /* Cuộn cả ngang và dọc */
-  border: 2px solid #ccc; /* Đường viền bảng */
-  border-radius: 10px; /* Bo góc bảng */
+  max-height: calc(50px + 10 * 40px); 
+  max-width: 1200px; 
+  overflow: auto; 
+  border: 2px solid #ccc; 
+  border-radius: 10px; 
   position: relative;
 }
 
@@ -14,11 +14,11 @@ table {
 
 thead {
   position: sticky;
-  top: 0; /* Cố định hàng tiêu đề trên cùng */
-  z-index: 2; /* Ưu tiên hơn nội dung */
+  top: 0; 
+  z-index: 2; 
   background-color: #f7f7f7;
-  margin: 0; /* Xóa bất kỳ khoảng margin thừa */
-  padding: 0; /* Xóa bất kỳ khoảng padding thừa */
+  margin: 0; 
+  padding: 0; 
 }
 
 thead th {
@@ -27,19 +27,19 @@ thead th {
   border-bottom: 2px solid #ccc;
 }
 
-/* Tiêu đề và nội dung cột hành động */
+
 thead th.action-column-header {
   position: sticky;
-  top: 0; /* Cố định tiêu đề cột action ở trên cùng */
-  right: 0; /* Cố định cột action ở bên phải */
-  z-index: 3; /* Đảm bảo tiêu đề cột action luôn nổi trên */
-  background-color: #f7f7f7; /* Cùng màu với hàng tiêu đề */
+  top: 0;
+  right: 0; 
+  z-index: 3;
+  background-color: #f7f7f7;
 }
 
 tbody td.action-column {
   position: sticky;
-  right: 0; /* Cố định cột hành động ở bên phải */
-  z-index: 1; /* Nội dung của cột action nằm dưới tiêu đề */
+  right: 0; 
+  z-index: 1; 
   background-color: white;
 }
 
@@ -53,10 +53,9 @@ tbody td {
 }
 
 tbody tr:hover {
-  background-color: #f5f5f5; /* Hiệu ứng hover */
+  background-color: #f5f5f5; 
 }
 
-/* Cột hành động */
 .action-column {
   display: flex;
   justify-content: center;

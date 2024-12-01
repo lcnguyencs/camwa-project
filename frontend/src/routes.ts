@@ -13,6 +13,7 @@ import { AccountDetailAdminComponent } from "./app/pages/account-admin/account-d
 import { ModuleAdminComponent } from "./app/pages/module-admin/module-admin.component";
 import { ModuleDetailAdminComponent } from "./app/pages/module-admin/module-detail-admin/module-detail-admin.component";
 import { ModuleStudentComponent } from "./app/pages/module-student/module-student.component";
+import { ModuleDetailStudentComponent } from "./app/pages/module-student/module-detail-student/module-detail-student.component";
 
 const routeConfig: Routes = [
   // {
@@ -89,8 +90,11 @@ const routeConfig: Routes = [
     component: ModuleStudentComponent,
     title: "Module Student View",
   },
-
-
+  {
+    path: "module-detail-student",
+    component: ModuleDetailStudentComponent,
+    title: "Module Detail Student View",
+  },
 ];
 
 export default routeConfig;

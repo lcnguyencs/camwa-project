@@ -21,7 +21,7 @@ export class RequestAdminComponent {
   lecturers = ['NguyenVanA', 'NguyenVanB'];
   columns = [
     { field: 'id', header: 'ID' },
-    { field: 'name', header: 'Name' },
+    { field: 'moduleNname', header: 'Module Name' },
     { field: 'program', header: 'Program' },
     { field: 'intake', header: 'Intake' },
     { field: 'semester', header: 'Semester' },
@@ -29,10 +29,10 @@ export class RequestAdminComponent {
   ];
   
   tableData = [
-    { id: 1, name: 'Master Thesis', program: 'ITS', intake: '2018', semester: 'SS 2019', lecturer: 'NguyenVanA' },
-    { id: 2, name: 'Discrete Math', program: 'CSE', intake: '2019', semester: 'WS 2019', lecturer: 'NguyenVanB' },
-    { id: 3, name: 'Algebra', program: 'CSE', intake: '2017', semester: 'SS2020', lecturer: 'NguyenVanA' },
-    { id: 4, name: 'Operating System', program: 'CSE', intake: '2018', semester: 'WS2020', lecturer: 'NguyenVanB' },
+    { id: 1, moduleNname: 'Master Thesis', program: 'ITS', intake: '2018', semester: 'SS 2019', lecturer: 'NguyenVanA' },
+    { id: 2, moduleNname: 'Discrete Math', program: 'CSE', intake: '2019', semester: 'WS 2019', lecturer: 'NguyenVanB' },
+    { id: 3, moduleNname: 'Algebra', program: 'CSE', intake: '2017', semester: 'SS2020', lecturer: 'NguyenVanA' },
+    { id: 4, moduleNname: 'Operating System', program: 'CSE', intake: '2018', semester: 'WS2020', lecturer: 'NguyenVanB' },
   ];
 
   onSearch() {
