@@ -54,14 +54,16 @@ const courseService = {
             { lecturer_id: lecturerId },
             { where: { intake_module_id: intakeModuleId } }
         );
+    
         await auditLogService.logAction(lecturerId, 'assignLecturer', { intakeModuleId, lecturerId });
         // Send email notification to lecturer
         await sendMail({
-            to: 'lecturer@vgu.edu.vn',  
+            to: lecturerEmail,  
             subject: 'You Have Been Assigned to a New Course',
             text: `You have been assigned to module ${intakeModuleId}.`,
             html: `<p>You have been assigned to module <b>${intakeModuleId}</b>.</p>`
         });
+
         return result;
     },
 
@@ -69,36 +71,51 @@ const courseService = {
     assignStudentsToIntakeModule: async (intakeModuleId, studentIds) => {
         const students = await Student.findAll({ where: { student_id: studentIds } });
         if (students.length !== studentIds.length) {
-            throw new Error('Some students not found');
+            // Check if the number of found students matches the input studentIds
+            const missingStudents = studentIds.filter(id => !students.some(student => student.student_id === id));  // Find missing students
+            throw new Error(`Some students not found: ${missingStudents.join(', ')}`);
         }
         const intakeModule = await IntakeModule.findByPk(intakeModuleId);
         if (!intakeModule) {
             throw new Error('Intake module not found');
         }
+
         await intakeModule.addStudents(students);
-        await auditLogService.logAction('faculty_assistant', 'assignStudents', { intakeModuleId, studentIds });
+        await auditLogService.logAction(userId, 'assignStudents', { intakeModuleId, studentIds });
+        
         // Send email notification to students
         await sendMail({
-            to: 'student@example.com',  // Replace with students' emails
+            to: students.map(student => student.email),  // Send email to the students' actual emails
             subject: 'You Have Been Enrolled in a New Course',
             text: `You have been enrolled in module ${intakeModuleId}.`,
             html: `<p>You have been enrolled in module <b>${intakeModuleId}</b>.</p>`
         });
+
         return intakeModule;
     },
 
     // Create classes for an intake module (Admin)
-    createClassesForIntakeModule: async (intakeModuleId, classCount = 15) => {
+    createClassesForIntakeModule: async (intakeModuleId, classCount = 15, userId) => {
         const intakeModule = await IntakeModule.findByPk(intakeModuleId);
         if (!intakeModule) {
             throw new Error('Intake module not found');
         }
+
+        // Create classes for the intake module
         const classes = [];
-        for (let i = 1; i <= 15; i++) {
-            classes.push({ intake_module_id: intakeModuleId, class_number: i });
+        for (let i = 1; i <= classCount; i++) {
+            classes.push({
+                intake_module_id: intakeModuleId,
+                class_number: i,
+                class_date: new Date(), // Here you can set a specific date or logic for the class date
+            });
         }
-        await Class.bulkCreate(classes); // Assuming a Class model to store individual classes
-        await auditLogService.logAction('faculty_assistant', 'createClasses', { intakeModuleId, classCount });
+        // Insert all the classes into the database in bulk
+        await Class.bulkCreate(classes); 
+
+         // Optionally log the action
+        await auditLogService.logAction(userId, 'createClasses', { intakeModuleId, classCount });
+        
         return classes;
     },
 
@@ -140,12 +157,22 @@ const courseService = {
 
     // Update a course by course_id (Admin/Faculty Assistant)
     updateCourse: async (courseId, updatedData) => {
-        return await Course.update(updatedData, { where: { course_id: courseId } });
+        const [affectedCount] = await Course.update(updatedData, { where: { course_id: courseId } });  // Update course in the database
+        if (affectedCount === 0) {
+            throw new Error('Course not found or no changes made');  // Handle case where course was not found or no changes were made
+        }
+        await auditLogService.logAction(userId, 'updateCourse', { courseId, updatedData });  // Log the update action with userId
+        return await Course.findByPk(courseId);  // Return the updated course object
     },
 
     // Delete a course by course_id (Admin only)
     deleteCourse: async (courseId) => {
-        return await Course.destroy({ where: { course_id: courseId } });
+        const affectedRows = await Course.destroy({ where: { course_id: courseId } });  // Delete course from the database
+        if (affectedRows === 0) {
+            throw new Error('Course not found');  // Handle case where course was not found
+        }
+        await auditLogService.logAction(userId, 'deleteCourse', { courseId });  // Log the deletion action with userId
+        return { message: 'Course successfully deleted' };  // Return success message
     },
 
 };
