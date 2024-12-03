@@ -2,6 +2,8 @@ import Course from '../models/Course.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
 import IntakeModule from '../models/IntakeModules.model.js';
+import Class from '../models/Class.model.js';
+import Attendance from '../models/Attendance.model.js';
 import auditLogService from '../services/auditLogService.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
