@@ -20,13 +20,13 @@ const auditLogService = {
 
             // Create the audit log entry
             await AuditLog.create({
-                user_id: userId,
-                action: action,
-                details: detailsString,  // Store the stringified details
-                timestamp: new Date(),  // Timestamp when the action occurred
+                user_id: userId,            // userId (can be a STRING or UUID as per your model)
+                action: action,             // Action performed
+                details: detailsString,     // JSON stringified details of the action
+                timestamp: new Date(),      // Timestamp when the action occurred (optional, as it's auto-handled by defaultValue: DataTypes.NOW)
             });
         } catch (error) {
-            console.error("Failed to log action:", error); 
+            console.error("Failed to log action:", error);
             // Optionally log the error to a different service or a file for better visibility
         }
     },
