@@ -23,7 +23,8 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.DATE,
   },
   attendance_status: {
-    type: DataTypes.STRING(10),
+    type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
+    allowNull: false 
   },
   is_deleted: {
     type: DataTypes.BOOLEAN,
