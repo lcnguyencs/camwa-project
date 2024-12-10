@@ -53,6 +53,13 @@
               "buildTarget": "camwa-frontend:build:production"
             }
           }
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",  
+          "options": {
+            "jestConfig": "./jest.config.js",  
+            "tsConfig": "./tsconfig.spec.json" 
+          }
         }
       }
     }
