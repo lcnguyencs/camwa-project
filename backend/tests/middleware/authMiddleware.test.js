@@ -10,6 +10,7 @@ describe('authenticateJWT', () => {
     const next = jest.fn();
     const decodedToken = { uid: '123', email: 'john@example.com' };
 
+    // Mocking the Firebase admin to return decoded token
     admin.auth().verifyIdToken.mockResolvedValue(decodedToken);
 
     await authenticateJWT(req, res, next);
@@ -23,6 +24,7 @@ describe('authenticateJWT', () => {
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const next = jest.fn();
 
+    // Mocking the scenario where no token is present
     await authenticateJWT(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
