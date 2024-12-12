@@ -6,13 +6,13 @@ import { LecturerClassViewComponent } from "./app/pages/lecturer-class-view/lect
 import { FacultyAssistantModuleViewComponent } from "./app/pages/faculty-assistant-module-view/faculty-assistant-module-view.component";
 
 import { FacultyAssistantClassViewComponent } from "./app/pages/faculty-assistant-class-view/faculty-assistant-class-view.component";
-import { ClassDetailsViewComponent } from "./app/pages/class-details-view/class-details-view.component";
+import { LoginPageComponent } from "./app/pages/login-page/login-page.component";
 
 const routeConfig: Routes = [
   {
-    path: "",
-    component: SidebarComponent,
-    title: "Sidebar",
+    path: "login",
+    component: LoginPageComponent,
+    title: "Login",
   },
   {
     path: "lecturer-module-view",
@@ -35,12 +35,6 @@ const routeConfig: Routes = [
     component: FacultyAssistantModuleViewComponent,
     title: "Faculty Module View",
   },
-
-  // {
-  //   path: "class-details-view",
-  //   component: ClassDetailsViewComponent,
-  //   title: "Class Details View",
-  // },
 ];
 
 export default routeConfig;

@@ -11,6 +11,7 @@ import { AppRoutingModule } from "./app-routing.module"; // Import your routing 
 import { SidebarComponent } from "./components/sidebar/sidebar.component";
 import { LecturerModuleViewComponent } from "./pages/lecturer-module-view/lecturer-module-view.component";
 import { FacultyAssistantModuleViewComponent } from "./pages/faculty-assistant-module-view/faculty-assistant-module-view.component";
+import { LoginPageComponent } from "./pages/login-page/login-page.component";
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,9 +20,9 @@ import { FacultyAssistantModuleViewComponent } from "./pages/faculty-assistant-m
     CommonModule,
     AppRoutingModule,
     SidebarComponent,
-    LecturerModuleViewComponent,
-    FacultyAssistantModuleViewComponent,
-
+    // LecturerModuleViewComponent,
+    // FacultyAssistantModuleViewComponent,
+    // LoginPageComponent,
     AngularFireModule.initializeApp(
       environment.firebaseConfig
     ) as ModuleWithProviders<any>,
