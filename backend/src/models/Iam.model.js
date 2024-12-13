@@ -11,16 +11,21 @@ const Iam = sequelize.define('Iam', {
   },
   email: {
     type: DataTypes.STRING(45),
+    allowNull: false,
+    unique: true,
   },
   password: {
     type: DataTypes.STRING(45),
+    allowNull: false,
   },
   role: {
     type: DataTypes.STRING(45),
+    allowNull: false,
   },
 }, {
   tableName: 'iam',
   timestamps: false,
 });
+
 
 export default Iam;

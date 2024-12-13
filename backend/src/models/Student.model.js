@@ -14,15 +14,15 @@ const Student = sequelize.define('Student', {
   },
   program_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'program', key: 'program_id' },
+    references: { model: 'Program', key: 'program_id' },
   },
   intake: {
-    type: DataTypes.DATE,
-    references: { model: 'intake', key: 'year' },
+    type: DataTypes.INTEGER,
+    references: { model: 'Intake', key: 'year' },
   },
   acc_id: {
     type: DataTypes.STRING(100),
-    references: { model: 'iam', key: 'acc_id' },
+    references: { model: 'Iam', key: 'acc_id' },
   }
 }, {
   tableName: 'student',

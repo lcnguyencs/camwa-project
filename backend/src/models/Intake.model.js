@@ -4,7 +4,7 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 
 const Intake = sequelize.define('Intake', {
   year: {
-    type: DataTypes.DATE,
+    type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false
   }

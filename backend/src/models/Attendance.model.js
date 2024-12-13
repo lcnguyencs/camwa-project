@@ -13,7 +13,7 @@ const Attendance = sequelize.define('Attendance', {
   },
   intake_module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'IntakeModule', key: 'intake_module_id' },
+    references: { model: 'IntakeModules', key: 'intake_module_id' },
   },
   class_id: {
     type: DataTypes.STRING(36),
@@ -23,7 +23,8 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.DATE,
   },
   attendance_status: {
-    type: DataTypes.STRING(10),
+    type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
+    allowNull: false 
   },
   is_deleted: {
     type: DataTypes.BOOLEAN,

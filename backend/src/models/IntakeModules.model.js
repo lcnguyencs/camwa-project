@@ -19,6 +19,10 @@ const IntakeModule = sequelize.define('IntakeModule', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  program_id: {
+    type: DataTypes.STRING(20),
+    references: { model: 'Program', key: 'program_id' },
+  },
   // Reference to the lecturer responsible for this intake module
   lecturer_id: {
     type: DataTypes.STRING(20),
