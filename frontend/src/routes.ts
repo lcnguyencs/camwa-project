@@ -6,8 +6,6 @@ import { LecturerModuleViewComponent } from "./app/pages/lecturer-module-view/le
 import { LecturerClassViewComponent } from "./app/pages/lecturer-class-view/lecturer-class-view.component";
 import { FacultyAssistantModuleViewComponent } from "./app/pages/faculty-assistant-module-view/faculty-assistant-module-view.component";
 import { FacultyAssistantClassViewComponent } from "./app/pages/faculty-assistant-class-view/faculty-assistant-class-view.component";
-
-import { LoginPageComponent } from "./app/pages/login-page/login-page.component";
 import { ClassDetailsViewComponent } from "./app/pages/class-details-view/class-details-view.component";
 import { RequestAdminComponent } from "./app/pages/request-admin/request-admin.component";
 import { AccountAdminComponent } from "./app/pages/account-admin/account-admin.component";
@@ -16,15 +14,20 @@ import { ModuleAdminComponent } from "./app/pages/module-admin/module-admin.comp
 import { ModuleDetailAdminComponent } from "./app/pages/module-admin/module-detail-admin/module-detail-admin.component";
 import { ModuleStudentComponent } from "./app/pages/module-student/module-student.component";
 import { ModuleDetailStudentComponent } from "./app/pages/module-student/module-detail-student/module-detail-student.component";
-
-
+import { LoginComponent } from "./app/pages/login/login.component";
 
 const routeConfig: Routes = [
+  // {
+  //   path: "",
+  //   component: SidebarComponent,
+  //   title: "Sidebar",
+  // },
   {
-    path: "login",
-    component: LoginPageComponent,
-    title: "Login",
+    path: "",
+    component: SidebarAdminComponent,
+    title: "Sidebar Admin",
   },
+
   {
     path: "lecturer-module-view",
     component: LecturerModuleViewComponent,
@@ -33,20 +36,71 @@ const routeConfig: Routes = [
   {
     path: "lecturer-class-view",
     component: LecturerClassViewComponent,
-    title: "Lecturer Class View",
+    title: "Lecturer Module View",
   },
 
   {
     path: "faculty-assistant-class-view",
     component: FacultyAssistantClassViewComponent,
-    title: "Faculty Assistant Class View",
+    title: "Faculty Class View",
   },
   {
     path: "faculty-assistant-module-view",
     component: FacultyAssistantModuleViewComponent,
-    title: "Faculty Assistant Module View",
+    title: "Faculty Module View",
   },
-  
+    {
+    path: "faculty-assistant-module-view",
+    component: FacultyAssistantModuleViewComponent,
+    title: "Faculty Module View",
+  },
+
+
+  // {
+  //   path: "class-details-view",
+  //   component: ClassDetailsViewComponent,
+  //   title: "Class Details View",
+  // },
+  {
+    path: "request-admin",
+    component: RequestAdminComponent,
+    title: "Request Admin View",
+  },
+  {
+    path: "account-admin",
+    component: AccountAdminComponent,
+    title: "Account Admin View",
+  },
+  {
+    path: "account-detail-admin",
+    component: AccountDetailAdminComponent,
+    title: "Account Detail Admin View",
+  },
+  {
+    path: "module-admin",
+    component: ModuleAdminComponent,
+    title: "Module Admin View",
+  },
+  {
+    path: "module-detail-admin",
+    component: ModuleDetailAdminComponent,
+    title: "Module Detail Admin View",
+  },
+  {
+    path: "module-student",
+    component: ModuleStudentComponent,
+    title: "Module Student View",
+  },
+  {
+    path: "module-detail-student",
+    component: ModuleDetailStudentComponent,
+    title: "Module Detail Student View",
+  },
+  {
+    path: "login",
+    component: LoginComponent,
+    title: "Login-View",
+  },
 ];
 
 export default routeConfig;

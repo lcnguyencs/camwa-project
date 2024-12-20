@@ -2,39 +2,19 @@
   <!-- Profile Section -->
   <div class="profile-section">
     <div class="profile-image">
-      <!-- <img
-        src="../../../assets/images/tranhongngoc.jpg"
-        alt="Profile Image"
-        class="profile-image"
-      /> -->
       <img
+        src="../../../assets/images/tranhongngoc.jpg"
         src="../../../assets/images/faculty-assistant.jpg"
         alt="Profile Image"
         class="profile-image"
       />
     </div>
-
-    <!-- <div class="profile-info">
-      <p class="lecturer-name">Ngoc Tran Hong</p>
-      <p class="job-title">Academic Coordinator of CSE</p>
+    <div class="profile-info">
+      <!-- <p class="lecturer-name">Ngoc Tran Hong</p>
+      <p class="job-title">Academic Coordinator of CSE</p> -->
 
       <p class="lecturer-name">Le T. Doan Trang</p>
       <p class="job-title">Faculty Assistant of CSE</p>
-    </div> -->
-
-    <div class="profile-info">
-      <!-- Conditional Rendering -->
-      <p class="lecturer-name">
-        {{ loggedIn ? username : "User 101" }}
-      </p>
-      <p class="job-title" *ngIf="loggedIn; else defaultJobTitle">
-        Academic Coordinator of CSE
-      </p>
-
-      <!-- Job Title for Not Logged In -->
-      <ng-template #defaultJobTitle>
-        <p class="job-title">Guest User</p>
-      </ng-template>
     </div>
   </div>
   <div class="separator"></div>
@@ -157,7 +137,7 @@
         />
       </svg>
 
-      <h3>{{ loggedIn ? "Sign out" : "Sign in" }}</h3>
+      <h3>Sign out</h3>
     </a>
   </div>
 </div>
