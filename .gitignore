@@ -132,7 +132,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-backend/src/config/serviceAccountKey.json
+# backend/src/config/serviceAccountKey.json
 
 # Loại bỏ toàn bộ thư mục node_modules
 node_modules/
