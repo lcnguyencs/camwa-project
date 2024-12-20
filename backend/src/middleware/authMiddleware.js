@@ -46,33 +46,29 @@ export const verifyTokenAndRole = (requiredRoles) => {
   return async (req, res, next) => {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-    //ATTENTION: next() is for TESTING purpose ONLY. Remove it before deployment and uncomment the code below it.
-    
-    next();
+    if (!token) {
+      return res.status(401).json({ message: 'Authorization token missing' });
+    }
 
-    // if (!token) {
-    //   return res.status(401).json({ message: 'Authorization token missing' });
-    // }
+    try {
+      // Verify the Firebase token
+      const decodedToken = await admin.auth().verifyIdToken(token);
 
-    // try {
-    //   // Verify the Firebase token
-    //   const decodedToken = await admin.auth().verifyIdToken(token);
+      // Attach decoded token to request, with role or default to 'student' if role is not provided
+      req.user = {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        role: decodedToken.role || 'student'
+      };
 
-    //   // Attach decoded token to request, with role or default to 'student' if role is not provided
-    //   req.user = {
-    //     uid: decodedToken.uid,
-    //     email: decodedToken.email,
-    //     role: decodedToken.role || 'student'
-    //   };
-
-    //   // Check if the user has the required role
-    //   if (requiredRoles.includes(req.user.role)) {
-    //     next();  // User has the required role, proceed
-    //   } else {
-    //     return res.status(403).json({ message: 'Access denied: Insufficient permissions.' });
-    //   }
-    // } catch (error) {
-    //   return res.status(401).json({ message: 'Invalid token', error: error.message });
-    // }
+      // Check if the user has the required role
+      if (requiredRoles.includes(req.user.role)) {
+        next();  // User has the required role, proceed
+      } else {
+        return res.status(403).json({ message: 'Access denied: Insufficient permissions.' });
+      }
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid token', error: error.message });
+    }
   };
 };
