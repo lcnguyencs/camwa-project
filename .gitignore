@@ -134,3 +134,8 @@ dist
 
 # backend/src/config/serviceAccountKey.json
 
+# Loại bỏ toàn bộ thư mục node_modules
+node_modules/
+
+# Bỏ thư mục .angular
+.angular/
