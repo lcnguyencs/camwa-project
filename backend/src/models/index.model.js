@@ -1,18 +1,18 @@
-import Student from './Student.js';
-import Program from './Program.js';
-import Intake from './Intake.js';
-import ProgramRegistering from './ProgramRegistering.js';
-import IntakeModule from './IntakeModule.model.js'; 
-import Semester from './Semester.js';
-import Class from './Class.js';
-import Exam from './Exam.js';
-import Lecturer from './Lecturer.js';
-import Attendance from './Attendance.js';
-import Iam from './Iam.js';
-import Notification from './Notification.js';
-import AttendanceRequest from './AttendanceRequest.js';
-import ExamTaking from './ExamTaking.js';
-import Course from './Course.js';
+import Student from './Student.model.js';
+import Program from './Program.model.js';
+import Intake from './Intake.model.js';
+import ProgramRegistering from './ProgramRegistering.model.js';
+import IntakeModules from './IntakeModule.model.js'; 
+import Semester from './Semester.model.js';
+import Class from './Class.model.js';
+import Exam from './Exam.model.js';
+import Lecturer from './Lecturer.model.js';
+import Attendance from './Attendance.model.js';
+import Iam from './Iam.model.js';
+import Notification from './Notification.model.js';
+import AttendanceRequest from './AttendanceRequest.model.js';
+import ExamTaking from './ExamTaking.model.js';
+import Course from './Course.model.js';
 
 // Define Associations
 
@@ -64,9 +64,9 @@ ExamTaking.belongsTo(Student, { foreignKey: 'student_id' });
 IntakeModule.hasMany(ExamTaking, { foreignKey: 'intake_module_id' });
 ExamTaking.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
 
-// 13. IntakeModule and Class Relationship (An IntakeModule has many Classes)
-IntakeModule.hasMany(Class, { foreignKey: 'intake_module_id' });
-Class.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+// 13. IntakeModules and Class Relationship (An IntakeModule has many Classes)
+IntakeModules.hasMany(Class, { foreignKey: 'intake_module_id' });
+Class.belongsTo(IntakeModules, { foreignKey: 'intake_module_id' });
 
 // 14. Iam and Notification Relationship (An Iam entity sends many Notifications)
 Iam.hasMany(Notification, { foreignKey: 'sender_id' });
@@ -111,11 +111,10 @@ Student.belongsToMany(IntakeModule, {
   otherKey: 'intake_module_id',
   as: 'intakeModules'
 });
+
 // 20. Iam and Student (One-to-One) - Represents student's account
 Student.belongsTo(Iam, { foreignKey: 'acc_id' });
 Iam.hasOne(Student, { foreignKey: 'acc_id' });
-
-
 
 export {
   Student,

@@ -1,0 +1,39 @@
+<div class="popup-overlay">
+  <div class="popup-content">
+    <h2>Attendance Details</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Student Name</th>
+          <th>Student ID</th>
+          <th>
+            <div>{{ time }}</div>
+            <div>{{ date }}</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ student.name }}</td>
+          <td>{{ student.id }}</td>
+          <td>
+            <span
+              class="status-tag"
+              [ngStyle]="{
+                backgroundColor:
+                  student.status === 'Present' ? '#00AFAA' : '#FF4338'
+              }"
+            >
+              {{ student.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="button-container">
+      <button (click)="closePopup()">Close</button>
+    </div>
+  </div>
+</div>

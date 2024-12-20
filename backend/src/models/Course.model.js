@@ -20,7 +20,7 @@ const Course = sequelize.define('Course', {
     allowNull: false,
   },
   intake: {
-    type: DataTypes.DATE,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   semester_id: {

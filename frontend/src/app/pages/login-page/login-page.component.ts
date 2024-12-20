@@ -11,8 +11,6 @@ export class LoginPageComponent {
   email: string = "";
   password: string = "";
 
-  constructor(private router: Router) {}
-
   onSubmit() {
     // TODO: Implement login logic here
     console.log("Login attempted with:", this.email, this.password);

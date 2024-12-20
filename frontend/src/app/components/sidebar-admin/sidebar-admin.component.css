@@ -1,0 +1,83 @@
+.sidebar {
+    background-color: var(--vgu-dark-blue);
+    color: #ffffff;
+    width: 300px;
+    height: 100vh; /* Set to viewport height */
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed; /* Fix the sidebar position */
+    left: 0;
+    top: 0;
+  }
+  
+  .profile-section {
+    display: flex;
+    text-align: left;
+    padding-top: 24px;
+    align-items: center;
+  }
+  
+  .profile-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .profile-info p.lecturer-name {
+    font-size: 20px;
+  }
+  
+  .profile-info p.job-title {
+    color: var(--vgu-cool-gray);
+    font-size: 14px;
+  }
+  
+  .separator {
+    height: 2px;
+    background-color: #ffffff;
+    width: 100%;
+    margin: 24px 0;
+  }
+  
+  .nav-links,
+  .bottom-links {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1em;
+  }
+  
+  .nav-item svg {
+    width: 36px;
+    height: 36px;
+    margin-right: 16px;
+  }
+  
+  .nav-item h2 {
+    text-transform: uppercase;
+  }
+  
+  .nav-item:hover {
+    background-color: var(--vgu-light-blue);
+    color: #ffffff;
+    border-radius: 10px;
+    transition-duration: 300ms;
+  }
+  
+  .bottom-links {
+    margin-top: auto;
+    padding-bottom: 24px;
+  }
+  
