@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('notification', {
       notification_id: {
         type: Sequelize.INTEGER,
@@ -46,11 +47,11 @@ module.exports = {
       module_id: {
         type: Sequelize.STRING(36),
         references: {
-          model: 'intake_module',      // Name of the referenced table
-          key: 'intake_module_id'      // Key in the referenced table
+          model: 'intake_module',      
+          key: 'intake_module_id'      
         },
-        onUpdate: 'CASCADE',   // Optional: what to do on update
-        onDelete: 'SET NULL',  // Optional: what to do on delete
+        onUpdate: 'CASCADE',   
+        onDelete: 'SET NULL',  
       },
       priority: {
         type: Sequelize.INTEGER,

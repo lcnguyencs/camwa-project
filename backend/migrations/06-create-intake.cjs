@@ -2,9 +2,10 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('intake', {
       year: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         primaryKey: true,
         allowNull: false
       }

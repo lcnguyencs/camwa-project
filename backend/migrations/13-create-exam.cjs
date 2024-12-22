@@ -2,16 +2,17 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('exam', {
       module_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
         references: {
-          model: 'intake_module',  // Name of the referenced table
-          key: 'intake_module_id' // Key in the referenced table
+          model: 'intake_module',  
+          key: 'intake_module_id' 
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'CASCADE', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'CASCADE', 
       },
       exam_date: {
         type: Sequelize.DATE,
@@ -25,7 +26,6 @@ module.exports = {
       },
     });
 
-    // Create unique index
     await queryInterface.addIndex('exam', ['module_id', 'exam_date'], { unique: true });
   },
   

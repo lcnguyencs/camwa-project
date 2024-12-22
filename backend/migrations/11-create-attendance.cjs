@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('attendance', {
       attendance_id: {
         type: Sequelize.INTEGER,
@@ -11,11 +12,11 @@ module.exports = {
       student_id: {
         type: Sequelize.STRING(20),
         references: {
-          model: 'student',  // Name of the referenced table
-          key: 'student_id'  // Key in the referenced table
+          model: 'student',  
+          key: 'student_id'  
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'SET NULL', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'SET NULL', 
       },
       intake_module_id: {
         type: Sequelize.STRING(36),

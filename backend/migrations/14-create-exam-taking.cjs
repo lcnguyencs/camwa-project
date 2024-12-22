@@ -2,26 +2,27 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('exam_taking', {
       student_id: {
         type: Sequelize.STRING(20),
         allowNull: false,
         references: {
-          model: 'student',  // Name of the referenced table
-          key: 'student_id'  // Key in the referenced table
+          model: 'student',  
+          key: 'student_id'  
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'CASCADE', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'CASCADE', 
       },
       intake_module_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
         references: {
-          model: 'intake_module',  // Name of the referenced table
-          key: 'intake_module_id'  // Key in the referenced table
+          model: 'intake_module',  
+          key: 'intake_module_id'  
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'CASCADE', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'CASCADE', 
       },
       exam_date: {
         type: Sequelize.DATE,

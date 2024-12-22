@@ -6,7 +6,7 @@ const attendanceManagement = {
     createAttendance: async (req, res, next) => {
         try {
             const attendanceData = req.body;
-            const result = await attendanceService.createAttendance(attendanceData);
+            const result = await attendanceService.submitAttendance(attendanceData);
             const resData = responseSuccess(result, 'Attendance recorded successfully');
             res.status(resData.code).json(resData);
         } catch (error) {

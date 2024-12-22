@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('program', {
       program_id: {
         type: Sequelize.STRING(20),
