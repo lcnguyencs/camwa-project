@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('intake_module', {
       intake_module_id: {
         type: Sequelize.STRING(36),
@@ -23,35 +24,35 @@ module.exports = {
         type: Sequelize.STRING(20),
         allowNull: false,
         references: {
-          model: 'lecturer',  // Name of the referenced table
-          key: 'staff_id'     // Key in the referenced table
+          model: 'lecturer', 
+          key: 'staff_id'     
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'CASCADE', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'CASCADE', 
       },
       course_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'course',     // Name of the referenced table
-          key: 'course_id'     // Key in the referenced table
+          model: 'course',     
+          key: 'course_id'     
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'CASCADE', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'CASCADE', 
       },
       intake_year: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       semester_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
         references: {
-          model: 'semester',    // Name of the referenced table
-          key: 'sem_id'        // Key in the referenced table
+          model: 'semester',    
+          key: 'sem_id'        
         },
-        onUpdate: 'CASCADE', // Optional: what to do on update
-        onDelete: 'CASCADE', // Optional: what to do on delete
+        onUpdate: 'CASCADE', 
+        onDelete: 'CASCADE', 
       },
     });
   },

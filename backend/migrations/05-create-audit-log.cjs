@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('audit_log', {
       id: {
         type: Sequelize.INTEGER,
@@ -22,7 +23,7 @@ module.exports = {
       },
       timestamp: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW, // Use literal for default value
+        defaultValue: Sequelize.NOW,
       },
     });
   },

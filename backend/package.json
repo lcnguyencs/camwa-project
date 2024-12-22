@@ -6,7 +6,9 @@
     "type": "module",
     "scripts": {
         "start": "node server.js",
-        "test": "jest"
+        "test": "jest",
+        "database:migrate": "npx sequelize-cli db:migrate",
+        "database:seed": "npx sequelize-cli db:seed:all"
     },
     "dependencies": {
         "bcryptjs": "^2.4.3",

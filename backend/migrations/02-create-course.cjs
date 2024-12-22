@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+
     await queryInterface.createTable('course', {
       course_id: {
         type: Sequelize.INTEGER,
@@ -21,7 +22,7 @@ module.exports = {
         allowNull: false,
       },
       intake: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       semester_id: {
