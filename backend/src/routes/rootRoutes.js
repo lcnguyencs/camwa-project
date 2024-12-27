@@ -5,6 +5,8 @@ import courseRouter from './course.router.js';
 import notificationRouter from './notification.router.js';
 import authRoutes from './authRoutes.js';
 import studentRouter from './student.router.js';
+import lecturerRouter from './lecturer.route.js';
+import programRouter from './program.router.js';
 
 const rootRoutes = express.Router();
 
@@ -30,5 +32,11 @@ rootRoutes.use('/notification', notificationRouter);
 
 //Student routes
 rootRoutes.use('/student', studentRouter);
+
+//Lecturer routes
+rootRoutes.use('/lecturer', lecturerRouter);
+
+//Program routes
+rootRoutes.use('/program', programRouter);
 
 export default rootRoutes;
