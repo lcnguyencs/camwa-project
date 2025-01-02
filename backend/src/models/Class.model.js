@@ -36,15 +36,15 @@ const Class = sequelize.define('Class', {
 });
 
 // Association with IntakeModules (One-to-Many)
-Class.belongsTo('IntakeModules', {
-  foreignKey: 'intake_module_id',
-  targetKey: 'intake_module_id',
-});
+// Class.belongsTo('IntakeModules', {
+//   foreignKey: 'intake_module_id',
+//   targetKey: 'intake_module_id',
+// });
 
-// Association with Lecturer (One-to-Many)
-Class.belongsTo('Lecturer', {
-  foreignKey: 'lecturer_id',
-  targetKey: 'staff_id',
-});
+// // Association with Lecturer (One-to-Many)
+// Class.belongsTo('Lecturer', {
+//   foreignKey: 'lecturer_id',
+//   targetKey: 'staff_id',
+// });
 
 export default Class;
