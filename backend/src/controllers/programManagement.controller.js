@@ -49,6 +49,72 @@ const programController = {
       res.status(400).json(responseError(error.message, 400));
     }
   },
+
+  // Assign a student to a program
+  assignStudentToProgram: async (req, res) => {
+    const { program_id, student_id } = req.params;
+    try {
+      const result = await programService.assignStudentToProgram(program_id, student_id);
+      res.status(200).json(responseSuccess(null, result.message));
+    } catch (error) {
+      res.status(400).json(responseError(error.message, 400));
+    }
+  },
+
+  // Assign a lecturer to a program
+  assignLecturerToProgram: async (req, res) => {
+    const { program_id, lecturer_id } = req.params;
+    try {
+      const result = await programService.assignLecturerToProgram(program_id, lecturer_id);
+      res.status(200).json(responseSuccess(null, result.message));
+    } catch (error) {
+      res.status(400).json(responseError(error.message, 400));
+    }
+  },
+
+  // Assign a course to a program
+  assignCourseToProgram: async (req, res) => {
+    const { program_id, course_id } = req.params;
+    try {
+      const result = await programService.assignCourseToProgram(program_id, course_id);
+      res.status(200).json(responseSuccess(null, result.message));
+    } catch (error) {
+      res.status(400).json(responseError(error.message, 400));
+    }
+  },
+
+  // View courses in a program
+  viewCoursesInProgram: async (req, res) => {
+    const { program_id } = req.params;
+    try {
+      const courses = await programService.viewCoursesInProgram(program_id);
+      res.status(200).json(responseSuccess(courses, 'Courses retrieved successfully'));
+    } catch (error) {
+      res.status(400).json(responseError(error.message, 400));
+    }
+  },
+
+  // View lecturers in a program
+  viewLecturersInProgram: async (req, res) => {
+    const { program_id } = req.params;
+    try {
+      const lecturers = await programService.viewLecturersInProgram(program_id);
+      res.status(200).json(responseSuccess(lecturers, 'Lecturers retrieved successfully'));
+    } catch (error) {
+      res.status(400).json(responseError(error.message, 400));
+    }
+  },
+
+  // View students in a program
+  viewStudentsInProgram: async (req, res) => {
+    const { program_id } = req.params;
+    try {
+      const students = await programService.viewStudentsInProgram(program_id);
+      res.status(200).json(responseSuccess(students, 'Students retrieved successfully'));
+    } catch (error) {
+      res.status(400).json(responseError(error.message, 400));
+    }
+  },
 };
 
 export default programController;
