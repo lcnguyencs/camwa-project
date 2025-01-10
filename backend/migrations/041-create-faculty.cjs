@@ -2,8 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
-    await queryInterface.createTable('lecturer', {
+    await queryInterface.createTable('facility_faculty', {
       staff_id: {
         type: Sequelize.STRING(20),
         primaryKey: true,
@@ -15,16 +14,24 @@ module.exports = {
       program_id: {
         type: Sequelize.STRING(20),
         references: {
-          model: 'program',      
-          key: 'program_id'      
+          model: 'program',
+          key: 'program_id'
         },
-        onUpdate: 'CASCADE',     
-        onDelete: 'SET NULL',     
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+      },
+      account_id: {
+        type: Sequelize.STRING(100),
+        references: {
+          model: 'iam',
+          key: 'acc_id'
+        },
+        allowNull: false,
       },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('lecturer');
+    await queryInterface.dropTable('facility_faculty');
   }
 };

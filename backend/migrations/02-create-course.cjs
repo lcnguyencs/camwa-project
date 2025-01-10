@@ -19,11 +19,19 @@ module.exports = {
       },
       program_id: {
         type: Sequelize.STRING(20),
-        allowNull: false,
+        references: {
+          model: 'program',      
+          key: 'program_id'      
+        },
+        onUpdate: 'CASCADE',     
+        onDelete: 'SET NULL',     
       },
       intake: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'intake',       
+          key: 'year'            
+        },
       },
       semester_id: {
         type: Sequelize.STRING(36),

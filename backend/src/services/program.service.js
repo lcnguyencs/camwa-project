@@ -99,57 +99,77 @@ const programService = {
       if (!program || !course) {
         throw new Error('Program or Course not found');
       }
-      await program.addCourse(course);
+  
+      // Check if course already exists in this program
+      const existingCourse = await Course.findOne({
+        where: {
+          name: course.name,
+          program_id: program_id
+        }
+      });
+  
+      if (existingCourse) {
+        throw new Error('This course is already assigned to the program');
+      }
+      
+      // Create new course entry excluding course_id
+      const { course_id: id, ...courseData } = course.dataValues;
+      const newCourse = await Course.create({
+        ...courseData,
+        program_id: program_id
+      });
+      
       return { message: 'Course assigned to program successfully' };
     } catch (error) {
       throw new Error('Error assigning course to program: ' + error.message);
     }
   },
-
-  // View courses in a program
-  viewCoursesInProgram: async (program_id) => {
-    try {
-      const program = await Program.findByPk(program_id, {
-        include: Course 
-      });
-      if (!program) {
-        throw new Error('Program not found');
-      }
-      return program.Courses; 
-    } catch (error) {
-      throw new Error('Error retrieving courses in program: ' + error.message);
+  
+// View courses in a program
+viewCoursesInProgram: async (program_id) => {
+  try {
+    const courses = await Course.findAll({
+      where: { program_id: program_id }
+    });
+    if (!courses) {
+      throw new Error('No courses found in this program');
     }
-  },
+    return courses;
+  } catch (error) {
+    throw new Error('Error retrieving courses in program: ' + error.message);
+  }
+},
 
-  // View lecturers in a program
-  viewLecturersInProgram: async (program_id) => {
-    try {
-      const program = await Program.findByPk(program_id, {
-        include: Lecturer 
-      });
-      if (!program) {
-        throw new Error('Program not found');
-      }
-      return program.Lecturers; 
-    } catch (error) {
-      throw new Error('Error retrieving lecturers in program: ' + error.message);
+// View lecturers in a program
+viewLecturersInProgram: async (program_id) => {
+  try {
+    const lecturers = await Lecturer.findAll({
+      where: { program_id: program_id }
+    });
+    if (!lecturers) {
+      throw new Error('No lecturers found in this program');
     }
-  },
+    return lecturers;
+  } catch (error) {
+    throw new Error('Error retrieving lecturers in program: ' + error.message);
+  }
+},
+
 
   // View students in a program
   viewStudentsInProgram: async (program_id) => {
     try {
-      const program = await Program.findByPk(program_id, {
-        include: Student 
+      const students = await Student.findAll({
+        where: { program_id: program_id }
       });
-      if (!program) {
-        throw new Error('Program not found');
+      if (!students) {
+        throw new Error('No students found in this program');
       }
-      return program.Students;
+      return students;
     } catch (error) {
       throw new Error('Error retrieving students in program: ' + error.message);
     }
-  },
+  },  
 };
 
 export default programService;
