@@ -2,11 +2,11 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
     await queryInterface.createTable('class', {
       class_id: {
         type: Sequelize.STRING(36),
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
       },
       intake_module_id: {
         type: Sequelize.STRING(36),
@@ -17,6 +17,10 @@ module.exports = {
         },
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE', 
+      },
+      class_number:{
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       class_date: {
         type: Sequelize.DATE,

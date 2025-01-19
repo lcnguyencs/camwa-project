@@ -1,4 +1,5 @@
 import admin from '../config/firebaseConfig.js';  // Firebase Admin SDK initialized
+import jwt from 'jsonwebtoken';
 
 // Middleware to authenticate the JWT token
 export const authenticateJWT = async (req, res, next) => {
@@ -41,7 +42,7 @@ export const authorizeRoles = (...allowedRoles) => {
   };
 };
 
-// Middleware to verify Firebase token and check required roles in one step
+// Middleware to verify Firebase token and check required roles in one step, currently commented out because no firebase token available. Uncomment when frontend is finished with login feataures.
 export const verifyTokenAndRole = (requiredRoles) => {
   return async (req, res, next) => {
     next();
@@ -73,3 +74,27 @@ export const verifyTokenAndRole = (requiredRoles) => {
     // }
   };
 };
+
+//a simple middleware to verify the token for testing purposes. Might be removed in the future.
+export const verifyTokenTest = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+      const decoded = jwt.verify(token, '1234');
+      req.user = decoded;
+      
+      // if (!allowedRoles.includes(decoded.role)) {
+      //     return res.status(403).json({ message: 'Insufficient permissions' });
+      // }
+      
+      next();
+  } catch (error) {
+      return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+

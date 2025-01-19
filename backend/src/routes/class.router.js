@@ -12,7 +12,7 @@ classRouter.delete('/:classId', verifyTokenAndRole(['faculty_assistant']), class
 // View classes by role and module
 classRouter.get('/lecturer/:lecturerId', verifyTokenAndRole(['lecturer', 'faculty_assistant', 'admin']), classController.viewClassesByLecturer); 
 classRouter.get('/student/:studentId', verifyTokenAndRole(['student', 'faculty_assistant', 'admin']), classController.viewClassesByStudent); 
-classRouter.get('/intake-module/:moduleId', verifyTokenAndRole(['faculty_assistant', 'admin']), classController.viewClassesByIntakeModule); 
+classRouter.get('/intake-module/:intakeModuleId', verifyTokenAndRole(['faculty_assistant', 'admin']), classController.viewClassesByIntakeModule); 
 
 // Attendance views and rates
 classRouter.get('/attendance/:classId', verifyTokenAndRole(['lecturer', 'faculty_assistant', 'admin']), classController.viewStudentAttendance); 

@@ -15,7 +15,7 @@ attendanceRouter.get('/eligibility/calculate', verifyTokenAndRole(['admin', 'fac
 attendanceRouter.get('/eligibility/status', verifyTokenAndRole(['student', 'lecturer', 'admin']), attendanceController.viewExamEligibilityStatus);
 
 // Attendance correction requests
-attendanceRouter.post('/student/correction', verifyTokenAndRole(['student']), attendanceController.requestAttendanceCorrection);
+attendanceRouter.post('/student/correction', verifyTokenAndRole(['admin', 'student']), attendanceController.requestAttendanceCorrection);
 attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['admin', 'faculty_assistant']), attendanceController.handleCorrectionRequest);
 
 export default attendanceRouter;

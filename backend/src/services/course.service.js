@@ -6,12 +6,13 @@ import Class from '../models/Class.model.js';
 import Attendance from '../models/Attendance.model.js';
 import auditLogService from '../services/auditLogService.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
+import StudentIntakeModule from '../models/StudentIntakeModule.model.js';
 
 const courseService = {
     // Create a new course (Admin only)
-    createCourse: async (courseData) => {
+    createCourse: async (courseData, userId) => {
         const course = await Course.create(courseData);
-        await auditLogService.logAction(courseData.createdBy, 'createCourse', course);
+        await auditLogService.logAction(userId, 'createCourse', course);
         return course;
     },
 
@@ -39,7 +40,7 @@ const courseService = {
     },
 
     // Assign a lecturer to an intake module (Faculty Assistant)
-    assignLecturerToIntakeModule: async (intakeModuleId, lecturerId) => {
+    assignLecturerToIntakeModule: async (intakeModuleId, lecturerId, userId) => {
         // Check if the lecturer exists
         const lecturer = await Lecturer.findByPk(lecturerId);
         if (!lecturer) {
@@ -47,7 +48,7 @@ const courseService = {
         }
 
         // Get the lecturer's email
-        const lecturerEmail = lecturer.email;
+        // const lecturerEmail = lecturer.email;
         
         // Assign lecturer to the intake module
         const result = await IntakeModule.update(
@@ -55,20 +56,20 @@ const courseService = {
             { where: { intake_module_id: intakeModuleId } }
         );
     
-        await auditLogService.logAction(lecturerId, 'assignLecturer', { intakeModuleId, lecturerId });
+        await auditLogService.logAction(userId, 'assignLecturer', { intakeModuleId, lecturerId });
         // Send email notification to lecturer
-        await sendMail({
-            to: lecturerEmail,  
-            subject: 'You Have Been Assigned to a New Course',
-            text: `You have been assigned to module ${intakeModuleId}.`,
-            html: `<p>You have been assigned to module <b>${intakeModuleId}</b>.</p>`
-        });
+        // await sendMail({
+        //     to: lecturerEmail,  
+        //     subject: 'You Have Been Assigned to a New Course',
+        //     text: `You have been assigned to module ${intakeModuleId}.`,
+        //     html: `<p>You have been assigned to module <b>${intakeModuleId}</b>.</p>`
+        // });
 
         return result;
     },
 
     // Assign students to an intake module (Faculty Assistant)
-    assignStudentsToIntakeModule: async (intakeModuleId, studentIds) => {
+    assignStudentsToIntakeModule: async (intakeModuleId, studentIds, userId) => {
         const students = await Student.findAll({ where: { student_id: studentIds } });
         if (students.length !== studentIds.length) {
             // Check if the number of found students matches the input studentIds
@@ -80,16 +81,24 @@ const courseService = {
             throw new Error('Intake module not found');
         }
 
-        await intakeModule.addStudents(students);
+        const studentIntakeModules = await Promise.all(
+            studentIds.map(studentId => 
+                StudentIntakeModule.create({
+                    student_id: studentId,
+                    intake_module_id: intakeModuleId
+                })
+            )
+        );
+    
         await auditLogService.logAction(userId, 'assignStudents', { intakeModuleId, studentIds });
         
         // Send email notification to students
-        await sendMail({
-            to: students.map(student => student.email),  // Send email to the students' actual emails
-            subject: 'You Have Been Enrolled in a New Course',
-            text: `You have been enrolled in module ${intakeModuleId}.`,
-            html: `<p>You have been enrolled in module <b>${intakeModuleId}</b>.</p>`
-        });
+        // await sendMail({
+        //     to: students.map(student => student.email),  // Send email to the students' actual emails
+        //     subject: 'You Have Been Enrolled in a New Course',
+        //     text: `You have been enrolled in module ${intakeModuleId}.`,
+        //     html: `<p>You have been enrolled in module <b>${intakeModuleId}</b>.</p>`
+        // });
 
         return intakeModule;
     },
@@ -142,7 +151,7 @@ const courseService = {
                 const record = attendanceRecords.find(
                     r => r.student_id === student.student_id && r.class_date === date
                 );
-                attendance[date] = record ? (record.attendance_status === 'Present' ? 'Present' : 'Absent') : 'Absent';
+                attendance[date] = record ? (record.attendance_status === 'present' ? 'present' : 'absent') : 'absent';
             });
             return {
                 id: student.student_id,
@@ -156,7 +165,7 @@ const courseService = {
 
 
     // Update a course by course_id (Admin/Faculty Assistant)
-    updateCourse: async (courseId, updatedData) => {
+    updateCourse: async (courseId, updatedData, userId) => {
         const [affectedCount] = await Course.update(updatedData, { where: { course_id: courseId } });  // Update course in the database
         if (affectedCount === 0) {
             throw new Error('Course not found or no changes made');  // Handle case where course was not found or no changes were made
@@ -166,7 +175,7 @@ const courseService = {
     },
 
     // Delete a course by course_id (Admin only)
-    deleteCourse: async (courseId) => {
+    deleteCourse: async (courseId, userId) => {
         const affectedRows = await Course.destroy({ where: { course_id: courseId } });  // Delete course from the database
         if (affectedRows === 0) {
             throw new Error('Course not found');  // Handle case where course was not found

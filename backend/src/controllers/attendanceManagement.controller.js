@@ -18,13 +18,13 @@ const attendanceManagement = {
     // View Attendance Records by Class or Student
     viewAttendance: async (req, res, next) => {
         try {
-            const { classId, studentId } = req.query;
-            if (!classId && !studentId) {
+            const { moduleId, studentId } = req.query;
+            if (!moduleId && !studentId) {
                 return res.status(400).json({ message: 'Either classId or studentId must be provided' });
             }
             let result;
-            if (classId) {
-                result = await attendanceService.viewAttendanceByModule(classId);
+            if (moduleId) {
+                result = await attendanceService.viewAttendanceByModule(moduleId);
             } else if (studentId) {
                 result = await attendanceService.viewAttendanceByStudent(studentId);
             }
@@ -67,8 +67,8 @@ const attendanceManagement = {
     // Calculate Exam Eligibility
     calculateEligibility: async (req, res, next) => {
         try {
-            const { studentId, moduleId } = req.query;
-            const result = await attendanceService.calculateEligibility(studentId, moduleId);
+            const { studentId, moduleId, examDate } = req.query;
+            const result = await attendanceService.calculateEligibility(studentId, moduleId, examDate);
             const resData = responseSuccess(result, 'Eligibility calculated successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
@@ -93,9 +93,9 @@ const attendanceManagement = {
     // Request Attendance Correction
     requestAttendanceCorrection: async (req, res, next) => {
         try {
-            const { studentId, moduleId } = req.body;
+            const { studentId, moduleId, classId} = req.body;
             const requestDetails = req.body;
-            const result = await attendanceService.requestAttendanceCorrection(studentId, moduleId, requestDetails);
+            const result = await attendanceService.requestAttendanceCorrection(studentId, moduleId, classId, requestDetails);
             const resData = responseSuccess(result, 'Attendance correction request submitted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {

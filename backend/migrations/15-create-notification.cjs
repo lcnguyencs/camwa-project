@@ -12,20 +12,20 @@ module.exports = {
       sender_id: {
         type: Sequelize.STRING(20),
         references: {
-          model: 'iam',         // Name of the referenced table
-          key: 'acc_id'        // Key in the referenced table
+          model: 'iam',        
+          key: 'acc_id'        
         },
-        onUpdate: 'CASCADE',   // Optional: what to do on update
-        onDelete: 'SET NULL',  // Optional: what to do on delete
+        onUpdate: 'CASCADE',   
+        onDelete: 'SET NULL',  
       },
       receiver_id: {
         type: Sequelize.STRING(20),
         references: {
-          model: 'student',     // Name of the referenced table
-          key: 'student_id'     // Key in the referenced table
+          model: 'student',     
+          key: 'student_id'     
         },
-        onUpdate: 'CASCADE',   // Optional: what to do on update
-        onDelete: 'SET NULL',  // Optional: what to do on delete
+        onUpdate: 'CASCADE',   
+        onDelete: 'SET NULL',  
       },
       notification_type: {
         type: Sequelize.STRING(50),
@@ -55,7 +55,7 @@ module.exports = {
       },
       priority: {
         type: Sequelize.INTEGER,
-        defaultValue: 0,       // Set priority levels
+        defaultValue: 0,      
       },
       is_critical: {
         type: Sequelize.BOOLEAN,
