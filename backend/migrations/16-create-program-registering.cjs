@@ -25,7 +25,7 @@ module.exports = {
         onDelete: 'CASCADE',   
       },
       intake: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         references: {
           model: 'intake',      
           key: 'year'           

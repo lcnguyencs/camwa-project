@@ -5,8 +5,7 @@ import NotificationService from '../services/notification.service.js';
 import Student from '../models/Student.model.js';
 import sequelize from '../common/sequelize/connect.sequelize.js'; // Import sequelize for Op
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
-
-const { Op } = sequelize;
+import { Op } from 'sequelize';
 
 const classService = {
     // Check for scheduling conflicts
@@ -42,19 +41,19 @@ const classService = {
         const newClass = await Class.create(classData);
         
         // Notify students and lecturer about the new class
-        try {
-            await NotificationService.sendClassCreationNotification(newClass);
-        } catch (notificationError) {
-            console.error('Failed to send class creation notification:', notificationError);
-        }
+        // try {
+        //     await NotificationService.sendClassCreationNotification(newClass);
+        // } catch (notificationError) {
+        //     console.error('Failed to send class creation notification:', notificationError);
+        // }
 
-        // Send email notification for class creation
-        await sendMail({
-            to: 'student@example.com', // Replace with list of student emails
-            subject: 'New Class Created',
-            text: `A new class ${newClass.className} has been scheduled.`,
-            html: `<p>A new class <b>${newClass.className}</b> has been scheduled.</p>`
-        });
+        // // Send email notification for class creation
+        // await sendMail({
+        //     to: 'student@example.com', // Replace with list of student emails
+        //     subject: 'New Class Created',
+        //     text: `A new class ${newClass.className} has been scheduled.`,
+        //     html: `<p>A new class <b>${newClass.className}</b> has been scheduled.</p>`
+        // });
 
         return newClass;
     },
@@ -154,14 +153,14 @@ const classService = {
 
     // Lecturer views student's attendance rate for the module
     viewStudentAttendanceRate: async (moduleId) => {
-        const attendances = await Attendance.findAll({ where: { module_id: moduleId } });
+        const attendances = await Attendance.findAll({ where: { intake_module_id: moduleId } });
 
         if (!attendances || attendances.length === 0) {
             throw new Error('No attendance data found for this module');
         }
 
         const totalClasses = attendances.length;
-        const attendedClasses = attendances.filter(a => a.status === 'present').length;
+        const attendedClasses = attendances.filter(a => a.attendance_status === 'present').length;
 
         // Calculate attendance rate
         const attendanceRate = (attendedClasses / totalClasses) * 100;

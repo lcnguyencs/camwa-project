@@ -37,7 +37,7 @@ const attendanceService = {
 
     // View attendance by module
     viewAttendanceByModule: async (moduleId) => {
-        return await Attendance.findAll({ where: { module_id: moduleId } });
+        return await Attendance.findAll({ where: { intake_module_id: moduleId } });
     },
 
     // View attendance by student
@@ -56,10 +56,10 @@ const attendanceService = {
     },
 
     // Calculate attendance eligibility for a student based on the 80% rule
-    calculateEligibility: async (studentId, moduleId, examDate = null) => {
+    calculateEligibility: async (studentId, moduleId, examDate) => {
         try {
             // Count total classes for the given module
-            const totalClasses = await Class.count({ where: { module_id: moduleId } });
+            const totalClasses = await Class.count({ where: { intake_module_id: moduleId } });
 
             // If there are no classes scheduled, return a default response
             if (totalClasses === 0) {
@@ -103,16 +103,17 @@ const attendanceService = {
     // Retrieve exam eligibility status for a student
     viewExamEligibilityStatus: async (studentId, moduleId) => {
         const examStatus = await ExamTaking.findOne({
-            where: { student_id: studentId, module_id: moduleId }
+            where: { student_id: studentId, intake_module_id: moduleId}
         });
         return examStatus ? examStatus.is_eligible ? 'Eligible' : 'Not Eligible' : 'No Record';
     },
 
     // Handle attendance discrepancy - request correction
-    requestAttendanceCorrection: async (studentId, moduleId, requestDetails) => {
+    requestAttendanceCorrection: async (studentId, moduleId, classId, requestDetails) => {
         const request = await AttendanceRequest.create({
             student_id: studentId,
-            module_id: moduleId,
+            intake_module_id: moduleId,
+            class_id: classId,
             status: 'pending',
             ...requestDetails
         });
@@ -142,7 +143,7 @@ const attendanceService = {
             if (request) {
                 await Attendance.update(
                     { attendance_status: 'present' },  // Assuming correction to mark as present
-                    { where: { student_id: request.student_id, module_id: request.module_id } }
+                    { where: { student_id: request.student_id, intake_module_id: request.intake_module_id } }
                 );
             }
             console.log(`Correction request ${requestId} approved and attendance updated.`);
@@ -156,8 +157,8 @@ const attendanceService = {
             await sendMail({
                 to: 'student@example.com',  // Replace with student's email
                 subject: `Attendance Correction ${approvalStatus ? 'Approved' : 'Denied'}`,
-                text: `Your attendance correction request for module ${request.module_id} has been ${approvalStatus ? 'approved' : 'denied'}.`,
-                html: `<p>Your attendance correction request for module ${request.module_id} has been ${approvalStatus ? 'approved' : 'denied'}.</p>`
+                text: `Your attendance correction request for module ${request.intake_module_id} has been ${approvalStatus ? 'approved' : 'denied'}.`,
+                html: `<p>Your attendance correction request for module ${request.intake_module_id} has been ${approvalStatus ? 'approved' : 'denied'}.</p>`
             });
         }
 

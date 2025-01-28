@@ -16,14 +16,30 @@ module.exports = {
       lecturer_id: {
         type: Sequelize.STRING(20),
         allowNull: false,
+        references: {
+          model: 'lecturer',      
+          key: 'staff_id'      
+        },
+        onUpdate: 'CASCADE',     
+        onDelete: 'CASCADE',     
       },
       program_id: {
         type: Sequelize.STRING(20),
-        allowNull: false,
+        references: {
+          model: 'program',      
+          key: 'program_id'      
+        },
+        onUpdate: 'CASCADE',     
+        onDelete: 'SET NULL',     
       },
       intake: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'intake',       
+          key: 'year'            
+        },
+        onUpdate: 'CASCADE',     
+        onDelete: 'SET NULL',     
       },
       semester_id: {
         type: Sequelize.STRING(36),

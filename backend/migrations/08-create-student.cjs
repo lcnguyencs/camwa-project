@@ -24,7 +24,7 @@ module.exports = {
         onDelete: 'SET NULL',     
       },
       intake: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         references: {
           model: 'intake',       
           key: 'year'            

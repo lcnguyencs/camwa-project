@@ -7,12 +7,13 @@ const courseManagement = {
     createCourse: async (req, res, next) => {
         try {
             const courseData = req.body;
-            const result = await courseService.createCourse(courseData);
+            const userId = req.user.id;
+            const result = await courseService.createCourse(courseData, userId);
             const resData = responseSuccess(result, 'Course created successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             console.error("Failed to create course:", error);
-            const resError = responseError(error, 'Failed to create course');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -24,7 +25,7 @@ const courseManagement = {
             const resData = responseSuccess(result, 'Courses retrieved successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error, 'Failed to retrieve courses');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -34,12 +35,13 @@ const courseManagement = {
         try {
             const intakeModuleId = req.params.intakeModuleId;
             const lecturerId = req.body.lecturerId;
-            const result = await courseService.assignLecturerToIntakeModule(intakeModuleId, lecturerId);
+            const userId = req.user.id;
+            const result = await courseService.assignLecturerToIntakeModule(intakeModuleId, lecturerId, userId);
             const resData = responseSuccess(result, 'Lecturer assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             console.error("Failed to assign lecturer to intake module:", error);
-            const resError = responseError(error, 'Failed to assign lecturer to intake module');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -49,12 +51,13 @@ const courseManagement = {
         try {
             const intakeModuleId = req.params.intakeModuleId;
             const studentIds = req.body.studentIds;
-            const result = await courseService.assignStudentsToIntakeModule(intakeModuleId, studentIds);
+            const userId = req.user.id;
+            const result = await courseService.assignStudentsToIntakeModule(intakeModuleId, studentIds, userId);
             const resData = responseSuccess(result, 'Students assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             console.error("Failed to assign students to intake module:", error);
-            const resError = responseError(error, 'Failed to assign students to intake module');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -63,12 +66,13 @@ const courseManagement = {
     createClassesForIntakeModule: async (req, res, next) => {
         try {
             const intakeModuleId = req.params.intakeModuleId;
-            const result = await courseService.createClassesForIntakeModule(intakeModuleId);
+            const userId = req.user.id;
+            const result = await courseService.createClassesForIntakeModule(intakeModuleId, userId);
             const resData = responseSuccess(result, 'Classes created for intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             console.error("Failed to create classes for intake module:", error);
-            const resError = responseError(error, 'Failed to create classes for intake module');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -116,7 +120,7 @@ const courseManagement = {
             res.end();
         } catch (error) {
             console.error("Failed to export intake module report:", error);
-            const resError = responseError(error, 'Failed to export intake module report');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -126,11 +130,12 @@ const courseManagement = {
         try {
             const courseId = req.params.courseId;
             const updatedData = req.body;
-            const result = await courseService.updateCourse(courseId, updatedData);
+            const userId = req.user.id;
+            const result = await courseService.updateCourse(courseId, updatedData, userId);
             const resData = responseSuccess(result, 'Course updated successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error, 'Failed to update course');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
@@ -139,11 +144,12 @@ const courseManagement = {
     deleteCourse: async (req, res, next) => {
         try {
             const courseId = req.params.courseId;
-            await courseService.deleteCourse(courseId);
+            const userId = req.user.id;
+            const result = await courseService.deleteCourse(courseId, userId);
             const resData = responseSuccess(result, 'Course deleted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error, 'Failed to delete course');
+            const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },

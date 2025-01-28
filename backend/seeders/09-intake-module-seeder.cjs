@@ -10,8 +10,9 @@ module.exports = {
         capacity: 30,
         ects: 6,
         lecturer_id: 'STAFF001',
+        program_id: 'PROG001',
         course_id: 1,
-        intake_year: '2023',
+        intake: '2023',
         semester_id: 'SEM001'
       },
       {
@@ -20,8 +21,9 @@ module.exports = {
         capacity: 25,
         ects: 6,
         lecturer_id: 'STAFF002',
+        program_id: 'PROG002',
         course_id: 2,
-        intake_year: '2023',
+        intake: '2023',
         semester_id: 'SEM001'
       }
     ]);

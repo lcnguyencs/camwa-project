@@ -10,7 +10,7 @@ module.exports = {
         map_location: 'A1-101',
         program_id: 'PROG001',
         intake: '2023',
-        acc_id: 'ACC001'
+        acc_id: 'STU001'
       },
       {
         student_id: 'STU002',
@@ -18,7 +18,7 @@ module.exports = {
         map_location: 'B2-202',
         program_id: 'PROG002',
         intake: '2023',
-        acc_id: 'ACC002'
+        acc_id: 'STU002'
       }
     ]);
   },

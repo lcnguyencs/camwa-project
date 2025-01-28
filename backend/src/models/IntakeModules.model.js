@@ -36,9 +36,9 @@ const IntakeModule = sequelize.define('IntakeModule', {
     allowNull: false,
   },
   // Reference to the intake year for this module
-  intake_year: {
-    type: DataTypes.DATE,
-    allowNull: false,
+  intake: {
+    type: DataTypes.INTEGER,
+    references: { model: 'Intake', key: 'year' },
   },
   // Reference to the semester of the module
   semester_id: {

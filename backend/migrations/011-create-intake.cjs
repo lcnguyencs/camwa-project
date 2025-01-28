@@ -5,7 +5,7 @@ module.exports = {
 
     await queryInterface.createTable('intake', {
       year: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
       }

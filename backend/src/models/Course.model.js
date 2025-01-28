@@ -14,18 +14,22 @@ const Course = sequelize.define('Course', {
   lecturer_id: {
     type: DataTypes.STRING(20),
     allowNull: false,
+    references: { model: 'Lecturer', key: 'staff_id' },
   },
   program_id: {
     type: DataTypes.STRING(20),
     allowNull: false,
+    references: { model: 'Program', key: 'program_id' },
   },
   intake: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: { model: 'Intake', key: 'year' },
   },
   semester_id: {
     type: DataTypes.STRING(36),
     allowNull: false,
+    references: { model: 'Semester', key: 'sem_id' },
   }
 }, {
   timestamps: false,  // Disable createdAt and updatedAt fields

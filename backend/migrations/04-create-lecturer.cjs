@@ -14,7 +14,12 @@ module.exports = {
       },
       program_id: {
         type: Sequelize.STRING(20),
-        allowNull: false,
+        references: {
+          model: 'program',      
+          key: 'program_id'      
+        },
+        onUpdate: 'CASCADE',     
+        onDelete: 'SET NULL',     
       },
     });
   },

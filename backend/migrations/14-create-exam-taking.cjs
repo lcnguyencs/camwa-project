@@ -2,11 +2,10 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
     await queryInterface.createTable('exam_taking', {
       student_id: {
         type: Sequelize.STRING(20),
-        allowNull: false,
+        primaryKey: true,
         references: {
           model: 'student',  
           key: 'student_id'  
@@ -16,7 +15,7 @@ module.exports = {
       },
       intake_module_id: {
         type: Sequelize.STRING(36),
-        allowNull: false,
+        primaryKey: true,
         references: {
           model: 'intake_module',  
           key: 'intake_module_id'  
@@ -26,15 +25,16 @@ module.exports = {
       },
       exam_date: {
         type: Sequelize.DATE,
+        primaryKey: true,
         allowNull: false,
       },
       is_eligible: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
-      },
+      }
     });
 
-    // Create unique index
+    //redundant since we have a composite primary key but can keep for documentation
     await queryInterface.addIndex('exam_taking', ['student_id', 'intake_module_id', 'exam_date'], { unique: true });
   },
   
