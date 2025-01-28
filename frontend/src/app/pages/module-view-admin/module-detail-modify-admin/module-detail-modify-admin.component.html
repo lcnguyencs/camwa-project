@@ -1,0 +1,66 @@
+<div class="page-container">
+  <div class="modules-info">
+    <h1>Module Information</h1>
+  </div>
+
+  <div class="module-detail">
+
+      <div class="form-group row">
+        <div class="field">
+          <label>Module Name:</label>
+          <input type="text" style="width: 288px;"/>
+        </div>
+        <div class="field">
+          <label>Lecturer:</label>
+          <select style="width: 288px;">
+            <option *ngFor="let lecturer of lecturers" [value]="lecturer">
+              {{ lecturer }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group row" style="margin-top: 6px;">
+        <div class="field">
+          <label>Program:</label>
+          <select>
+            <option *ngFor="let prog of programs" [value]="prog">
+              {{ prog }}
+            </option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Semester:</label>
+          <select>
+            <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Intake:</label>
+          <input type="text"/>
+        </div>
+      </div>
+
+      <div class="form-group row" style="margin-top: 6px;">
+        <div class="field">
+          <label>Begin Date:</label>
+          <input type="date" style="margin-right: 8px;"/>
+        </div>
+        <div class="field">
+          <label>End Date:</label>
+          <input type="date" style="margin-right: 8px;"/>
+        </div>
+        <div class="field">
+          <label>Exam Date:</label>
+          <input type="date" style="margin-right: 8px;"/>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button (click)="updateModule()">Update</button>
+        <button (click)="deleteModule()" style="background-color: red;">Delete</button>
+      </div>
+    
+  </div>
+</div>
+

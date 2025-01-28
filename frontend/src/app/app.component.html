@@ -1,12 +1,6 @@
-<!-- <main class="app-container">
-  <app-sidebar></app-sidebar>
-  <section class="main-content">
-    <router-outlet></router-outlet>
-  </section>
-</main> -->
 <main class="app-container">
-  <sidebar-admin></sidebar-admin>
-  <section class="main-content">
+  <app-sidebar *ngIf="showSidebar"></app-sidebar>
+  <section class="main-content" [class.full-width]="!showSidebar">
     <router-outlet></router-outlet>
   </section>
 </main>

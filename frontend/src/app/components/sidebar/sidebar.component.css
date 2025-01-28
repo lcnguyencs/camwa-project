@@ -27,7 +27,7 @@
   margin-bottom: 10px;
 }
 
-.profile-info p.lecturer-name {
+.profile-info p.user-name {
   font-size: 20px;
 }
 
@@ -40,7 +40,7 @@
   height: 2px;
   background-color: #ffffff;
   width: 100%;
-  margin: 24px 0;
+  margin: 30px 0;
 }
 
 .nav-links,
@@ -70,10 +70,16 @@
 }
 
 .nav-item:hover {
-  background-color: var(--vgu-light-blue);
-  color: #ffffff;
+  background-color: #ffffff;
+  color: var(--vgu-dark-blue);
   border-radius: 10px;
   transition-duration: 300ms;
+}
+
+.nav-item.active {
+  background-color: #ffffff;
+  color: var(--vgu-dark-blue);
+  border-radius: 10px;
 }
 
 .bottom-links {

@@ -1,5 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&display=swap");
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+body {
+  font-family: "IBM Plex Sans" !important;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -28,10 +42,6 @@ h6 {
   padding: 0;
   margin: 0;
   font-weight: bold;
-}
-
-body {
-  font-family: "IBM Plex Sans" !important;
 }
 
 .page-container {
@@ -113,6 +123,7 @@ table td {
   padding: 12px;
   text-align: center;
   vertical-align: middle !important;
+  white-space: no-wrap;
 }
 
 table th {
@@ -252,4 +263,13 @@ label {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.cell-btn {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
 }

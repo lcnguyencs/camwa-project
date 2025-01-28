@@ -1,105 +1,75 @@
-import { from } from "rxjs";
 import { Routes } from "@angular/router";
-import { SidebarAdminComponent } from "./app/components/sidebar-admin/sidebar-admin.component";
-import { SidebarComponent } from "./app/components/sidebar/sidebar.component";
-import { LecturerModuleViewComponent } from "./app/pages/lecturer-module-view/lecturer-module-view.component";
-import { LecturerClassViewComponent } from "./app/pages/lecturer-class-view/lecturer-class-view.component";
-import { FacultyAssistantModuleViewComponent } from "./app/pages/faculty-assistant-module-view/faculty-assistant-module-view.component";
-import { FacultyAssistantClassViewComponent } from "./app/pages/faculty-assistant-class-view/faculty-assistant-class-view.component";
-import { ClassDetailsViewComponent } from "./app/pages/class-details-view/class-details-view.component";
-import { RequestAdminComponent } from "./app/pages/request-admin/request-admin.component";
-import { AccountAdminComponent } from "./app/pages/account-admin/account-admin.component";
-import { AccountDetailAdminComponent } from "./app/pages/account-admin/account-detail-admin/account-detail-admin.component";
-import { ModuleAdminComponent } from "./app/pages/module-admin/module-admin.component";
-import { ModuleDetailAdminComponent } from "./app/pages/module-admin/module-detail-admin/module-detail-admin.component";
-import { ModuleStudentComponent } from "./app/pages/module-student/module-student.component";
-import { ModuleDetailStudentComponent } from "./app/pages/module-student/module-detail-student/module-detail-student.component";
-import { LoginComponent } from "./app/pages/login/login.component";
+
+import { LoginPageComponent } from "./app/pages/login-page/login-page.component";
+import { ProfilePageComponent } from "./app/pages/profile-page/profile-page.component";
+import { ModuleViewAdminComponent } from "./app/pages/module-view-admin/module-view-admin.component";
+import { ModuleDetailCreateAdminComponent } from "./app/pages/module-view-admin/module-detail-create-admin/module-detail-create-admin.component";
+import { ModuleDetailModifyAdminComponent } from "./app/pages/module-view-admin/module-detail-modify-admin/module-detail-modify-admin.component";
+import { ModuleDetailComponent } from "./app/pages/module-view-admin/module-detail/module-detail.component";
+import { RequestViewAdminComponent } from "./app/pages/request-view-admin/request-view-admin.component";
+import { RequestDetailAdminComponent } from "./app/pages/request-view-admin/request-detail-admin/request-detail-admin.component";
+import { AccountViewAdminComponent } from "./app/pages/account-view-admin/account-view-admin.component";
+import { AccountDetailCreateAdminComponent } from "./app/pages/account-view-admin/account-detail-create-admin/account-detail-create-admin.component";
+import { AccountDetailModifyAdminComponent } from "./app/pages/account-view-admin/account-detail-modify-admin/account-detail-modify-admin.component";
 
 const routeConfig: Routes = [
-  // {
-  //   path: "",
-  //   component: SidebarComponent,
-  //   title: "Sidebar",
-  // },
-  {
-    path: "",
-    component: SidebarAdminComponent,
-    title: "Sidebar Admin",
-  },
-
-  {
-    path: "lecturer-module-view",
-    component: LecturerModuleViewComponent,
-    title: "Lecturer Module View",
-  },
-  {
-    path: "lecturer-class-view",
-    component: LecturerClassViewComponent,
-    title: "Lecturer Module View",
-  },
-
-  {
-    path: "faculty-assistant-class-view",
-    component: FacultyAssistantClassViewComponent,
-    title: "Faculty Class View",
-  },
-  {
-    path: "faculty-assistant-module-view",
-    component: FacultyAssistantModuleViewComponent,
-    title: "Faculty Module View",
-  },
-    {
-    path: "faculty-assistant-module-view",
-    component: FacultyAssistantModuleViewComponent,
-    title: "Faculty Module View",
-  },
-
-
-  // {
-  //   path: "class-details-view",
-  //   component: ClassDetailsViewComponent,
-  //   title: "Class Details View",
-  // },
-  {
-    path: "request-admin",
-    component: RequestAdminComponent,
-    title: "Request Admin View",
-  },
-  {
-    path: "account-admin",
-    component: AccountAdminComponent,
-    title: "Account Admin View",
-  },
-  {
-    path: "account-detail-admin",
-    component: AccountDetailAdminComponent,
-    title: "Account Detail Admin View",
-  },
-  {
-    path: "module-admin",
-    component: ModuleAdminComponent,
-    title: "Module Admin View",
-  },
-  {
-    path: "module-detail-admin",
-    component: ModuleDetailAdminComponent,
-    title: "Module Detail Admin View",
-  },
-  {
-    path: "module-student",
-    component: ModuleStudentComponent,
-    title: "Module Student View",
-  },
-  {
-    path: "module-detail-student",
-    component: ModuleDetailStudentComponent,
-    title: "Module Detail Student View",
-  },
   {
     path: "login",
-    component: LoginComponent,
-    title: "Login-View",
+    component: LoginPageComponent,
+    title: "Login",
+  },
+  {
+    path: "profile",
+    component: ProfilePageComponent,
+    title: "Profile",
+  },
+  
+  {
+    path: "module-view-admin",
+    component: ModuleViewAdminComponent,
+    title: "Admin Module View",
+  },
+  {
+    path: "module-view-admin/module-detail-create-admin",
+    component: ModuleDetailCreateAdminComponent,
+    title: "Admin Module Detail Create View",
+  },
+  {
+    path: "module-view-admin/module-detail-modify-admin",
+    component: ModuleDetailModifyAdminComponent,
+    title: "Admin Module Detail Modify View",
+  },
+  {
+    path: "module-view-admin/module-detail-view",
+    component: ModuleDetailComponent,
+    title: "Module Detail View",
+  },
+
+  {
+    path: "request-view-admin",
+    component: RequestViewAdminComponent,
+    title: "Request View",
+  },
+  {
+    path: "request-view-admin/request-detail-admin",
+    component: RequestDetailAdminComponent,
+    title: "Request Detail",
+  },
+
+  {
+    path: "account-view-admin",
+    component: AccountViewAdminComponent,
+    title: "Accounts View",
+  },
+  {
+    path: "account-view-admin/account-detail-create-admin",
+    component: AccountDetailCreateAdminComponent,
+    title: "Admin Account Detail Create View",
+  },
+  {
+    path: "account-view-admin/account-detail-modify-admin",
+    component: AccountDetailModifyAdminComponent,
+    title: "Admin Account Detail Modify View",
   },
 ];
 

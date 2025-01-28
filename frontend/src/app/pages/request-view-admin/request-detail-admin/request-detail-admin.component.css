@@ -1,0 +1,191 @@
+.table-wrapper {
+  max-height: 70vh;
+  display: block;
+  overflow: auto;
+
+  .table {
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      min-height: 48px;
+      background-color: #f2f2f2;
+      font-weight: bold;/* Ensures the content fits */
+    }
+
+    td {
+      width: auto; /* Matches the width of the corresponding th */
+      height: auto;
+    }
+  }
+}
+
+.class-details-container {
+  background: #fff;
+  height: 100%;
+
+  .header {
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    .class-info {
+      p {
+        margin-bottom: 5px;
+        color: #666;
+      }
+    }
+  }
+
+  .search-container {
+    width: 50%;
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.5em;
+
+    &.pending {
+      color: #FFBF00
+    }
+    
+    &.present {
+      color: #008000;
+    }
+
+    &.absent {
+      color: #ff0000;
+    }
+  }
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  margin-top: 6px;
+  margin-right: 8px;
+  margin-left: 8px;  
+  align-items: center;
+}
+
+.tabs {
+  .tab{
+    background-color: #ffffff;
+    color: var(--vgu-dark-blue);
+    border-color: var(--vgu-dark-blue);
+    border-style: solid;
+    border-width: 1px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  .tab.active {
+    background-color: var(--vgu-dark-blue);
+    color: #ffffff;
+  }
+}
+
+.functionButtons {
+  cursor: pointer;
+  margin-right: 20px;
+  background-color: var(--vgu-dark-blue);
+  min-height: 48px;
+  max-height: 48px;
+}
+
+.functionRow {
+  margin-bottom: 30px;
+}
+
+.functionRow h4 {
+  font-size: 20px;
+  color: var(--vgu-dark-blue);
+  margin-bottom: 10px;
+  margin-right: 30px;
+  display: inline-block;
+}
+
+.functionRow input,select {
+  min-height: 48px;
+  max-height: 48px;
+  width: 144px;
+  margin-right: 20px;
+}
+
+.functionRow svg {
+  width: 27px;
+  height: 27px;
+  margin-right: 4px;
+  margin-bottom:  4px;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.modules-info h1 {
+  font-size: 80px;
+  color: var(--vgu-dark-blue);
+}
+
+.modules-info h2 {
+  font-size: 24px;
+  color: var(--vgu-cool-gray);
+}
+
+.request-details {
+  display: flex;
+  gap: 64px;
+  color: var(--vgu-cool-gray);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.image-container {
+  display: flex;
+  justify-content: left;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.image-row {
+  margin-top: 0px; /* Khoảng cách phía trên */
+}
+
+.image-row img {
+  width: 250px; /* Chiếm 45% chiều rộng của vùng chứa */
+  height: auto; /* Giữ tỷ lệ ảnh */
+  border: 1px solid #ccc; /* Viền cho ảnh */
+  border-radius: 10px; /* Bo góc ảnh */
+  margin-right: 30px; /* Khoảng cách phía bên phải */
+}
+
+.image-row h3 {
+  margin-top: 0; /* Loại bỏ khoảng cách phía trên */
+  margin-bottom: 20px;
+  margin-right: 20px;
+  font-size: medium;
+
+}
+
+.attendance-options {
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  padding-left: 650px;
+}
+
+.attendance-options label {
+  margin-right: 15px;
+  color: var(--vgu-dark-blue);
+}

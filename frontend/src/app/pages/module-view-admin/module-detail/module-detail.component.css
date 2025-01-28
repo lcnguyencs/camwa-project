@@ -1,0 +1,120 @@
+input,
+select {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.table-wrapper {
+  max-height: 70vh;
+  display: block;
+  overflow: auto;
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  th {
+    min-height: 48px;
+    background-color: #f2f2f2;
+    font-weight: bold;/* Ensures the content fits */
+  }
+
+  td {
+    width: auto; /* Matches the width of the corresponding th */
+    height: auto;
+  }
+}
+
+.class-details-container {
+  background: #fff;
+  height: 100%;
+
+  .header {
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    .class-info {
+      p {
+        margin-bottom: 5px;
+        color: #666;
+      }
+    }
+  }
+
+  .search-container {
+    width: 50%;
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.5em;
+
+    &.present {
+      color: #008000;
+    }
+
+    &.absent {
+      color: #ff0000;
+    }
+  }
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  margin-top: 6px;
+  margin-right: 8px;
+  margin-left: 8px;  
+  align-items: center;
+}
+
+.tabs {
+  .tab{
+    background-color: #ffffff;
+    color: var(--vgu-dark-blue);
+    border-color: var(--vgu-dark-blue);
+    border-style: solid;
+    border-width: 1px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  .tab.active {
+    background-color: var(--vgu-dark-blue);
+    color: #ffffff;
+  }
+}
+
+.functionButtons {
+  cursor: pointer;
+  margin-right: 20px;
+  background-color: var(--vgu-dark-blue);
+  min-height: 48px;
+  max-height: 48px;
+}
+
+.functionRow {
+  margin-bottom: 30px;
+}
+
+.functionRow svg {
+  width: 27px;
+  height: 27px;
+  margin-right: 4px;
+  margin-bottom:  4px;
+  vertical-align: middle;
+  align-items: center;
+}
