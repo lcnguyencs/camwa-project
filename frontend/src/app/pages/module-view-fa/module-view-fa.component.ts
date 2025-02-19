@@ -9,13 +9,13 @@ import { HttpClient } from '@angular/common/http';
 
 
 @Component({
-  selector: 'module-view-admin',
+  selector: 'module-view-fa',
   standalone: true,  // Đánh dấu RequestComponent là standalone
   imports: [CommonModule, ActionTableComponent, PopupAddModuleComponent,RouterModule,RouterLink, RouterOutlet],  // Import thư viện cần thiết
-  templateUrl: './module-view-admin.component.html',
-  styleUrls: ['./module-view-admin.component.scss']
+  templateUrl: './module-view-fa.component.html',
+  styleUrls: ['./module-view-fa.component.scss']
 })
-export class ModuleViewAdminComponent {  
+export class ModuleViewFAComponent {  
   // public id! : string;
   // public name! : string;
   // public program! : string;

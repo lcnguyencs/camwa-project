@@ -3,22 +3,8 @@
     <h1>Modules</h1>
   </div>
 
-  <button class="functionButtons" routerLink="/module-detail-create">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-    </svg>  
-    Create Module
-  </button>
-
   <div class="functionRow">
     <input type="text" placeholder="Module name" style="width: 270px;" />
-    
-    <select>
-      <option value="" disabled selected hidden>Program</option>
-      <option value="CSE">CSE</option>
-      <option value="ITS">ITS</option>
-      <!-- Add more options here -->
-    </select>
     
     <select>
       <option value="" disabled selected hidden>Semester</option>
@@ -31,8 +17,6 @@
       <option value="2020">2020</option>
       <!-- Add more options here -->
     </select>
-
-    <input type="text" placeholder="Lecturer name" style="width: 270px;"/>
 
     <button class="functionButtons">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -49,10 +33,8 @@
           <th>No.</th>
           <th>Module ID</th>
           <th>Module Name</th>
-          <th>Program</th>
           <th>Semester</th>
           <th>Intake</th>
-          <th>Lecturer</th>
           <th># of students</th>
           <th>Action</th>
         </tr>
@@ -62,10 +44,8 @@
           <td> {{ i + 1 }} </td>
           <td style="width: 144px;">{{ module.id }}</td>
           <td style="width: 270px;">{{ module.name }}</td>
-          <td style="width: 144px;">{{ module.program }}</td>
           <td style="width: 144px;">{{ module.semester }}</td>
           <td style="width: 144px;">{{ module.intake }}</td>
-          <td style="width: 270px;">{{ module.lecturer }}</td>
           <td style="width: 150px;">{{ module.studentCount }}</td>
           <td style="width: 144px;"> 
             <a class="nav-item" routerLink="/module-detail-view">

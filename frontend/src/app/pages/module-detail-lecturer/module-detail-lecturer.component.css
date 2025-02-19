@@ -1,26 +1,32 @@
+input,
+select {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 .table-wrapper {
   max-height: 70vh;
   display: block;
   overflow: auto;
 
-  .table {
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
 
-    th {
-      min-height: 48px;
-      background-color: #f2f2f2;
-      font-weight: bold;/* Ensures the content fits */
-    }
+  th {
+    min-height: 48px;
+    background-color: #f2f2f2;
+    font-weight: bold;/* Ensures the content fits */
+  }
 
-    td {
-      width: auto; /* Matches the width of the corresponding th */
-      height: auto;
-    }
+  td {
+    width: auto; /* Matches the width of the corresponding th */
+    height: auto;
   }
 }
 
@@ -57,10 +63,6 @@
     font-weight: bold;
     font-size: 1.5em;
 
-    &.pending {
-      color: #FFBF00
-    }
-    
     &.present {
       color: #008000;
     }
@@ -97,7 +99,6 @@
 }
 
 .functionButtons {
-  display: flex;
   cursor: pointer;
   margin-right: 20px;
   background-color: var(--vgu-dark-blue);
@@ -106,15 +107,7 @@
 }
 
 .functionRow {
-  display: flex;
   margin-bottom: 30px;
-}
-
-.functionRow input,select {
-  min-height: 48px;
-  max-height: 48px;
-  width: 144px;
-  margin-right: 20px;
 }
 
 .functionRow svg {
@@ -126,12 +119,21 @@
   align-items: center;
 }
 
-.modules-info h1 {
-  font-size: 80px;
-  color: var(--vgu-dark-blue);
-}
+.form-group {
+  display: flex;
+  margin-left: 0px;
+  .field {
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
 
-.modules-info h2 {
-  font-size: 24px;
-  color: var(--vgu-cool-gray);
+    input,
+    select {
+      width: 183px;
+      height: 48px;
+      padding: 8px;
+    }
+  }
 }

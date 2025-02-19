@@ -26,6 +26,7 @@ export class AccountDetailCreateAdminComponent {
   attendanceDate = '';
 
   lecturers = ['NguyenVanA', 'NguyenVanB'];
+  roles = ['Lecturer', 'Admin', 'Student', 'Faculty Assistant','Academic Coordinator'];
   intakes = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
   programs = ['CSE', 'ECE', 'MEN', 'BBA', 'BFA', 'ARC'];
   semesters = ['WS', 'SS'];

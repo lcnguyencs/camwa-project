@@ -4,13 +4,13 @@ import { CommonModule } from '@angular/common';
 import { PopupAttendanceComponent } from 'src/app/components/popup-attendance/popup-attendance.component';
 
 @Component({
-  selector: 'account-detail-modify-admin',
+  selector: 'module-detail-create',
   standalone: true, 
   imports: [CommonModule, ActionTableComponent, PopupAttendanceComponent],
-  templateUrl: './account-detail-modify-admin.component.html',
-  styleUrls: ['./account-detail-modify-admin.component.scss'],
+  templateUrl: './module-detail-create.component.html',
+  styleUrls: ['./module-detail-create.component.scss'],
 })
-export class AccountDetailModifyAdminComponent {
+export class ModuleDetailCreateComponent {
   activeSection = 'information';
 
   moduleName = '';
@@ -27,7 +27,6 @@ export class AccountDetailModifyAdminComponent {
 
   lecturers = ['NguyenVanA', 'NguyenVanB'];
   intakes = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
-  roles = ['Lecturer', 'Admin', 'Student', 'Faculty Assistant','Academic Coordinator'];
   programs = ['CSE', 'ECE', 'MEN', 'BBA', 'BFA', 'ARC'];
   semesters = ['WS', 'SS'];
   years = [2020, 2021, 2022, 2023, 2024, 2025, 2026];

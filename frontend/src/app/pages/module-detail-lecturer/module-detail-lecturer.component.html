@@ -1,0 +1,213 @@
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="class-info">
+    <h1>Theoretical Computer Science</h1>
+    <div class="class-details">
+      <div class="left-detail">
+        <p>Module ID: CS1</p>
+        <p>Lecturer: Tran Hong Ngoc</p>
+        <p>Semester: WS 2024</p>
+      </div>
+
+      <div class="right-detail">
+        <p>Duration: September 9th - December 9th</p>
+        <p>Exam Date: December 18th</p>
+        <p>Total number of students: 4</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="class-details-container">
+      <div class="functionRow">  
+        <button
+          class="functionButtons"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Export CSV
+        </button>
+      </div>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Intake</th>
+              <th>Att. %</th>
+              <th>Exam Eligibility</th>
+              <th *ngFor="let session of classSessions" style="max-width: 160px;">
+                {{ session.date }} {{ session.startTime }} - {{ session.endTime }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of classStudents; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td style="min-width: 160px;">{{ student.id }}</td>
+              <td style="min-width: 270px;">{{ student.fullName }}</td>
+              <td style="min-width: 160px;">{{ student.intake }}</td>
+              <td style="min-width: 160px;">{{ student.attendancePercent }}</td> 
+              <td style="min-width: 270px;">{{ student.eligibility }}</td> 
+              <td style="min-width: 160px;" class="text-center" *ngFor="let attendance of classAttendance">
+                  <span
+                    [class.present]="attendance.status === 'P'"
+                    [class.absent]="attendance.status === 'A'"
+                    class="status-badge"
+                  >
+                    {{ attendance.status }}
+                  </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+  </div>
+</div>
+
+      <div
+        class="modal fade"
+        id="deleteModalSession"
+        role="dialog"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="exampleModalLabel" style="font-size: 18px; margin-left: 120px;" >Warning</h3>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete this session?</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="delete-btn">Delete</button>
+              <button type="button" class="cancel-btn-delete-form" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="deleteModalStudent"
+        role="dialog"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="exampleModalLabel" style="font-size: 18px; margin-left: 120px;" >Warning</h3>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to remove this student?</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="delete-btn">Delete</button>
+              <button type="button" class="cancel-btn-delete-form" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="inviteModalStudent"
+        role="dialog"
+        aria-labelledby="inviteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="exampleModalLabel" style="font-size: 18px; margin-left: 42px;" >Invite Student</h3>
+            </div>
+            <div class="modal-body">
+              <div class="field">
+                <label>ID:</label>
+                <input type="text" style="width:100%;"/>
+              </div>
+              <div class="field">
+                <label>Name:</label>
+                <input type="text" style="width:100%;"/>
+              </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="send-btn">Invite</button>
+              <button type="button" class="cancel-btn" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="addModalSession"
+        role="dialog"
+        aria-labelledby="addModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="form-group row" style="margin-top: 6px;">
+                <div class="field">
+                  <label>Date:</label>
+                  <input type="date" style="margin-right: 8px;"/>
+                </div>
+                <div class="field">
+                  <label>Time:</label>
+                  <input type="text" style="margin-right: 8px;"/>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="send-btn">Add</button>
+              <button type="button" class="cancel-btn" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="editModalSession"
+        role="dialog"
+        aria-labelledby="editModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="form-group row" style="margin-top: 6px;">
+                <div class="field">
+                  <label>Date:</label>
+                  <input type="date" style="margin-right: 8px;"/>
+                </div>
+                <div class="field">
+                  <label>Time:</label>
+                  <input type="text" style="margin-right: 8px;"/>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="send-btn">Update</button>
+              <button type="button" class="cancel-btn" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>

@@ -1,0 +1,142 @@
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="modules-info">
+    <h1>Requests</h1>
+  </div>
+
+  <div class="class-details-container">
+      <div class="functionRow">  
+        <input type="text" placeholder="Module name" style="width: 270px;" />
+    
+        <select>
+          <option value="" disabled selected hidden>Program</option>
+          <option value="CSE">CSE</option>
+          <option value="ITS">ITS</option>
+          <!-- Add more options here -->
+        </select>
+        
+        <select>
+          <option value="" disabled selected hidden>Intake</option>
+          <option value="2020">2020</option>
+          <!-- Add more options here -->
+        </select>
+        
+        <input type="text" placeholder="Student ID"/>
+
+        <input type="text" placeholder="Student name" style="width: 270px;"/>
+        
+        <button
+          class="functionButtons"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+          Search
+        </button>
+      </div>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Module ID</th>
+              <th>Module Name</th>
+              <th>Program</th>
+              <th>Intake</th>
+              <th>Session</th>
+              <th>Student ID</th>
+              <th>Student Name</th>
+              <th>Request Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of requestData; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td style="min-width: 150px;">{{ data.moduleID }}</td>
+              <td style="min-width: 270px;">{{ data.moduleName }}</td>
+              <td style="min-width: 150px;">{{ data.program }}</td>
+              <td style="min-width: 150px;">{{ data.intake }}</td>
+              <td style="min-width: 150px;">
+                  {{ data.sessionDate }} <br>
+                  {{ data.sessionStartTime }} - {{ data.sessionEndTime }}
+              </td>  
+              <td style="min-width: 150px;">{{ data.studentID }}</td>
+              <td style="min-width: 270px;">{{ data.studentName }}</td>
+              <td style="min-width: 150px;">{{ data.requestDate }} <br> {{ data.requestTime }}</td>
+              <td style="min-width: 150px;" 
+                  [class.pending]="data.status === 'In Progress'"
+                  [class.present]="data.status === 'Completed'"
+                  class="status-badge">
+                    {{ data.status }}
+              </td>
+              <td style="min-width: 150px;"> 
+                <a class="nav-item" routerLink="false ? 'inspection' : undefined" data-toggle="modal" data-target="#confirmModalRequest" *ngIf="data.status === 'In Progress'">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                  
+                </a>
+                <a class="nav-item" routerLink="false ? 'inspection' : undefined" data-toggle="modal" data-target="#confirmSendModalRequest" *ngIf="data.status === 'In Progress'">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                  </svg>                  
+                </a>
+              </td>  
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+
+      <div
+        class="modal fade"
+        id="confirmModalRequest"
+        role="dialog"
+        aria-labelledby="confirmModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="exampleModalLabel" style="font-size: 18px; margin-left: 110px;" >Warning</h3>
+            </div>
+            <div class="modal-body">
+              <p>Change this student's attendance status?</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="send-btn">Confirm</button>
+              <button type="button" class="cancel-btn" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="confirmSendModalRequest"
+        role="dialog"
+        aria-labelledby="confirmModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="exampleModalLabel" style="font-size: 18px; margin-left: 100px;" >Warning</h3>
+            </div>
+            <div class="modal-body">
+              <p>Send this request to an Administrator?</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <button type="submit" class="send-btn">Confirm</button>
+              <button type="button" class="cancel-btn" data-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>

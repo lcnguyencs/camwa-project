@@ -62,7 +62,7 @@ export class AccountViewAdminComponent {
     },
     {
       id: "CS2",
-      name: "Discrete Math",
+      name: "Lecturer 1",
       program: "CSE",
       intake: "",
       role: "Lecturer",

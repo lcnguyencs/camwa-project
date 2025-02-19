@@ -199,9 +199,8 @@ label {
   height: fit-content; /* Adjust the width as needed */
   margin: 0 auto; /* Center horizontally */
   position: fixed;
-  top: 50%;
-  left: 40%;
-  transform: translate(-50%, -50%); /* To not block the buttons */
+  top: 40%;
+  /*transform: translate(-50%, -50%); To not block the buttons */
   z-index: 1050; /* Ensure it appears above other content */
   padding: 0px !important;
 }
@@ -258,6 +257,24 @@ label {
 
 .modal-footer .cancel-btn {
   background-color: #f56565;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-footer .delete-btn {
+  background-color: #f56565;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-footer .cancel-btn-delete-form {
+  background-color: var(--vgu-dark-blue);
   color: white;
   border: none;
   padding: 0.5rem 1rem;

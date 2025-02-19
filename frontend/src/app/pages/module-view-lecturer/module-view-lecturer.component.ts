@@ -9,13 +9,13 @@ import { HttpClient } from '@angular/common/http';
 
 
 @Component({
-  selector: 'module-view-admin',
+  selector: 'module-view-lecturer',
   standalone: true,  // Đánh dấu RequestComponent là standalone
   imports: [CommonModule, ActionTableComponent, PopupAddModuleComponent,RouterModule,RouterLink, RouterOutlet],  // Import thư viện cần thiết
-  templateUrl: './module-view-admin.component.html',
-  styleUrls: ['./module-view-admin.component.scss']
+  templateUrl: './module-view-lecturer.component.html',
+  styleUrls: ['./module-view-lecturer.component.scss']
 })
-export class ModuleViewAdminComponent {  
+export class ModuleViewLecturerComponent {  
   // public id! : string;
   // public name! : string;
   // public program! : string;
@@ -61,18 +61,18 @@ export class ModuleViewAdminComponent {
       studentCount: 4,
     },
     {
-      id: "CS3",
-      name: "Algebra",
-      program: "CSE",
+      id: "EEIT1",
+      name: "Electrical Circuits",
+      program: "EEIT",
       semester: "WS 2024",
       intake: 2022,
       lecturer: "Lecturer 3",
       studentCount: 4,
     },
     {
-      id: "CS4",
-      name: "Operating System",
-      program: "CSE",
+      id: "EEIT2",
+      name: "Digital Signal Processing",
+      program: "EEIT",
       semester: "WS 2024",
       intake: 2022,
       lecturer: "Lecturer 4",

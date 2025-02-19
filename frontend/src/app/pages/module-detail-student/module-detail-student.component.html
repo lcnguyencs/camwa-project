@@ -1,0 +1,85 @@
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="class-info">
+    <h1>Theoretical Computer Science</h1>
+    <div class="class-details">
+      <div class="left-detail">
+        <p>Module ID: CS1</p>
+        <p>Lecturer: Tran Hong Ngoc</p>
+        <p>Semester: WS 2024</p>
+      </div>
+
+      <div class="right-detail">
+        <p>Duration: September 9th - December 9th</p>
+        <p>Exam Date: December 18th</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="class-details-container">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let session of classSessions; let i = index"
+            [class.highlight]="i === 2"
+          >
+            <td>{{ i + 1 }}</td>
+            <td style="width: 160px;">{{ session.date }}</td>
+            <td style="width: 160px;">{{ session.startTime }} - {{ session.endTime }}</td>
+            <td style="min-width: 160px;" class="text-center">
+              <span
+                [class.present]="session.status === 'P'"
+                [class.absent]="session.status === 'A'"
+                class="status-badge"
+              >
+                {{ session.status }}
+              </span>
+          </td>
+            <td style="width: 144px;"> 
+              <a class="nav-item" routerLink="false ? 'inspection' : undefined" data-toggle="modal" data-target="#confirmSendModalRequest" *ngIf="session.status === 'A'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                </svg>                  
+              </a>    
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>   
+  </div>
+</div>
+
+<div
+class="modal fade"
+id="confirmSendModalRequest"
+role="dialog"
+aria-labelledby="confirmModalLabel"
+aria-hidden="true"
+>
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="exampleModalLabel" style="font-size: 18px; margin-left: 75px;" >Warning</h3>
+    </div>
+    <div class="modal-body">
+      <p>Send this request to a lecturer?</p>
+    </div>
+    <div class="modal-footer" style="justify-content: center;">
+      <button type="submit" class="send-btn">Confirm</button>
+      <button type="button" class="cancel-btn" data-dismiss="modal">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+</div>
