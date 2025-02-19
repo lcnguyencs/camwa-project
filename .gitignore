@@ -133,6 +133,7 @@ dist
 .pnp.*
 
 backend/src/config/serviceAccountKey.json
+backend/config/config.json
 
 # Loại bỏ toàn bộ thư mục node_modules
 node_modules/
