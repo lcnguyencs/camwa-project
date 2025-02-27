@@ -10,6 +10,16 @@ const intakeModuleController = {
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
     }
+  },
+
+  getModuleDetails: async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const moduleDetails = await intakeModuleService.getModuleDetails(moduleId);
+      res.status(200).json(responseSuccess(moduleDetails, 'Module details retrieved successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
   }
 };
 
