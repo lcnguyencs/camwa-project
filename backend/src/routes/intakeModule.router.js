@@ -4,5 +4,6 @@ import intakeModuleController from '../controllers/intakeModuleManagement.contro
 const intakeModuleRouter = express.Router();
 
 intakeModuleRouter.get('/', intakeModuleController.getAllIntakeModules);
+intakeModuleRouter.get('/:moduleId', intakeModuleController.getModuleDetails);
 
 export default intakeModuleRouter;
