@@ -4,7 +4,7 @@
 CAMWA is a web-based system designed for efficiently managing class attendance. It allows lecturers to track attendance, students to view their attendance records, and admins to manage courses, programs, and users seamlessly. The system utilizes:
 
 - **Frontend**: Angular-based single-page application (SPA).
-- **Backend**: Node.js with Express and PostgreSQL (using Docker).
+- **Backend**: Node.js with Express and PostgreSQL.
 - **Authentication**: Firebase Authentication with JWT for secure access control.
 
 ## Table of Contents
@@ -25,14 +25,13 @@ Before starting, ensure you have the following installed:
   ```bash
   npm install -g @angular/cli
   ```
-- **Docker Desktop**: [Download from Docker](https://www.docker.com/products/docker-desktop)
 - **Git**: [Download from Git](https://git-scm.com)
-- **Postgres Client (TablePlus)**: [Download TablePlus](https://tableplus.com)
+- **PostgreSQL**: [Download PostgreSQL](https://www.postgresql.org/download/)
 
 ### Backend Setup
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Dangtrunghieu2002/camwa-project.git
+   git clone https://github.com/lcnguyencs/camwa-project.git
    cd camwa-project/backend
    ```
 
@@ -41,23 +40,20 @@ Before starting, ensure you have the following installed:
    npm install
    ```
 
-3. **Set up Docker for PostgreSQL**:
-   ```bash
-   docker run --name Attendance-Checking-System-Postgres -e POSTGRES_PASSWORD=1234 -d -p 5433:5432 postgres:latest
-   ```
-
-4. **Configure PostgreSQL using TablePlus**:
-   - Connect to the Postgres database with:
+3. **Configure PostgreSQL using pgAdmin4**:
+   -During installation of postgreSQL, make sure to also install pgAdmin4.
+   - Open pgAdmin4 and choose a master password. "1234" is used in this project.
+   - Connect to the Postgres server with:
      - Host: `127.0.0.1`
-     - Port: `5433`
+     - Port: `5432`
      - User: `postgres`
      - Password: `1234`
-   - Create the database and tables using the SQL script provided in the `/backend` directory.
+   - Create a new database with the name "camwa_db"
 
-5. **Create `.env` file in the backend directory**:
+4. **Create `.env` file in the backend directory**:
    ```env
    DB_HOST=127.0.0.1
-   DB_PORT=5433
+   DB_PORT=5432
    DB_USER=postgres
    DB_PASSWORD=1234
    DB_NAME=camwa_db
@@ -65,7 +61,50 @@ Before starting, ensure you have the following installed:
    GOOGLE_APPLICATION_CREDENTIALS=./backend/src/config/serviceAccountKey.json
    ```
 
-6. **Start the backend server**:
+5. **Create/Edit `config.json` file in `backend/config` directory**:
+   ```env
+   {
+      "development": {
+         "username": "postgres",
+         "password": "1234",
+         "database": "camwa_db",
+         "host": "localhost",
+         "port": 5432,
+         "dialect": "postgres"
+      },
+      "test": {
+         "username": "postgres",
+         "password": "1234",
+         "database": "camwa_db",
+         "host": "localhost",
+         "port": 5432,
+         "dialect": "postgres"
+      },
+      "production": {
+         "username": "postgres",
+         "password": "1234",  
+         "database": "camwa_db",
+         "host": "localhost",
+         "port": 5432,
+         "dialect": "postgres"
+      }
+   }
+   ```
+
+6. **Getting serviceAccountKey.json**:
+   - Go to "https://console.firebase.google.com/u/0/project/vgu-attendance-management/settings/serviceaccounts/adminsdk"
+   - Generate new private key
+   - Rename the downloaded file to `serviceAccountKey.json`and save it in `backend/src/config/`
+
+7. **Sequalize the database**:
+   ```bash
+   npm run database:migrate 
+   ```
+   ```bash
+   npm run database:seed
+   ```
+
+8. **Start the backend server**:
    ```bash
    npm start
    ```
@@ -105,24 +144,19 @@ Before starting, ensure you have the following installed:
    The frontend will be available at `http://localhost:4200`.
 
 ## Running the Application
-1. **Start Docker**:
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Run the backend server**:
+1. **Run the backend server**:
    ```bash
    cd backend
    npm start
    ```
 
-3. **Run the frontend server**:
+2. **Run the frontend server**:
    ```bash
    cd frontend
    ng serve
    ```
 
-4. **Access the application**:
+3. **Access the application**:
    - **Frontend**: [http://localhost:4200](http://localhost:4200)
    - **Backend API**: [http://localhost:3000/api](http://localhost:3000/api)
 
