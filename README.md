@@ -136,6 +136,7 @@ Before starting, ensure you have the following installed:
      apiUrl: 'http://localhost:3000'
    };
    ```
+   You can get these values from Project Settings -> General -> Your apps -> Firebase SDK snippet.
 
 4. **Run the frontend server**:
    ```bash
@@ -183,6 +184,8 @@ camwa-project/
 ```
 
 ## API Documentation
+
+http://localhost:3000/api-docs/#/
 
 ## Contributing
 We welcome contributions from the community! Please follow these steps to contribute:
