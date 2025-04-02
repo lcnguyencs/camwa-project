@@ -10,6 +10,8 @@ import programRouter from './program.router.js';
 import intakeModuleRouter from './intakeModule.router.js';
 import facilityFacultyRouter from './faculty.router.js';
 import testTokenController from '../controllers/testTokenController.js';
+import accountRouter from './account.router.js';
+
 
 const rootRoutes = express.Router();
 
@@ -50,6 +52,9 @@ rootRoutes.use('/faculty', facilityFacultyRouter);
 
 //fetchiing jwt token for testing
 rootRoutes.post('/test-token', testTokenController.getTestToken);
+
+//Account routes
+rootRoutes.use('/account', accountRouter);
 
 
 export default rootRoutes;
