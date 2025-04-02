@@ -3,6 +3,7 @@ import Program from '../models/Program.model.js';
 import Semester from '../models/Semester.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import StudentIntakeModule from '../models/StudentIntakeModule.model.js';
+import sequelize from '../common/sequelize/connect.sequelize.js';
 import { Op } from 'sequelize';
 
 const intakeModuleService = {
