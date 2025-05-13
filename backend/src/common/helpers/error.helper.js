@@ -1,5 +1,53 @@
 import { responseError } from "./response.helper.js";
 
+// Request timeout middleware
+export const requestTimeout = (req, res, next) => {
+    const timeout = 5000;
+    
+    const timeoutHandler = setTimeout(() => {
+        const error = new BaseError('Request timeout after 5 seconds', 408);
+        next(error);
+    }, timeout);
+
+    res.on('finish', () => {
+        clearTimeout(timeoutHandler);
+    });
+
+    req.on('error', (err) => {
+        clearTimeout(timeoutHandler);
+        next(err);
+    });
+
+    next();
+};
+
+// Global error boundary
+export const globalErrorBoundary = (app) => {
+   // Catch all unhandled errors
+   process.on('uncaughtException', (error) => {
+       console.error('Uncaught Exception:', error);
+       // Keep server running
+   });
+
+   process.on('unhandledRejection', (error) => {
+       console.error('Unhandled Rejection:', error);
+       // Keep server running
+   });
+
+   // Last resort error handler
+   app.use((err, req, res, next) => {
+       console.error('Global error caught:', err);
+       const safeStatusCode = err.code >= 100 && err.code < 600 ? err.code : 500;
+       
+       const response = responseError(
+           err.message || 'Internal Server Error',
+           safeStatusCode
+       );
+       
+       res.status(safeStatusCode).json(response);
+   });
+};
+
 // Error handler middleware
 // Error handler middleware
 export const handlerError = (err, req, res, next) => {

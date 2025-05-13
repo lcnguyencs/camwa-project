@@ -12,8 +12,8 @@ authRoutes.post('/refresh-token', refreshToken);
 authRoutes.post('/logout', authenticateJWT, logOutUser);
 
 // Role-based dashboard routes
-authRoutes.get('/admin-dashboard', verifyTokenAndRole(['admin']), (req, res) => {
-    res.json({ message: 'Welcome to the admin dashboard' });
+authRoutes.get('/ADMIN-dashboard', verifyTokenAndRole(['ADMIN']), (req, res) => {
+    res.json({ message: 'Welcome to the ADMIN dashboard' });
 });
 
 authRoutes.get('/faculty-dashboard', verifyTokenAndRole(['faculty']), (req, res) => {

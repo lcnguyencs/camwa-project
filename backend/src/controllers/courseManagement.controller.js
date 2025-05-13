@@ -13,7 +13,7 @@ const courseManagement = {
             res.status(resData.code).json(resData);
         } catch (error) {
             console.error("Failed to create course:", error);
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to create course');
             res.status(resError.code).json(resError);
         }
     },
