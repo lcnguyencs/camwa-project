@@ -7,7 +7,7 @@ const courseManagement = {
     createCourse: async (req, res, next) => {
         try {
             const courseData = req.body;
-            const userId = req.user.id;
+            const userId = req.user.uid;
             const result = await courseService.createCourse(courseData, userId);
             const resData = responseSuccess(result, 'Course created successfully');
             res.status(resData.code).json(resData);
