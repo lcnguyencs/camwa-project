@@ -1,4 +1,6 @@
 import Iam from '../models/Iam.model.js';
+import bcrypt from 'bcrypt';
+
 
 const accountService = {
   getAllUsers: async () => {
@@ -41,11 +43,14 @@ const accountService = {
 
   createUser: async (userData) => {
     try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(userData.password, salt);
+
       const newUser = await Iam.create({
         acc_id: userData.accId,
         username: userData.username,
         email: userData.email,
-        password: userData.password, // Note: In a real app, you should hash this password
+        password: hashedPassword,
         role: userData.role
       });
       
@@ -62,12 +67,18 @@ const accountService = {
 
   updateUser: async (accId, userData) => {
     try {
-      const [updated] = await Iam.update({
+      const updateData = {
         username: userData.username,
         email: userData.email,
-        password: userData.password, // Note: In a real app, you should hash this password
         role: userData.role
-      }, {
+      };
+
+      if (userData.password) {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(userData.password, salt);
+      }
+
+      const [updated] = await Iam.update(updateData, {
         where: { acc_id: accId }
       });
       
