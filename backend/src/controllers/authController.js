@@ -26,7 +26,7 @@ export const refreshToken = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
   try {
-    const result = await authService.logOut(req.user.uid);
+    const result = await authService.logOut(req.body.userId);
     const resData = responseSuccess(result, 'Logout successful');
     return res.status(200).json(resData);
   } catch (error) {

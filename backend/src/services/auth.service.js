@@ -23,7 +23,10 @@ const authService = {
 
     // Generate tokens
     const accessToken = jwt.sign(
-      { uid: user.acc_id, email: user.email, role: user.role },
+      { uid: user.acc_id, 
+        email: user.email, 
+        role: user.role, 
+        username: user.username},
       JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -59,7 +62,10 @@ const authService = {
       const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
       
       const accessToken = jwt.sign(
-        { uid: user.acc_id, email: user.email, role: user.role },
+        { uid: user.acc_id, 
+          email: user.email, 
+          role: user.role, 
+          username: user.username },
         JWT_SECRET,
         { expiresIn: '1h' }
       );
