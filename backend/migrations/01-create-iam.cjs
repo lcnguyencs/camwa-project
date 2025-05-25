@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
       },
       username: {
-        type: Sequelize.STRING(45),
+        type: Sequelize.STRING(100),
       },
       email: {
         type: Sequelize.STRING(100),
@@ -20,7 +20,7 @@ module.exports = {
         allowNull: false,
       },
       role: {
-        type: Sequelize.STRING(45),
+        type: Sequelize.STRING(100),
         allowNull: false,
       },
       refresh_token: {

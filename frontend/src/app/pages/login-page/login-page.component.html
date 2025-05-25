@@ -3,52 +3,72 @@
     <h1 class="system-title">VGU Attendance Management System</h1>
     <div class="login-form">
       <h2>Welcome back!</h2>
-
-      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">Email:</label>
           <input 
             type="email" 
             id="email" 
-            name="email" 
-            [(ngModel)]="email"
-            required 
-            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-            #emailInput="ngModel"
-          />
-          <div class="validation-error" *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
-            <span *ngIf="emailInput.errors?.['required']">Email is required</span>
-            <span *ngIf="emailInput.errors?.['pattern']">Please enter a valid email</span>
+            formControlName="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+            [attr.aria-invalid]="email?.invalid && (email?.dirty || email?.touched)"
+          >
+          <div class="validation-feedback" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+            <div *ngIf="email?.errors?.['required']" class="error-text">Email is required.</div>
+            <div *ngIf="email?.errors?.['email']" class="error-text">Please enter a valid email address.</div>
           </div>
         </div>
-
+      
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">Password:</label>
           <input 
             type="password" 
             id="password" 
-            name="password"
-            [(ngModel)]="password" 
-            required
-            #passwordInput="ngModel"
-          />
-          <div class="validation-error" *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)">
-            <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+            formControlName="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            [attr.aria-invalid]="password?.invalid && (password?.dirty || password?.touched)"
+          >
+          <div class="validation-feedback" *ngIf="password?.invalid && (password?.dirty || password?.touched)">
+            <div *ngIf="password?.errors?.['required']" class="error-text">Password is required.</div>
           </div>
         </div>
-
+      
         <div *ngIf="errorMessage" class="error-message" role="alert">
           {{ errorMessage }}
         </div>
 
-        <button 
-          type="submit" 
-          class="login-btn" 
-          [disabled]="isSubmitting || loginForm.invalid"
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading"
+          class="login-btn"
         >
-          {{ isSubmitting ? 'Logging in...' : 'Login' }}
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading">Logging in...</span>
         </button>
-      </form>
+      </form>      
     </div>
   </div>
 </div>
+
+
+<!-- <form (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required />
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required />
+  </div>
+
+  <button
+    type="submit"
+    routerLink="/module-view-admin"
+    class="login-btn"
+  >
+    Login
+  </button>
+</form> -->

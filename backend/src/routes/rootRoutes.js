@@ -11,7 +11,7 @@ import intakeModuleRouter from './intakeModule.router.js';
 import facilityFacultyRouter from './faculty.router.js';
 import testTokenController from '../controllers/testTokenController.js';
 import accountRouter from './account.router.js';
-
+import semesterRouter from './semester.router.js';
 
 const rootRoutes = express.Router();
 
@@ -22,6 +22,18 @@ rootRoutes.get('/', (req, res) => {
 
 // Auth routes
 rootRoutes.use('/auth', authRoutes);
+
+// Student routes
+rootRoutes.use('/student', studentRouter);
+
+// Lecturer routes
+rootRoutes.use('/lecturer', lecturerRouter);
+
+// Program routes
+rootRoutes.use('/program', programRouter);
+
+// Intake Module routes
+rootRoutes.use('/intakemodule', intakeModuleRouter);
 
 // Attendance routes
 rootRoutes.use('/attendance', attendanceRouter);
@@ -35,26 +47,16 @@ rootRoutes.use('/course', courseRouter);
 // Notification routes
 rootRoutes.use('/notification', notificationRouter);
 
-//Student routes
-rootRoutes.use('/student', studentRouter);
-
-//Lecturer routes
-rootRoutes.use('/lecturer', lecturerRouter);
-
-//Program routes
-rootRoutes.use('/program', programRouter);
-
-//IntakeModule routes
-rootRoutes.use('/intakemodule', intakeModuleRouter);
-
-//Faculty routes
+// Faculty routes
 rootRoutes.use('/faculty', facilityFacultyRouter);
+
+// Account routes
+rootRoutes.use('/account', accountRouter);
+
+// Semester routes
+rootRoutes.use('/semester', semesterRouter);
 
 //fetchiing jwt token for testing
 rootRoutes.post('/test-token', testTokenController.getTestToken);
-
-//Account routes
-rootRoutes.use('/account', accountRouter);
-
 
 export default rootRoutes;

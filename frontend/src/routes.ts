@@ -52,13 +52,13 @@ const routeConfig: Routes = [
     canActivate: [AuthRoute]
   },
   {
-    path: "module-detail-modify",
+    path: "module-detail-modify/:id",
     component: ModuleDetailModifyComponent,
     title: "Module Detail Modify View",
     canActivate: [AuthRoute]
   },
   {
-    path: "module-detail-view",
+    path: "module-detail-view/:id",
     component: ModuleDetailComponent,
     title: "Module Detail View",
     canActivate: [AuthRoute]

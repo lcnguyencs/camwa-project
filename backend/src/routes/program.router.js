@@ -5,7 +5,7 @@ import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 const programRouter = express.Router();
 
 programRouter.post('/',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.createProgram);
-programRouter.get('/',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.getAllPrograms);
+programRouter.get('/',programController.getAllPrograms);
 programRouter.get('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.findProgramById);
 programRouter.delete('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.deleteProgram);
 programRouter.put('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.updateProgram);

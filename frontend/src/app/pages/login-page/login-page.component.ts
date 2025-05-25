@@ -1,78 +1,90 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterModule } from "@angular/router";
-import { FormsModule } from "@angular/forms";
 import { AuthService } from "../../services/auth.service";
-import { HttpClientModule, HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "app-login-page",
   standalone: true,
   templateUrl: "./login-page.component.html",
   styleUrls: ["./login-page.component.css"],
-  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule],
-  providers: [AuthService]
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
 })
 export class LoginPageComponent {
-  email: string = "";
-  password: string = "";
-  errorMessage: string = "";
-  isSubmitting: boolean = false;
+  loginForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', Validators.required),
+  });
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
-
-  validateForm(): boolean {
-    if (!this.email && !this.password) {
-      this.errorMessage = "Email and password are required";
-      return false;
-    }
-    if (!this.email) {
-      this.errorMessage = "Email is required";
-      return false;
-    }
-    if (!this.password) {
-      this.errorMessage = "Password is required";
-      return false;
-    }
-    return true;
-  }
-
-  handleError(error: HttpErrorResponse) {
-    if (error.status === 401) {
-      this.errorMessage = "Invalid email or password";
-    } else if (error.status === 404) {
-      this.errorMessage = "User not found";
-    } else if (error.status === 400) {
-      this.errorMessage = "Invalid input data";
-    } else {
-      this.errorMessage = "An unexpected error occurred. Please try again later";
-    }
-  }
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.errorMessage = "";
-    
-    if (!this.validateForm()) {
-      return;
+    if (this.loginForm.valid) {
+      const { email, password } = this.loginForm.value;
+      this.login(email || '', password || '');
+    } else {
+      this.loginForm.markAllAsTouched(); // Show validation errors
+      console.log('Form is invalid');
     }
+  }
 
-    this.isSubmitting = true;
+  login(email: string, password: string) {
+    this.errorMessage = ''; // Clear any previous error messages
+    this.isLoading = true; // Start loading
+    
+    this.authService.login(email, password)
+      .subscribe({
+        next: (response) => {
+          console.log('Login response:', response); // Debug log
+          
+          // Check for accessToken instead of token (matching backend response)
+          if (!response || !response.accessToken) {
+            this.errorMessage = 'Invalid response from server';
+            return;
+          }
+          
+          // Store the tokens and user info
+          localStorage.setItem('token', response.accessToken);
+          if (response.refreshToken) {
+            localStorage.setItem('refreshToken', response.refreshToken);
+          }
+          if (response.role) {
+            localStorage.setItem('role', response.role);
+          }
+          if (response.username) {
+            localStorage.setItem('username', response.username);
+          }
 
-    this.authService.login(this.email, this.password).subscribe({
-      next: (response) => {
-        localStorage.setItem('token', response.metaData.accessToken);
-        localStorage.setItem('role', response.metaData.role);
-        
-        const defaultRoute = this.authService.getDefaultRoute();
-        this.router.navigate([defaultRoute]);
-      },
-      error: (error) => {
-        this.handleError(error);
-        this.isSubmitting = false;
-      },
-      complete: () => {
-        this.isSubmitting = false;
-      }
-    });
+          // Navigate to the appropriate route based on user role
+          const defaultRoute = this.authService.getDefaultRoute();
+          this.router.navigate([defaultRoute]);
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          if (error.status === 0) {
+            this.errorMessage = 'Unable to connect to the server. Please make sure the backend is running.';
+          } else if (error.status === 401) {
+            this.errorMessage = 'Invalid email or password.';
+          } else if (error.status === 404) {
+            this.errorMessage = 'User not found.';
+          } else {
+            this.errorMessage = error.error?.message || 'An error occurred during login. Please try again.';
+          }
+        },
+        complete: () => {
+          this.isLoading = false; // Stop loading regardless of outcome
+        }
+      });
+  }
+
+  get email() {
+    return this.loginForm.get('email');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
   }
 }

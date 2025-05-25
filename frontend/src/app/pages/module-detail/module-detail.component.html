@@ -1,20 +1,24 @@
 <div class="page-container">
   <!-- Header Section -->
-  <div class="class-info">
-    <h1>Theoretical Computer Science</h1>
+  <div class="class-info" *ngIf="module">
+    <h1>{{ module.moduleName }}</h1>
     <div class="class-details">
       <div class="left-detail">
-        <p>Module ID: CS1</p>
-        <p>Lecturer: Tran Hong Ngoc</p>
-        <p>Semester: WS 2024</p>
+        <p>Module ID: {{ module.moduleId }}</p>
+        <p>Lecturer: {{ module.lecturerName }}</p>
+        <p>Semester: {{ module.semesterId }}</p>
       </div>
 
       <div class="right-detail">
-        <p>Duration: September 9th - December 9th</p>
-        <p>Exam Date: December 18th</p>
-        <p>Total number of students: 4</p>
+        <p>Duration: {{ module.beginDate || 'Not set' }} - {{ module.endDate || 'Not set' }}</p>
+        <p>Exam Date: {{ module.examDate || 'Not set' }}</p>
+        <p>Total number of students: {{ module.capacity }}</p>
       </div>
     </div>
+  </div>
+
+  <div class="loading" *ngIf="!module">
+    Loading module details...
   </div>
 
   <!-- Tabs Section -->

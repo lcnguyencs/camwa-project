@@ -2,6 +2,15 @@ import intakeModuleService from '../services/intakeModule.service.js';
 import { responseSuccess, responseError } from '../common/helpers/response.helper.js';
 
 const intakeModuleController = {
+  getNextModuleId: async (req, res) => {
+    try {
+      const nextId = await intakeModuleService.generateNextModuleId();
+      res.status(200).json(responseSuccess(nextId, 'Next module ID generated successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
+
   getAllIntakeModules: async (req, res) => {
     try {
       const { filteredActive } = req.query;
@@ -25,6 +34,9 @@ const intakeModuleController = {
   createIntakeModule: async (req, res) => {
     try {
       const moduleData = req.body;
+      if (!moduleData.moduleId) {
+        moduleData.moduleId = await intakeModuleService.generateNextModuleId();
+      }
       const newModule = await intakeModuleService.createIntakeModule(moduleData);
       res.status(201).json(responseSuccess(newModule, 'Intake module created successfully'));
     } catch (error) {
@@ -61,8 +73,25 @@ const intakeModuleController = {
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
     }
+  },
+
+  searchModules: async (req, res) => {
+    try {
+      const searchParams = {
+        name: req.query.name,
+        program: req.query.program,
+        semester: req.query.semester,
+        intake: req.query.intake,
+        lecturer: req.query.lecturer
+      };
+      
+      const modules = await intakeModuleService.searchModules(searchParams);
+      res.status(200).json(responseSuccess(modules, 'Modules retrieved successfully'));
+    } catch (error) {
+      const resData = responseError(error, 'Error searching modules');
+      res.status(500).json(resData);
+    }
   }
-  
 };
 
 export default intakeModuleController;

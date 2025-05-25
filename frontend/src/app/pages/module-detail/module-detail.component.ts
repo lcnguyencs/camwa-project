@@ -1,10 +1,32 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 // import "bootstrap";
-import { RouterModule } from "@angular/router";
+import { RouterModule, ActivatedRoute } from "@angular/router";
 
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+
+interface ApiResponse<T> {
+  status: string;
+  code: number;
+  message: string;
+  metaData: T;
+  doc: string;
+}
+
+interface Module {
+  moduleId: string;
+  moduleName: string;
+  lecturerName: string;
+  programName: string;
+  semesterId: string;
+  intake: number;
+  capacity: number;
+  // These will be implemented later
+  beginDate?: string;
+  endDate?: string;
+  examDate?: string;
+}
 
 type TabType = "classSessions" | "classStudents" | "classAttendance";
 @Component({
@@ -14,24 +36,11 @@ type TabType = "classSessions" | "classStudents" | "classAttendance";
   templateUrl: "./module-detail.component.html",
   styleUrl: "./module-detail.component.css",
 })
-export class ModuleDetailComponent {
-  // data$: Observable<any>;
-
-  // dataArray: any[] = [];
-
-  // constructor(private http: HttpClient) {
-  //   this.data$ = this.fetchData();
-  //   this.data$.subscribe((data) => {
-  //     this.dataArray = data; // Assign the fetched data to the array
-  //     console.log(this.dataArray);
-  //   });
-  // }
-
-  // fetchData(): Observable<any> {
-  //   return this.http.get("http://localhost:3000/class/lecturer/L001");
-  // }
-
-  activeTab: TabType = "classSessions"; // Default active tab
+export class ModuleDetailComponent implements OnInit {
+  private baseUrl = 'http://localhost:3000/api';
+  moduleId: string = '';
+  module: Module | null = null;
+  activeTab = 'classSessions';
 
   showInviteModal: boolean = false;
   showRemoveModal: boolean = false;
@@ -102,9 +111,41 @@ export class ModuleDetailComponent {
     },
   ];
 
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.moduleId = params['id'];
+      if (this.moduleId) {
+        this.loadModuleDetails();
+      }
+    });
+  }
+
+  loadModuleDetails() {
+    console.log('Loading module details for ID:', this.moduleId);
+    this.http.get<ApiResponse<Module>>(`${this.baseUrl}/intakemodule/${this.moduleId}`).subscribe({
+      next: (response) => {
+        console.log('Module details response:', response);
+        if (!response?.metaData) {
+          console.error('No module data received');
+          return;
+        }
+
+        this.module = response.metaData;
+        console.log('Loaded module:', this.module);
+      },
+      error: (error) => {
+        console.error('Error loading module details:', error);
+      }
+    });
+  }
 
   setActiveTab(tab: string) {
-    this.activeTab = tab as TabType;
+    this.activeTab = tab;
   }
 
   selectedItem: any;

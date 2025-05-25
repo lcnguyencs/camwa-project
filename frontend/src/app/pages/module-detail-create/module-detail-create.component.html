@@ -8,13 +8,14 @@
       <div class="form-group row">
         <div class="field">
           <label>Module Name:</label>
-          <input type="text" style="width: 288px;"/>
+          <input type="text" [(ngModel)]="moduleName" style="width: 288px;" required/>
         </div>
         <div class="field">
           <label>Lecturer:</label>
-          <select style="width: 288px;">
-            <option *ngFor="let lecturer of lecturers" [value]="lecturer">
-              {{ lecturer }}
+          <select [(ngModel)]="selectedLecturer" style="width: 288px;" required>
+            <option value="">Select a lecturer</option>
+            <option *ngFor="let lecturer of lecturers" [value]="lecturer.staff_id">
+              {{lecturer.name}}
             </option>
           </select>
         </div>
@@ -23,41 +24,48 @@
       <div class="form-group row" style="margin-top: 6px;">
         <div class="field">
           <label>Program:</label>
-          <select>
-            <option *ngFor="let prog of programs" [value]="prog">
-              {{ prog }}
+          <select [(ngModel)]="selectedProgram" required>
+            <option value="">Select a program</option>
+            <option *ngFor="let program of programs" [value]="program.program_id">
+              {{program.name}}
             </option>
           </select>
         </div>
         <div class="field">
           <label>Semester:</label>
-          <select>
-            <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+          <select [(ngModel)]="selectedSemester" required>
+            <option value="">Select a semester</option>
+            <option *ngFor="let semester of semesters" [value]="semester.sem_id">
+              {{semester.name}}
+            </option>
           </select>
         </div>
         <div class="field">
           <label>Intake:</label>
-          <input type="text"/>
+          <select [(ngModel)]="intake" required>
+            <option value="">Select intake year</option>
+            <option *ngFor="let year of intakes" [value]="year">{{year}}</option>
+          </select>
         </div>
       </div>
 
       <div class="form-group row" style="margin-top: 6px;">
         <div class="field">
           <label>Begin Date:</label>
-          <input type="date" style="margin-right: 8px;"/>
+          <input type="date" [(ngModel)]="beginDate" style="margin-right: 8px;" required/>
         </div>
         <div class="field">
           <label>End Date:</label>
-          <input type="date" style="margin-right: 8px;"/>
+          <input type="date" [(ngModel)]="endDate" style="margin-right: 8px;" required/>
         </div>
         <div class="field">
           <label>Exam Date:</label>
-          <input type="date" style="margin-right: 8px;"/>
+          <input type="date" [(ngModel)]="examDate" style="margin-right: 8px;" required/>
         </div>
       </div>
 
       <div class="buttons">
-        <button (click)="createModule()">Create</button>
+        <button (click)="createModule()" [disabled]="!validateForm()">Create</button>
       </div>
     
   </div>

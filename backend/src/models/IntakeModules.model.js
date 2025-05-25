@@ -47,7 +47,7 @@ const IntakeModule = sequelize.define('IntakeModule', {
     type: DataTypes.STRING(36),
     references: { model: 'Semester', key: 'sem_id' },
     allowNull: false,
-  },
+  }
 }, {
   tableName: 'intake_module',
   timestamps: false,

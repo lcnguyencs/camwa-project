@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       proctors: {
-        type: Sequelize.STRING(45),
+        type: Sequelize.STRING(255),
       },
     });
 

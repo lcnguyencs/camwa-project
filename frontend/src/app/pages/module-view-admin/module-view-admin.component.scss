@@ -121,6 +121,15 @@
     align-items: center;
   }
   
+  .nav-item {
+    cursor: pointer;
+
+    // Target only the delete icon container
+    &:nth-child(3) svg {
+      stroke: #dc3545; // Red color for the outline
+    }
+  }
+
   .functionButtons {
     display: flex;
     cursor: pointer;
@@ -137,4 +146,17 @@
     margin-bottom:  4px;
     vertical-align: middle;
     align-items: center;
+  }
+
+  /* Modal Styles */
+  .modal-header {
+    display: flex;
+    justify-content: center;
+    border-bottom: none;
+    padding: 1rem;
+
+    .modal-title {
+      font-size: 18px;
+      margin: 0;
+    }
   }

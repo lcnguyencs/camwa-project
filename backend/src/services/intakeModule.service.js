@@ -74,7 +74,7 @@ const intakeModuleService = {
         include: [
           {
             model: Program,
-            attributes: ['name'],
+            attributes: ['program_id', 'name'],
           },
           {
             model: Semester,
@@ -82,19 +82,19 @@ const intakeModuleService = {
           },
           {
             model: Lecturer,
-            attributes: ['name'],
+            attributes: ['staff_id', 'name'],
           }
         ],
         attributes: [
           'intake_module_id',
           'name',
+          'capacity',
+          'ects',
+          'course_id',
           'intake',
-          [
-            sequelize.literal(
-              '(SELECT COUNT(*) FROM student_intake_module WHERE student_intake_module.intake_module_id = "IntakeModule".intake_module_id)'
-            ),
-            'student_count'
-          ]          
+          'lecturer_id',
+          'program_id',
+          'semester_id'
         ]
       });
 
@@ -105,11 +105,15 @@ const intakeModuleService = {
       return {
         moduleId: moduleDetails.intake_module_id,
         moduleName: moduleDetails.name,
-        programName: moduleDetails.Program.name,
-        semesterId: moduleDetails.Semester.sem_id,
-        intakeYear: moduleDetails.intake,
+        capacity: moduleDetails.capacity,
+        ects: moduleDetails.ects,
+        courseId: moduleDetails.course_id,
+        intake: moduleDetails.intake,
+        lecturerId: moduleDetails.lecturer_id,
         lecturerName: moduleDetails.Lecturer.name,
-        studentCount: moduleDetails.dataValues.student_count
+        programId: moduleDetails.program_id,
+        programName: moduleDetails.Program.name,
+        semesterId: moduleDetails.semester_id
       };
 
     } catch (error) {
@@ -210,7 +214,158 @@ const intakeModuleService = {
     } catch (error) {
       throw new Error('Error retrieving module students: ' + error.message);
     }
-  }    
+  },
+
+  searchModules: async (searchParams) => {
+    try {
+      const { name, program, semester, intake, lecturer } = searchParams;
+      
+      const whereClause = {};
+      const includeClause = [
+        {
+          model: Program,
+          attributes: ['name'],
+          required: false
+        },
+        {
+          model: Semester,
+          attributes: ['sem_id'],
+          required: false
+        },
+        {
+          model: Lecturer,
+          attributes: ['name'],
+          required: false
+        }
+      ];
+
+      if (name) {
+        whereClause.name = { [Op.like]: `%${name}%` };
+      }
+      
+      if (program) {
+        includeClause[0].where = { name: { [Op.like]: `%${program}%` } };
+        includeClause[0].required = true;
+      }
+      
+      if (semester) {
+        includeClause[1].where = { sem_id: { [Op.like]: `%${semester}%` } };
+        includeClause[1].required = true;
+      }
+      
+      if (lecturer) {
+        includeClause[2].where = { name: { [Op.like]: `%${lecturer}%` } };
+        includeClause[2].required = true;
+      }
+      
+      if (intake) {
+        whereClause.intake = parseInt(intake) || intake;
+      }
+
+      const modules = await IntakeModule.findAll({
+        where: whereClause,
+        include: includeClause,
+        attributes: [
+          'intake_module_id',
+          'name',
+          'intake',
+          [
+            sequelize.literal(
+              '(SELECT COUNT(*) FROM student_intake_module WHERE student_intake_module.intake_module_id = "IntakeModule".intake_module_id)'
+            ),
+            'student_count'
+          ]
+        ]
+      });
+
+      return modules.map(module => ({
+        moduleId: module.intake_module_id,
+        moduleName: module.name,
+        programName: module.Program?.name || 'N/A',
+        semesterId: module.Semester?.sem_id || 'N/A',
+        intakeYear: module.intake,
+        lecturerName: module.Lecturer?.name || 'N/A',
+        studentCount: module.dataValues.student_count || 0
+      }));
+
+    } catch (error) {
+      console.error('Search error:', error);
+      throw new Error('Error searching modules: ' + error.message);
+    }
+  },
+
+  generateNextModuleId: async () => {
+    try {
+      // Test database connection first
+      try {
+        await sequelize.authenticate();
+        console.log('Database connection has been established successfully.');
+      } catch (error) {
+        console.error('Unable to connect to the database:', error);
+        throw new Error('Database connection failed');
+      }
+
+      // Check if the table exists
+      try {
+        await sequelize.query('SELECT 1 FROM intake_module LIMIT 1');
+        console.log('Table intake_module exists and is accessible.');
+      } catch (error) {
+        console.error('Error accessing intake_module table:', error);
+        throw new Error('Table intake_module not found or not accessible');
+      }
+
+      // Get all module IDs
+      const result = await sequelize.query(
+        'SELECT intake_module_id FROM intake_module WHERE intake_module_id LIKE :pattern ORDER BY intake_module_id DESC LIMIT 1',
+        {
+          replacements: { pattern: 'IM%' },
+          type: sequelize.QueryTypes.SELECT
+        }
+      );
+
+      console.log('Database query result:', result);  // Debug log
+
+      if (!result || result.length === 0) {
+        console.log('No existing modules found, returning IM001');  // Debug log
+        return 'IM001'; // First module
+      }
+
+      const lastId = result[0].intake_module_id;
+      console.log('Last ID found:', lastId);  // Debug log
+
+      if (!lastId || typeof lastId !== 'string') {
+        console.log('Invalid last ID, returning IM001');
+        return 'IM001';
+      }
+
+      // Extract the number part using regex
+      const matches = lastId.match(/IM(\d+)/);
+      if (!matches || matches.length < 2) {
+        console.log('Failed to extract number from ID, returning IM001');
+        return 'IM001';
+      }
+
+      const numberPart = parseInt(matches[1]);
+      console.log('Extracted number:', numberPart);  // Debug log
+      
+      if (isNaN(numberPart)) {
+        console.log('Failed to parse number, returning IM001');
+        return 'IM001';
+      }
+
+      const nextNumber = numberPart + 1;
+      if (nextNumber > 999) {
+        throw new Error('Module ID limit reached');
+      }
+
+      const nextId = `IM${String(nextNumber).padStart(3, '0')}`;
+      console.log('Generated next ID:', nextId);  // Debug log
+      return nextId;
+    } catch (error) {
+      console.error('Error in generateNextModuleId:', error);  // Detailed error logging
+      throw new Error(`Failed to generate next module ID: ${error.message}`);
+    }
+  },
 };
 
 export default intakeModuleService;

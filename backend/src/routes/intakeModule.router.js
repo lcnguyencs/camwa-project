@@ -3,6 +3,8 @@ import intakeModuleController from '../controllers/intakeModuleManagement.contro
 
 const intakeModuleRouter = express.Router();
 
+intakeModuleRouter.get('/next-id', intakeModuleController.getNextModuleId);
+intakeModuleRouter.get('/search', intakeModuleController.searchModules);
 intakeModuleRouter.get('/', intakeModuleController.getAllIntakeModules);
 intakeModuleRouter.get('/:moduleId', intakeModuleController.getModuleDetails);
 intakeModuleRouter.post('/', intakeModuleController.createIntakeModule);
