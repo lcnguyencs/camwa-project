@@ -107,6 +107,20 @@ const authService = {
       email: newUser.email,
       role: newUser.role
     };
+  },
+
+  getCurrentUser: async (userId) => {
+    const user = await Iam.findOne({ where: { acc_id: userId } });
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    return {
+      acc_id: user.acc_id,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    };
   }
 };
 

@@ -97,9 +97,6 @@ const attendanceService = {
         }
     },
 
-
-
-
     // Retrieve exam eligibility status for a student
     viewExamEligibilityStatus: async (studentId, moduleId) => {
         const examStatus = await ExamTaking.findOne({
@@ -162,8 +159,39 @@ const attendanceService = {
             });
         }
 
-
         return approvalStatus ? 'Correction Approved' : 'Correction Denied';
+    },
+
+    // Get attendance data for a specific module and student
+    getStudentModuleAttendance: async (studentId, moduleId) => {
+        try {
+            const attendance = await Attendance.findAll({
+                where: {
+                    student_id: studentId,
+                    intake_module_id: moduleId,
+                    is_deleted: false
+                },
+                include: [{
+                    model: Class,
+                    attributes: ['class_date', 'start_time', 'end_time']
+                }],
+                order: [['class_date', 'ASC']]
+            });
+
+            if (!attendance || attendance.length === 0) {
+                return []; // Return empty array if no attendance records found
+            }
+
+            return attendance.map(record => ({
+                date: record.Class?.class_date || record.class_date,
+                startTime: record.Class?.start_time || '00:00',
+                endTime: record.Class?.end_time || '00:00',
+                status: record.attendance_status
+            }));
+        } catch (error) {
+            console.error('Error in getStudentModuleAttendance:', error);
+            throw new Error('Error retrieving student module attendance: ' + error.message);
+        }
     }
 };
 

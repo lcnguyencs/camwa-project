@@ -1,11 +1,40 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 // import "bootstrap";
-import { RouterModule } from "@angular/router";
+import { RouterModule, ActivatedRoute } from "@angular/router";
 
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { AuthService } from "../../services/auth.service";
 
+interface ApiResponse<T> {
+  status: string;
+  code: number;
+  message: string;
+  metaData: T;
+  doc: string;
+}
+
+interface Module {
+  moduleId: string;
+  moduleName: string;
+  lecturerName: string;
+  programName: string;
+  semesterId: string;
+  intake: number;
+  capacity: number;
+  // These will be implemented later
+  beginDate?: string;
+  endDate?: string;
+  examDate?: string;
+}
+
+interface AttendanceRecord {
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+}
 
 @Component({
   selector: "module-detail-student-view",
@@ -15,93 +44,75 @@ import { Observable } from "rxjs";
   styleUrl: "./module-detail-student.component.css",
 })
 export class ModuleDetailStudentComponent {
-  // data$: Observable<any>;
-
-  // dataArray: any[] = [];
-
-  // constructor(private http: HttpClient) {
-  //   this.data$ = this.fetchData();
-  //   this.data$.subscribe((data) => {
-  //     this.dataArray = data; // Assign the fetched data to the array
-  //     console.log(this.dataArray);
-  //   });
-  // }
-
-  // fetchData(): Observable<any> {
-  //   return this.http.get("http://localhost:3000/class/lecturer/L001");
-  // }
-
-  showInviteModal: boolean = false;
-  showRemoveModal: boolean = false;
-
-  // Define the scheduleData array
-  classSessions = [
-    { date: "09/09/2024", startTime: "9:00", endTime: "11:45",status: "P" },
-    { date: "09/09/2024", startTime: "13:00", endTime: "16:00",status: "P" },
-    { date: "12/09/2024", startTime: "9:00", endTime: "11:45",status: "A" },
-    { date: "12/09/2024", startTime: "13:00", endTime: "16:30",status: "P" },
-  ];
+  private baseUrl = 'http://localhost:3000/api';
+  moduleId: string = '';
+  module: Module | null = null;
+  attendanceRecords: AttendanceRecord[] = [];
+  studentId: string = '';
   
-  classStudents = [
-    {
-      no: 1,
-      fullName: "Student 1",
-      id: "14841",
-      intake: "2022",
-      attendancePercent: "50%",
-      eligibility: "Ineligible",
-    },
-    {
-      no: 2,
-      fullName: "Student 2",
-      id: "14842",
-      intake: "2022",
-      attendancePercent: "50%",
-      eligibility: "Ineligible",
-    },
-    {
-      no: 3,
-      fullName: "Student 3",
-      id: "14843",
-      intake: "2022",
-      attendancePercent: "50%",
-      eligibility: "Ineligible",
-    },
-    {
-      no: 4,
-      fullName: "Student 4",
-      id: "14844",
-      intake: "2022",
-      attendancePercent: "50%",
-      eligibility: "Ineligible",
-    },
-  ];
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  classAttendance = [
-    {
-      name: "Student 1",
-      id: "14841",
-      status: "P", // A for Absent
-    },
-  ];
-
-
-  selectedItem: any;
-  // Define the viewItem method
-
-  viewItem(item: any) {
-    this.selectedItem = item;
+  ngOnInit() {
+    this.route.params.subscribe((params: { [key: string]: string }) => {
+      this.moduleId = params['id'];
+      if (this.moduleId) {
+        this.loadModuleDetails();
+        this.loadCurrentUser();
+      }
+    });
   }
 
-  // Define the editItem method
-  editItem(item: any) {
-    this.selectedItem = item;
+  loadCurrentUser() {
+    this.authService.getCurrentUser().subscribe({
+      next: (user) => {
+        this.studentId = user.acc_id;
+        this.loadAttendanceData();
+      },
+      error: (error) => {
+        console.error('Error loading current user:', error);
+      }
+    });
   }
 
-  close() {
-    this.showInviteModal = false;
-    this.showRemoveModal = false;
+  loadModuleDetails() {
+    console.log('Loading module details for ID:', this.moduleId);
+    this.http.get<ApiResponse<Module>>(`${this.baseUrl}/intakemodule/${this.moduleId}`).subscribe({
+      next: (response) => {
+        console.log('Module details response:', response);
+        if (!response?.metaData) {
+          console.error('No module data received');
+          return;
+        }
+
+        this.module = response.metaData;
+        console.log('Loaded module:', this.module);
+      },
+      error: (error) => {
+        console.error('Error loading module details:', error);
+      }
+    });
   }
 
-  // ... other existing code ...
+  loadAttendanceData() {
+    if (!this.studentId) {
+      console.error('No student ID available');
+      return;
+    }
+
+    this.http.get<ApiResponse<AttendanceRecord[]>>(`${this.baseUrl}/attendance/student/${this.studentId}/module/${this.moduleId}`).subscribe({
+      next: (response) => {
+        if (response?.metaData) {
+          this.attendanceRecords = response.metaData;
+          console.log('Loaded attendance records:', this.attendanceRecords);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading attendance data:', error);
+      }
+    });
+  }
 }

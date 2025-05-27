@@ -60,16 +60,23 @@ select {
   .status-badge {
     padding: 4px 8px;
     border-radius: 4px;
-    font-weight: bold;
-    font-size: 1.5em;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
 
-    &.present {
-      color: #008000;
-    }
+  .status-badge.present {
+    background-color: #e6f4ea;
+    color: #1e7e34;
+  }
 
-    &.absent {
-      color: #ff0000;
-    }
+  .status-badge.absent {
+    background-color: #fbe9e7;
+    color: #d32f2f;
+  }
+
+  .status-badge.pending {
+    background-color: #fff3e0;
+    color: yellow;
   }
 }
 

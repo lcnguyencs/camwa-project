@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 import Student from './Student.model.js';
+import IntakeModules from './IntakeModules.model.js';
 
 const StudentIntakeModule = sequelize.define('StudentIntakeModule', {
   student_id: {
@@ -24,7 +25,12 @@ const StudentIntakeModule = sequelize.define('StudentIntakeModule', {
 
 StudentIntakeModule.belongsTo(Student, {
   foreignKey: 'student_id',
-  targetKey: 'student_id',
+  targetKey: 'student_id'
+});
+
+StudentIntakeModule.belongsTo(IntakeModules, {
+  foreignKey: 'intake_module_id',
+  targetKey: 'intake_module_id'
 });
 
 export default StudentIntakeModule;

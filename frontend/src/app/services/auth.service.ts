@@ -10,6 +10,13 @@ interface LoginResponse {
   username: string;
 }
 
+interface UserInfo {
+  acc_id: string;
+  username: string;
+  email: string;
+  role: string;
+}
+
 interface ApiResponse<T> {
   status: string;
   code: number;
@@ -39,6 +46,16 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/logout`, { userId }, { headers })
       .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getCurrentUser(): Observable<UserInfo> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<ApiResponse<UserInfo>>(`${this.apiUrl}/me`, { headers })
+      .pipe(
+        map(response => response.metaData),
         catchError(this.handleError)
       );
   }

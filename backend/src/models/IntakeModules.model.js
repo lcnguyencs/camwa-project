@@ -4,7 +4,7 @@ import Program from './Program.model.js';
 import Semester from './Semester.model.js';
 import Lecturer from './Lecturer.model.js';
 
-const IntakeModule = sequelize.define('IntakeModule', {
+const IntakeModules = sequelize.define('IntakeModule', {
   intake_module_id: {
     type: DataTypes.STRING(36),
     primaryKey: true,
@@ -51,22 +51,23 @@ const IntakeModule = sequelize.define('IntakeModule', {
 }, {
   tableName: 'intake_module',
   timestamps: false,
+  modelName: 'IntakeModule'
 });
 
-// Add this association
-IntakeModule.belongsTo(Program, {
+// Add associations
+IntakeModules.belongsTo(Program, {
   foreignKey: 'program_id',
   targetKey: 'program_id'
 });
 
-IntakeModule.belongsTo(Semester, {
+IntakeModules.belongsTo(Semester, {
   foreignKey: 'semester_id',
   targetKey: 'sem_id'
 });
 
-IntakeModule.belongsTo(Lecturer, {
+IntakeModules.belongsTo(Lecturer, {
   foreignKey: 'lecturer_id',
   targetKey: 'staff_id'
 });
 
-export default IntakeModule;
+export default IntakeModules;

@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
+import Class from './Class.model.js';
 
 const Attendance = sequelize.define('Attendance', {
   attendance_id: {
@@ -38,6 +39,12 @@ const Attendance = sequelize.define('Attendance', {
     { fields: ['intake_module_id'] },
     { fields: ['class_id'] }
   ]
+});
+
+// Define the association with Class model
+Attendance.belongsTo(Class, {
+  foreignKey: 'class_id',
+  targetKey: 'class_id'
 });
 
 export default Attendance;

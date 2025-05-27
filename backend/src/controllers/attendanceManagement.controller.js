@@ -117,6 +117,19 @@ const attendanceManagement = {
             res.status(resError.code).json(resError);
         }
     },
+
+    // Get attendance data for a specific module and student
+    getStudentModuleAttendance: async (req, res, next) => {
+        try {
+            const { studentId, moduleId } = req.params;
+            const result = await attendanceService.getStudentModuleAttendance(studentId, moduleId);
+            const resData = responseSuccess(result, 'Student module attendance retrieved successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },
 };
 
 export default attendanceManagement;

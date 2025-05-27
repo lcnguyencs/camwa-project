@@ -1,4 +1,4 @@
-import IntakeModule from '../models/IntakeModules.model.js';
+import IntakeModules from '../models/IntakeModules.model.js';
 import Program from '../models/Program.model.js';
 import Semester from '../models/Semester.model.js';
 import Lecturer from '../models/Lecturer.model.js';
@@ -21,7 +21,7 @@ const intakeModuleService = {
         };
       }
   
-      const modules = await IntakeModule.findAll({
+      const modules = await IntakeModules.findAll({
         where: whereClause,
         include: [
           {
@@ -67,7 +67,7 @@ const intakeModuleService = {
 
   getModuleDetails: async (moduleId) => {
     try {
-      const moduleDetails = await IntakeModule.findOne({
+      const moduleDetails = await IntakeModules.findOne({
         where: {
           intake_module_id: moduleId
         },
@@ -123,7 +123,7 @@ const intakeModuleService = {
 
   createIntakeModule: async (moduleData) => {
     try {
-      const newModule = await IntakeModule.create({
+      const newModule = await IntakeModules.create({
         intake_module_id: moduleData.moduleId,
         name: moduleData.name,
         capacity: moduleData.capacity,
@@ -143,7 +143,7 @@ const intakeModuleService = {
   
   deleteIntakeModule: async (moduleId) => {
     try {
-      const result = await IntakeModule.destroy({
+      const result = await IntakeModules.destroy({
         where: {
           intake_module_id: moduleId
         }
@@ -159,7 +159,7 @@ const intakeModuleService = {
   
   updateIntakeModule: async (moduleId, moduleData) => {
     try {
-      const [updated] = await IntakeModule.update({
+      const [updated] = await IntakeModules.update({
         name: moduleData.name,
         capacity: moduleData.capacity,
         ects: moduleData.ects,
@@ -208,7 +208,7 @@ const intakeModuleService = {
         name: enrollment.Student.name,
         mapLocation: enrollment.Student.map_location,
         intakeYear: enrollment.Student.intake,
-        programId: enrollment.Student.program_id, // Use program_id instead of Program.name
+        programId: enrollment.Student.program_id,
         enrollmentDate: enrollment.enrollment_date
       }));
     } catch (error) {
@@ -262,7 +262,7 @@ const intakeModuleService = {
         whereClause.intake = parseInt(intake) || intake;
       }
 
-      const modules = await IntakeModule.findAll({
+      const modules = await IntakeModules.findAll({
         where: whereClause,
         include: includeClause,
         attributes: [
@@ -364,6 +364,54 @@ const intakeModuleService = {
     } catch (error) {
       console.error('Error in generateNextModuleId:', error);  // Detailed error logging
       throw new Error(`Failed to generate next module ID: ${error.message}`);
+    }
+  },
+
+  getStudentModules: async (studentId) => {
+    try {
+      console.log('Getting modules for student:', studentId);
+      
+      // First, find the student
+      const student = await Student.findByPk(studentId);
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Then get their modules through the join table
+      const studentModules = await StudentIntakeModule.findAll({
+        where: { student_id: studentId },
+        include: [
+          {
+            model: IntakeModules,
+            include: [
+              {
+                model: Semester,
+                attributes: ['sem_id']
+              },
+              {
+                model: Lecturer,
+                attributes: ['name']
+              }
+            ]
+          }
+        ]
+      });
+
+      console.log('Found student modules:', studentModules);
+
+      const mappedModules = studentModules.map(enrollment => ({
+        moduleId: enrollment.IntakeModule.intake_module_id,
+        moduleName: enrollment.IntakeModule.name,
+        semesterId: enrollment.IntakeModule.Semester?.sem_id || '',
+        lecturerName: enrollment.IntakeModule.Lecturer?.name || '',
+        enrollmentDate: enrollment.enrollment_date
+      }));
+
+      console.log('Mapped modules:', mappedModules);
+      return mappedModules;
+    } catch (error) {
+      console.error('Error in getStudentModules:', error);
+      throw new Error('Error retrieving student modules: ' + error.message);
     }
   },
 };

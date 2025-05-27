@@ -7,6 +7,7 @@ const attendanceRouter = express.Router();
 // Create and manage attendance records (for Admin or Faculty Assistant)
 attendanceRouter.post('/create', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.createAttendance);
 attendanceRouter.get('/view', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), attendanceController.viewAttendance);
+attendanceRouter.get('/student/:studentId/module/:moduleId', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), attendanceController.getStudentModuleAttendance);
 attendanceRouter.put('/update/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.updateAttendance);
 attendanceRouter.delete('/delete/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.deleteAttendance);
 

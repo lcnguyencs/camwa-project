@@ -64,13 +64,13 @@ const routeConfig: Routes = [
     canActivate: [AuthRoute]
   },
   {
-    path: "module-detail-lecturer-view",
+    path: "module-detail-lecturer",
     component: ModuleDetailLecturerComponent,
     title: "Module Detail View",
     canActivate: [AuthRoute]
   },
   {
-    path: "module-detail-student-view",
+    path: "module-detail-student/:id",
     component: ModuleDetailStudentComponent,
     title: "Module Detail View",
     canActivate: [AuthRoute]

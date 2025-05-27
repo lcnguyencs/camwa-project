@@ -91,6 +91,16 @@ const intakeModuleController = {
       const resData = responseError(error, 'Error searching modules');
       res.status(500).json(resData);
     }
+  },
+
+  getStudentModules: async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const modules = await intakeModuleService.getStudentModules(studentId);
+      res.status(200).json(responseSuccess(modules, 'Student modules retrieved successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
   }
 };
 

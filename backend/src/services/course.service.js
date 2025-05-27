@@ -29,16 +29,6 @@ const courseService = {
         });
     },
 
-    // View intake modules by student (Student)
-    viewCoursesForStudent: async (studentId) => {
-        return await IntakeModule.findAll({
-            include: [{
-                model: Student,
-                where: { student_id: studentId }
-            }]
-        });
-    },
-
     // Assign a lecturer to an intake module (Faculty Assistant)
     assignLecturerToIntakeModule: async (intakeModuleId, lecturerId, userId) => {
         // Check if the lecturer exists

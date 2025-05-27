@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, refreshToken, logOutUser } from '../controllers/authController.js';
+import { loginUser, refreshToken, logOutUser, getCurrentUser } from '../controllers/authController.js';
 import { authenticateJWT, verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const authRoutes = express.Router();
@@ -8,6 +8,9 @@ const authRoutes = express.Router();
 authRoutes.post('/login', loginUser);
 authRoutes.post('/refresh-token', refreshToken);
 authRoutes.post('/logout', logOutUser);
+
+// Get current user
+authRoutes.get('/me', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), getCurrentUser);
 
 // Role-based dashboard routes
 authRoutes.get('/admin-dashboard', verifyTokenAndRole(['ADMIN']), (req, res) => {

@@ -34,3 +34,15 @@ export const logOutUser = async (req, res) => {
     return res.status(resData.code).json(resData);
   }
 };
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user.uid;
+    const result = await authService.getCurrentUser(userId);
+    const resData = responseSuccess(result, 'Current user retrieved successfully');
+    return res.status(200).json(resData);
+  } catch (error) {
+    const resData = responseError(error, 'Failed to retrieve current user');
+    return res.status(resData.code).json(resData);
+  }
+};
