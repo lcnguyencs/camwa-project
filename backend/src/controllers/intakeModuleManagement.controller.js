@@ -101,6 +101,26 @@ const intakeModuleController = {
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
     }
+  },
+
+  getModulesByLecturer: async (req, res) => {
+    try {
+      const { accountId } = req.params;
+      const modules = await intakeModuleService.getModulesByLecturer(accountId);
+      res.status(200).json(responseSuccess(modules, 'Lecturer modules retrieved successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
+
+  getModulesByFacultyStaff: async (req, res) => {
+    try {
+      const { accountId } = req.params;
+      const modules = await intakeModuleService.getModulesByFacultyStaff(accountId);
+      res.status(200).json(responseSuccess(modules, 'Faculty staff modules retrieved successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
   }
 };
 

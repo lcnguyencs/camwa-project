@@ -8,6 +8,7 @@ interface LoginResponse {
   refreshToken?: string;
   role: string;
   username: string;
+  acc_id: string;
 }
 
 interface UserInfo {
@@ -42,7 +43,7 @@ export class AuthService {
   }
 
   logout(userId: string): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/logout`, { userId }, { headers })
       .pipe(
@@ -51,7 +52,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<UserInfo> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get<ApiResponse<UserInfo>>(`${this.apiUrl}/me`, { headers })
       .pipe(
@@ -61,7 +62,7 @@ export class AuthService {
   }
 
   getRole(): string | null {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (!token) return null;
     return localStorage.getItem('role');
   }

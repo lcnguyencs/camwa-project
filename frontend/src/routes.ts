@@ -64,7 +64,7 @@ const routeConfig: Routes = [
     canActivate: [AuthRoute]
   },
   {
-    path: "module-detail-lecturer",
+    path: "module-detail-lecturer/:id",
     component: ModuleDetailLecturerComponent,
     title: "Module Detail View",
     canActivate: [AuthRoute]

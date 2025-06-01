@@ -46,8 +46,10 @@ export class SidebarComponent implements OnInit {
     if (userId) {
       this.authService.logout(userId).subscribe({
         next: () => {
-          localStorage.removeItem('token');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           localStorage.removeItem('role');
+          localStorage.removeItem('username');
           window.location.reload();
         }
       });

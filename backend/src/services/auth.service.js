@@ -44,7 +44,8 @@ const authService = {
       accessToken,
       refreshToken,
       role: user.role,
-      username: user.username
+      username: user.username,
+      acc_id: user.acc_id
     };
   },
 

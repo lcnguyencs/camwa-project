@@ -6,6 +6,8 @@ import StudentIntakeModule from '../models/StudentIntakeModule.model.js';
 import Student from '../models/Student.model.js';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 import { Op } from 'sequelize';
+import lecturerService from './lecturer.service.js';
+import FacilityFaculty from '../models/FacilityFaculty.model.js';
 
 const intakeModuleService = {
   getAllIntakeModules: async (filteredActive) => {
@@ -414,6 +416,129 @@ const intakeModuleService = {
       throw new Error('Error retrieving student modules: ' + error.message);
     }
   },
+
+  getModulesByLecturer: async (accountId) => {
+    try {
+      console.log('Getting modules for lecturer with account ID:', accountId);
+      // First get the staff ID from the account ID
+      const staffId = await lecturerService.getStaffIdByAccountId(accountId);
+      console.log('Found staff ID:', staffId);
+      
+      // Then get the modules using the staff ID
+      const modules = await IntakeModules.findAll({
+        where: { lecturer_id: staffId },
+        include: [
+          {
+            model: Program,
+            attributes: ['name'],
+          },
+          {
+            model: Semester,
+            attributes: ['sem_id'],
+          }
+        ],
+        attributes: [
+          'intake_module_id',
+          'name',
+          'intake',
+          [
+            sequelize.literal(
+              '(SELECT COUNT(*) FROM student_intake_module WHERE student_intake_module.intake_module_id = "IntakeModule".intake_module_id)'
+            ),
+            'student_count'
+          ]
+        ]
+      });
+      console.log('Found modules:', modules);
+
+      if (!modules || modules.length === 0) {
+        return [];
+      }
+
+      return modules.map(module => ({
+        moduleId: module.intake_module_id,
+        moduleName: module.name,
+        programName: module.Program?.name || 'N/A',
+        semesterId: module.Semester?.sem_id || 'N/A',
+        intakeYear: module.intake,
+        studentCount: module.dataValues.student_count || 0
+      }));
+    } catch (error) {
+      console.error('Error in getModulesByLecturer:', error);
+      throw new Error('Error getting modules by lecturer: ' + error.message);
+    }
+  },
+
+  getModulesByFacultyStaff: async (accountId) => {
+    try {
+      console.log('Getting modules for faculty staff with account ID:', accountId);
+      
+      // Get the programs assigned to this faculty staff using acc_id
+      const facultyPrograms = await FacilityFaculty.findAll({
+        where: { acc_id: accountId },
+        attributes: ['program_id']
+      });
+
+      console.log('Found faculty programs:', facultyPrograms);
+
+      if (!facultyPrograms || facultyPrograms.length === 0) {
+        console.log('No programs found for faculty staff');
+        return [];
+      }
+
+      const programIds = facultyPrograms.map(fp => fp.program_id);
+      console.log('Program IDs:', programIds);
+
+      // Get modules for these programs
+      const modules = await IntakeModules.findAll({
+        where: {
+          program_id: {
+            [Op.in]: programIds
+          }
+        },
+        include: [
+          {
+            model: Program,
+            attributes: ['name'],
+          },
+          {
+            model: Semester,
+            attributes: ['sem_id'],
+          },
+          {
+            model: Lecturer,
+            attributes: ['name'],
+          }
+        ],
+        attributes: [
+          'intake_module_id',
+          'name',
+          'intake',
+          [
+            sequelize.literal(
+              '(SELECT COUNT(*) FROM student_intake_module WHERE student_intake_module.intake_module_id = "IntakeModule".intake_module_id)'
+            ),
+            'student_count'
+          ]
+        ]
+      });
+
+      console.log('Found modules:', modules);
+
+      return modules.map(module => ({
+        moduleId: module.intake_module_id,
+        moduleName: module.name,
+        programName: module.Program?.name || 'N/A',
+        semesterId: module.Semester?.sem_id || 'N/A',
+        intakeYear: module.intake,
+        lecturerName: module.Lecturer?.name || 'N/A',
+        studentCount: module.dataValues.student_count || 0
+      }));
+    } catch (error) {
+      console.error('Error in getModulesByFacultyStaff:', error);
+      throw new Error('Error getting modules by faculty staff: ' + error.message);
+    }
+  }
 };
 
 export default intakeModuleService;

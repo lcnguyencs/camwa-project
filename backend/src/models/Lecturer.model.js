@@ -15,6 +15,15 @@ const Lecturer = sequelize.define('Lecturer', {
     type: DataTypes.STRING(20),
     allowNull: false,
     references: { model: 'Program', key: 'program_id' },
+  },
+  acc_id: {
+    type: DataTypes.STRING(100),
+    references: {
+      model: 'iam',
+      key: 'acc_id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL',
   }
 }, {
   timestamps: false,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ActionTableComponent } from 'src/app/components/action-table/action-table.component';
 import { CommonModule } from '@angular/common';
@@ -6,77 +6,132 @@ import { RouterModule } from "@angular/router";
 import { NgModule } from '@angular/core';
 import { PopupAddModuleComponent } from 'src/app/components/popup-add-module/popup-add-module.component';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { TokenService } from 'src/app/services/token.service';
 
+interface Module {
+  moduleId: string;
+  moduleName: string;
+  programName: string;
+  semesterId: string;
+  intakeYear: number;
+  studentCount: number;
+}
+
+interface ApiResponse<T> {
+  status: string;
+  code: number;
+  message: string;
+  metaData: T;
+  doc: string;
+}
 
 @Component({
   selector: 'module-view-lecturer',
-  standalone: true,  // Đánh dấu RequestComponent là standalone
-  imports: [CommonModule, ActionTableComponent, PopupAddModuleComponent,RouterModule,RouterLink, RouterOutlet],  // Import thư viện cần thiết
+  standalone: true,
+  imports: [CommonModule, ActionTableComponent, PopupAddModuleComponent, RouterModule, RouterLink, RouterOutlet, FormsModule],
   templateUrl: './module-view-lecturer.component.html',
   styleUrls: ['./module-view-lecturer.component.scss']
 })
-export class ModuleViewLecturerComponent {  
-  // public id! : string;
-  // public name! : string;
-  // public program! : string;
-  // public semester! : string;
-  // public intake! : number;
-  // public lecturer! : string;
-  // public studentCount! : number;
-  
-  constructor() { }
+export class ModuleViewLecturerComponent implements OnInit {
+  private baseUrl = 'http://localhost:3000/api';
+  modules: Module[] = [];
+  filteredModules: Module[] = [];
+  isLoading = false;
+  error: string | null = null;
 
-  // ngOnInit(): void {
-  //   this.getModules();
-  // }
+  // Search filters
+  searchModuleName: string = '';
+  searchProgram: string = '';
+  searchSemester: string = '';
+  searchIntake: string = '';
 
-  // getModules(){
-  //   this.http.get<any>('http://localhost:3000/api/course/IM001/export-report').subscribe(
-  //     response => {
-  //       console.log(response);
-  //       this.modules = response;
-  //     }
-  //   );
-  // }
+  // Dropdown options
+  programOptions: string[] = [];
+  semesterOptions: string[] = [];
+  intakeOptions: string[] = [];
 
-  // modules = [];
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) {}
 
-  modules= [
-    {
-      id: "CS1",
-      name: "Theoretical Computer Science",
-      program: "CSE",
-      semester: "WS 2024",
-      intake: 2022,
-      lecturer: "Lecturer 1",
-      studentCount: 4,
-    },
-    {
-      id: "CS2",
-      name: "Discrete Math",
-      program: "CSE",
-      semester: "WS 2024",
-      intake: 2022,
-      lecturer: "Lecturer 2",
-      studentCount: 4,
-    },
-    {
-      id: "EEIT1",
-      name: "Electrical Circuits",
-      program: "EEIT",
-      semester: "WS 2024",
-      intake: 2022,
-      lecturer: "Lecturer 3",
-      studentCount: 4,
-    },
-    {
-      id: "EEIT2",
-      name: "Digital Signal Processing",
-      program: "EEIT",
-      semester: "WS 2024",
-      intake: 2022,
-      lecturer: "Lecturer 4",
-      studentCount: 4,
-    },
-  ];
+  ngOnInit(): void {
+    this.loadModules();
+  }
+
+  loadModules() {
+    this.isLoading = true;
+    this.error = null;
+
+    // Get lecturer ID from decoded token
+    const decodedToken = this.tokenService.getDecodedToken();
+    if (!decodedToken?.uid) {
+      this.error = 'Lecturer ID not found. Please log in again.';
+      this.isLoading = false;
+      return;
+    }
+
+    console.log('Loading modules for lecturer:', decodedToken.uid); // Debug log
+
+    // Use the intakeModule endpoint to get modules for this lecturer
+    this.http.get<ApiResponse<Module[]>>(`${this.baseUrl}/intakemodule/lecturer/${decodedToken.uid}`).subscribe({
+      next: (response) => {
+        console.log('Response from server:', response); // Debug log
+        if (response?.metaData) {
+          this.modules = response.metaData;
+          this.filteredModules = [...this.modules];
+          
+          // Extract unique values for dropdowns
+          this.programOptions = [...new Set(this.modules.map(m => m.programName))].sort();
+          this.semesterOptions = [...new Set(this.modules.map(m => m.semesterId))].sort();
+          this.intakeOptions = [...new Set(this.modules.map(m => m.intakeYear.toString()))].sort();
+          
+          console.log('Modules loaded:', this.modules); // Debug log
+        } else {
+          console.warn('No modules found in response'); // Debug log
+          this.modules = [];
+          this.filteredModules = [];
+          this.programOptions = [];
+          this.semesterOptions = [];
+          this.intakeOptions = [];
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading modules:', error);
+        if (error.status === 404) {
+          this.error = 'No modules found for this lecturer.';
+        } else if (error.status === 401) {
+          this.error = 'Please log in again to view your modules.';
+        } else {
+          this.error = error.error?.message || 'Failed to load modules. Please try again later.';
+        }
+        this.isLoading = false;
+      }
+    });
+  }
+
+  filterModules() {
+    this.filteredModules = this.modules.filter(module => {
+      const matchesName = !this.searchModuleName || 
+        module.moduleName.toLowerCase().includes(this.searchModuleName.toLowerCase());
+      const matchesProgram = !this.searchProgram || 
+        module.programName === this.searchProgram;
+      const matchesSemester = !this.searchSemester || 
+        module.semesterId === this.searchSemester;
+      const matchesIntake = !this.searchIntake || 
+        module.intakeYear.toString() === this.searchIntake;
+
+      return matchesName && matchesProgram && matchesSemester && matchesIntake;
+    });
+  }
+
+  resetFilters() {
+    this.searchModuleName = '';
+    this.searchProgram = '';
+    this.searchSemester = '';
+    this.searchIntake = '';
+    this.filteredModules = [...this.modules];
+  }
 }

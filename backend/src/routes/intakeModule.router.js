@@ -13,5 +13,7 @@ intakeModuleRouter.post('/', intakeModuleController.createIntakeModule);
 intakeModuleRouter.delete('/:moduleId', intakeModuleController.deleteIntakeModule);
 intakeModuleRouter.put('/:moduleId', intakeModuleController.updateIntakeModule);
 intakeModuleRouter.get('/:moduleId/students', intakeModuleController.getModuleStudents);
+intakeModuleRouter.get('/lecturer/:accountId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), intakeModuleController.getModulesByLecturer);
+intakeModuleRouter.get('/faculty/:accountId', verifyTokenAndRole(['FACULTY', 'ADMIN']), intakeModuleController.getModulesByFacultyStaff);
 
 export default intakeModuleRouter;

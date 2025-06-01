@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ActionTableComponent } from 'src/app/components/action-table/action-table.component';
 import { PopupAttendanceComponent } from 'src/app/components/popup-attendance/popup-attendance.component';
+import { Location } from '@angular/common';
 
 interface ApiResponse<T> {
   status: string;
@@ -78,7 +79,8 @@ export class ModuleDetailModifyComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -239,6 +241,6 @@ export class ModuleDetailModifyComponent implements OnInit {
   }
 
   cancelEdit() {
-    this.router.navigate(['/module-view-admin']);
+    this.location.back();
   }
 }

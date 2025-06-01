@@ -47,7 +47,7 @@ export class LoginPageComponent {
           }
           
           // Store the tokens and user info
-          localStorage.setItem('token', response.accessToken);
+          localStorage.setItem('accessToken', response.accessToken);
           if (response.refreshToken) {
             localStorage.setItem('refreshToken', response.refreshToken);
           }
@@ -56,6 +56,9 @@ export class LoginPageComponent {
           }
           if (response.username) {
             localStorage.setItem('username', response.username);
+          }
+          if (response.acc_id) {
+            localStorage.setItem('accountId', response.acc_id);
           }
 
           // Navigate to the appropriate route based on user role

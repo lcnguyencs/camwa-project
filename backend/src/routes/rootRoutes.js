@@ -8,7 +8,8 @@ import studentRouter from './student.router.js';
 import lecturerRouter from './lecturer.route.js';
 import programRouter from './program.router.js';
 import intakeModuleRouter from './intakeModule.router.js';
-import facilityFacultyRouter from './faculty.router.js';
+import intakeRouter from './intake.router.js';
+import facultyRouter from './faculty.router.js';
 import testTokenController from '../controllers/testTokenController.js';
 import accountRouter from './account.router.js';
 import semesterRouter from './semester.router.js';
@@ -35,6 +36,12 @@ rootRoutes.use('/program', programRouter);
 // Intake Module routes
 rootRoutes.use('/intakemodule', intakeModuleRouter);
 
+// Intake routes
+rootRoutes.use('/intake', intakeRouter);
+
+// Faculty routes
+rootRoutes.use('/faculty', facultyRouter);
+
 // Attendance routes
 rootRoutes.use('/attendance', attendanceRouter);
 
@@ -46,9 +53,6 @@ rootRoutes.use('/course', courseRouter);
 
 // Notification routes
 rootRoutes.use('/notification', notificationRouter);
-
-// Faculty routes
-rootRoutes.use('/faculty', facilityFacultyRouter);
 
 // Account routes
 rootRoutes.use('/account', accountRouter);

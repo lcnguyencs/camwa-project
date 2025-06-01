@@ -22,7 +22,7 @@ const classManagement = {
             const result = await classService.viewClassesByIntakeModule(intakeModuleId);
             const resData = responseSuccess(result, 'Classes retrieved successfully for the module');
             res.status(resData.code).json(resData);
-        } catch (error) {x
+        } catch (error) {
             const resError = responseError(error, 'Failed to retrieve classes for the module');
             res.status(resError.code).json(resError);
         }
@@ -87,11 +87,21 @@ const classManagement = {
         try {
             const classId = req.params.classId;
             const updatedData = req.body;
+            console.log('Updating class with ID:', classId);
+            console.log('Update data:', updatedData);
+            
             const result = await classService.updateClass(classId, updatedData);
+            console.log('Update result:', result);
+            
+            if (!result) {
+                throw new Error('Failed to update class');
+            }
+
             const resData = responseSuccess(result, 'Class updated successfully');
-            res.status(resData.code).json(resData);
+            res.status(200).json(resData);
         } catch (error) {
-            const resError = responseError(error, 'Failed to update class');
+            console.error('Error in updateClass controller:', error);
+            const resError = responseError(error, error.message || 'Failed to update class');
             res.status(resError.code).json(resError);
         }
     },
@@ -132,6 +142,68 @@ const classManagement = {
             res.status(resData.code).json(resData);
         } catch (error) {
             const resError = responseError(error, 'Failed to retrieve student attendance rate for the module');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Get students enrolled in a module
+    getStudentsByModule: async (req, res, next) => {
+        try {
+            const moduleId = req.params.moduleId;
+            const result = await classService.getStudentsByModule(moduleId);
+            const resData = responseSuccess(result, 'Students retrieved successfully for the module');
+            res.status(200).json(resData);
+        } catch (error) {
+            console.error('Error in getStudentsByModule controller:', error);
+            const resError = responseError(error, error.message || 'Failed to retrieve students for the module');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Invite student to module
+    inviteStudentToModule: async (req, res, next) => {
+        try {
+            const { studentId } = req.body;
+            const { moduleId } = req.params;
+
+            if (!studentId) {
+                const resError = responseError(new Error('Student ID is required'), 'Student ID is required');
+                return res.status(resError.code).json(resError);
+            }
+
+            const result = await classService.inviteStudentToModule(studentId, moduleId);
+            const resData = responseSuccess(result, 'Student invited successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error, error.message || 'Failed to invite student');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Get student details by ID
+    getStudentById: async (req, res, next) => {
+        try {
+            const { studentId } = req.params;
+            const result = await classService.getStudentById(studentId);
+            const resData = responseSuccess(result, 'Student details retrieved successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error, error.message || 'Failed to retrieve student details');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Remove student from module
+    removeStudentFromModule: async (req, res, next) => {
+        try {
+            const { studentId } = req.params;
+            const { moduleId } = req.params;
+
+            const result = await classService.removeStudentFromModule(studentId, moduleId);
+            const resData = responseSuccess(result, 'Student removed successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error, error.message || 'Failed to remove student');
             res.status(resError.code).json(resError);
         }
     },

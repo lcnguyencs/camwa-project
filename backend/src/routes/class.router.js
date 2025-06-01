@@ -1,22 +1,28 @@
 import express from 'express';
-import classController from '../controllers/classManagement.controller.js';
+import classManagement from '../controllers/classManagement.controller.js';
 import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const classRouter = express.Router();
 
 // Create and update classes (Faculty Assistant or Admin)
-classRouter.post('/create', verifyTokenAndRole(['FACULTY', 'ADMIN']), classController.createClass); 
-classRouter.put('/:classId', verifyTokenAndRole(['FACULTY', 'ADMIN']), classController.updateClass); 
-classRouter.delete('/:classId', verifyTokenAndRole(['FACULTY']), classController.deleteClass); 
+classRouter.post('/create', classManagement.createClass); 
+classRouter.put('/:classId', classManagement.updateClass); 
+classRouter.delete('/:classId', classManagement.deleteClass); 
 
 // View classes by role and module
-classRouter.get('/lecturer/:lecturerId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), classController.viewClassesByLecturer); 
+classRouter.get('/lecturer/:lecturerId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), classManagement.viewClassesByLecturer); 
 // Temporarily removing role check for debugging
-classRouter.get('/student/:studentId', classController.viewClassesByStudent); 
-classRouter.get('/intake-module/:intakeModuleId', verifyTokenAndRole(['FACULTY', 'ADMIN']), classController.viewClassesByIntakeModule); 
+classRouter.get('/student/:studentId', classManagement.viewClassesByStudent); 
+classRouter.get('/intake-module/:intakeModuleId', classManagement.viewClassesByIntakeModule); 
+classRouter.get('/module/:moduleId/students', classManagement.getStudentsByModule);
+
+// Student operations
+classRouter.get('/student/:studentId/details', classManagement.getStudentById);
+classRouter.post('/module/:moduleId/invite', classManagement.inviteStudentToModule);
+classRouter.delete('/module/:moduleId/student/:studentId', classManagement.removeStudentFromModule);
 
 // Attendance views and rates
-classRouter.get('/attendance/:classId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), classController.viewStudentAttendance); 
-classRouter.get('/attendance-rate/:moduleId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), classController.viewStudentAttendanceRate); 
+classRouter.get('/attendance/:classId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), classManagement.viewStudentAttendance); 
+classRouter.get('/attendance-rate/:moduleId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), classManagement.viewStudentAttendanceRate); 
 
 export default classRouter;

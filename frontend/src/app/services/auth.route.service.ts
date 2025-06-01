@@ -12,7 +12,7 @@ export class AuthRoute implements CanActivate {
   ) {}
 
   canActivate(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (!token) {
       this.router.navigate(['/login']);
       return false;

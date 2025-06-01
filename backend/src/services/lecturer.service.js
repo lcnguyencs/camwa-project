@@ -57,6 +57,24 @@ const lecturerService = {
       throw new Error('Error updating lecturer: ' + error.message);
     }
   },
+
+  getStaffIdByAccountId: async (accountId) => {
+    try {
+      console.log('Looking up lecturer with account ID:', accountId);
+      const lecturer = await Lecturer.findOne({ 
+        where: { acc_id: accountId },
+        attributes: ['staff_id']
+      });
+      console.log('Found lecturer:', lecturer);
+      if (!lecturer) {
+        throw new Error('Lecturer not found');
+      }
+      return lecturer.staff_id;
+    } catch (error) {
+      console.error('Error in getStaffIdByAccountId:', error);
+      throw new Error('Error finding lecturer: ' + error.message);
+    }
+  },
 };
 
 export default lecturerService;

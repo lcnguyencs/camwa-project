@@ -15,7 +15,7 @@ interface JwtPayload {
 })
 export class TokenService {
   getDecodedToken(): JwtPayload | null {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       return jwtDecode<JwtPayload>(token);
     }

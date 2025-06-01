@@ -120,6 +120,14 @@
     margin-left: 8px;  
     align-items: center;
   }
+  .nav-item {
+    cursor: pointer;
+
+    // Target only the delete icon container
+    &:nth-child(3) svg {
+      stroke: #dc3545; // Red color for the outline
+    }
+  }
   
   .functionButtons {
     display: flex;

@@ -24,7 +24,7 @@ export class AppComponent {
         this.showSidebar = !["/login", "/"].includes(event.url);
         
         if (event.url === '/') {
-          const token = localStorage.getItem('token');
+          const token = localStorage.getItem('accessToken');
           if (token) {
             const defaultRoute = this.authService.getDefaultRoute();
             this.router.navigate([defaultRoute]);
@@ -33,7 +33,7 @@ export class AppComponent {
           }
         }
         
-        if (!localStorage.getItem('token') && event.url !== "/login") {
+        if (!localStorage.getItem('accessToken') && event.url !== "/login") {
           this.router.navigate(['/login']);
         }
       }

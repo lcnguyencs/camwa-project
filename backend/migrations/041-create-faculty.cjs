@@ -20,7 +20,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
-      account_id: {
+      acc_id: {
         type: Sequelize.STRING(100),
         allowNull: false,
         references: {
