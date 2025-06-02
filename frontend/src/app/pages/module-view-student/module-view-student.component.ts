@@ -79,7 +79,7 @@ export class ModuleViewStudentComponent implements OnInit {
     this.error = null;
 
     // Get the current token
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (!token) {
       console.error('No token found in localStorage');
       this.error = 'Authentication token not found. Please log in again.';
