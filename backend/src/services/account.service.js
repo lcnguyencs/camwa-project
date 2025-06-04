@@ -104,6 +104,74 @@ const accountService = {
     } catch (error) {
       throw new Error('Error deleting user: ' + error.message);
     }
+  },
+  createMultipleStudentsFromCSV: async (filePath) => {
+    try {
+      const fs = await import('fs/promises');
+      
+      // Check if file exists before attempting to read
+      try {
+        await fs.access(filePath);
+        console.log(`CSV file exists at: ${filePath}`);
+      } catch (fileError) {
+        throw new Error(`File not found: ${filePath}`);
+      }
+      
+      const Excel = (await import('exceljs')).default;
+      const workbook = new Excel.Workbook();
+      
+      console.log(`Attempting to read CSV from: ${filePath}`);
+      
+      // Parse the CSV file
+      await workbook.csv.readFile(filePath);
+      const worksheet = workbook.worksheets[0];
+      
+      console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+      
+      const results = {
+        successful: [],
+        failed: []
+      };
+      
+      // Skip the header row and process each row
+      for (let i = 2; i <= worksheet.rowCount; i++) {
+        const row = worksheet.getRow(i);
+        const studentId = row.getCell(1).value?.toString();
+        const email = row.getCell(2).value?.toString();
+        
+        // Skip empty rows
+        if (!studentId || !email) continue;
+        
+        try {
+          // Create student user with the same ID as username and password
+          const userData = {
+            accId: studentId,
+            username: studentId,
+            password: studentId,
+            email: email,
+            role: 'STUDENT'
+          };
+          
+          // Use the existing createUser method to create each student
+          const newUser = await accountService.createUser(userData);
+          results.successful.push({
+            accId: newUser.accId,
+            username: newUser.username,
+            email: newUser.email
+          });
+        } catch (error) {
+          results.failed.push({
+            studentId,
+            email,
+            error: error.message
+          });
+        }
+      }
+      
+      return results;
+    } catch (error) {
+      throw new Error('Error creating users from CSV: ' + error.message);
+    }
   }
 };
 

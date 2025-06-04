@@ -50,6 +50,30 @@ const iamController = {
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
     }
+  },
+  createStudentsFromCSV: async (req, res) => {
+    try {
+      // Check if file was uploaded
+      if (!req.file) {
+        return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+      }
+
+      console.log('File uploaded:', req.file);
+      console.log('File path:', req.file.path);
+      
+      // Process the CSV file and create students using the uploaded file path
+      const results = await accountService.createMultipleStudentsFromCSV(req.file.path);
+      
+      res.status(201).json(
+        responseSuccess(
+          results, 
+          `Created ${results.successful.length} student accounts successfully. ${results.failed.length} failed.`
+        )
+      );
+    } catch (error) {
+      console.error('Error processing CSV:', error);
+      res.status(500).json(responseError(error.message, 500));
+    }
   }
 };
 
