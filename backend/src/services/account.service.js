@@ -6,11 +6,11 @@ const accountService = {
   getAllUsers: async () => {
     try {
       const users = await Iam.findAll({
-        attributes: ['acc_id', 'username', 'email', 'role']
+        attributes: ['iam_id', 'username', 'email', 'role']
       });
       
       return users.map(user => ({
-        accId: user.acc_id,
+        iamId: user.iam_id,
         username: user.username,
         email: user.email,
         role: user.role
@@ -20,10 +20,10 @@ const accountService = {
     }
   },
 
-  getUserById: async (accId) => {
+  getUserById: async (iamId) => {
     try {
-      const user = await Iam.findByPk(accId, {
-        attributes: ['acc_id', 'username', 'email', 'role']
+      const user = await Iam.findByPk(iamId, {
+        attributes: ['iam_id', 'username', 'email', 'role']
       });
       
       if (!user) {
@@ -31,7 +31,7 @@ const accountService = {
       }
       
       return {
-        accId: user.acc_id,
+        iamId: user.iam_id,
         username: user.username,
         email: user.email,
         role: user.role
@@ -47,7 +47,7 @@ const accountService = {
       const hashedPassword = await bcrypt.hash(userData.password, salt);
 
       const newUser = await Iam.create({
-        acc_id: userData.accId,
+        iam_id: userData.iamId,
         username: userData.username,
         email: userData.email,
         password: hashedPassword,
@@ -55,7 +55,7 @@ const accountService = {
       });
       
       return {
-        accId: newUser.acc_id,
+        iamId: newUser.iam_id,
         username: newUser.username,
         email: newUser.email,
         role: newUser.role
@@ -65,7 +65,7 @@ const accountService = {
     }
   },
 
-  updateUser: async (accId, userData) => {
+  updateUser: async (iamId, userData) => {
     try {
       const updateData = {
         username: userData.username,
@@ -79,23 +79,23 @@ const accountService = {
       }
 
       const [updated] = await Iam.update(updateData, {
-        where: { acc_id: accId }
+        where: { iam_id: iamId }
       });
       
       if (!updated) {
         throw new Error('User not found');
       }
       
-      return await accountService.getUserById(accId);
+      return await accountService.getUserById(iamId);
     } catch (error) {
       throw new Error('Error updating user: ' + error.message);
     }
   },
 
-  deleteUser: async (accId) => {
+  deleteUser: async (iamId) => {
     try {
       const deleted = await Iam.destroy({
-        where: { acc_id: accId }
+        where: { iam_id: iamId }
       });
       
       if (!deleted) {
@@ -145,7 +145,7 @@ const accountService = {
         try {
           // Create student user with the same ID as username and password
           const userData = {
-            accId: studentId,
+            iamId: studentId,
             username: studentId,
             password: studentId,
             email: email,
@@ -155,7 +155,7 @@ const accountService = {
           // Use the existing createUser method to create each student
           const newUser = await accountService.createUser(userData);
           results.successful.push({
-            accId: newUser.accId,
+            iamId: newUser.iamId,
             username: newUser.username,
             email: newUser.email
           });

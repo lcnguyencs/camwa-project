@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING(20),
         references: {
           model: 'iam',        
-          key: 'acc_id'        
+          key: 'iam_id'        
         },
         onUpdate: 'CASCADE',   
         onDelete: 'SET NULL',  

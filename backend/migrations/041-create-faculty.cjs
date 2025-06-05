@@ -25,7 +25,7 @@ module.exports = {
         allowNull: false,
         references: {
           model: 'iam',
-          key: 'acc_id'
+          key: 'iam_id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',

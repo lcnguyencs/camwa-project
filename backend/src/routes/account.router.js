@@ -19,7 +19,7 @@ if (!fs.existsSync(uploadsDir)) {
 const accountRouter = express.Router();
 
 accountRouter.get('/', iamController.getAllUsers);
-accountRouter.get('/:accId', iamController.getUserById);
+accountRouter.get('/:iamId', iamController.getUserById);
 accountRouter.post('/create', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), iamController.createUser);
 // Endpoint with specific field name
 accountRouter.post(
@@ -85,7 +85,7 @@ accountRouter.post(
   },
   iamController.createStudentsFromCSV
 );
-accountRouter.put('/:accId', iamController.updateUser);
-accountRouter.delete('/:accId', iamController.deleteUser);
+accountRouter.put('/:iamId', iamController.updateUser);
+accountRouter.delete('/:iamId', iamController.deleteUser);
 
 export default accountRouter;

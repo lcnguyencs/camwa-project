@@ -32,11 +32,11 @@ module.exports = {
         onUpdate: 'CASCADE',     
         onDelete: 'SET NULL',     
       },
-      acc_id: {
+      iam_id: {
         type: Sequelize.STRING(100),
         references: {
           model: 'iam',         
-          key: 'acc_id'          
+          key: 'iam_id'          
         },
         onUpdate: 'CASCADE',     
         onDelete: 'SET NULL',     

@@ -17,7 +17,7 @@ const FacilityFaculty = sequelize.define('FacilityFaculty', {
   },
   account_id: {
     type: DataTypes.STRING(100),
-    references: { model: 'Iam', key: 'acc_id' },
+    references: { model: 'Iam', key: 'iam_id' },
     allowNull: false,
   }
 }, {

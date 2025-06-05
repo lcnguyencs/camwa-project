@@ -13,8 +13,8 @@ const iamController = {
 
   getUserById: async (req, res) => {
     try {
-      const { accId } = req.params;
-      const user = await accountService.getUserById(accId);
+      const { iamId } = req.params;
+      const user = await accountService.getUserById(iamId);
       res.status(200).json(responseSuccess(user, 'User retrieved successfully'));
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
@@ -33,9 +33,9 @@ const iamController = {
 
   updateUser: async (req, res) => {
     try {
-      const { accId } = req.params;
+      const { iamId } = req.params;
       const userData = req.body;
-      const updatedUser = await accountService.updateUser(accId, userData);
+      const updatedUser = await accountService.updateUser(iamId, userData);
       res.status(200).json(responseSuccess(updatedUser, 'User updated successfully'));
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
@@ -44,8 +44,8 @@ const iamController = {
 
   deleteUser: async (req, res) => {
     try {
-      const { accId } = req.params;
-      await accountService.deleteUser(accId);
+      const { iamId } = req.params;
+      await accountService.deleteUser(iamId);
       res.status(200).json(responseSuccess(null, 'User deleted successfully'));
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));

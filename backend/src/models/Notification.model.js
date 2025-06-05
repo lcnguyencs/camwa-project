@@ -9,7 +9,7 @@ const Notification = sequelize.define('Notification', {
   },
   sender_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Iam', key: 'acc_id' },
+    references: { model: 'Iam', key: 'iam_id' },
   },
   receiver_id: {
     type: DataTypes.STRING(20),

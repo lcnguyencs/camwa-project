@@ -23,7 +23,7 @@ const authService = {
 
     // Generate tokens
     const accessToken = jwt.sign(
-      { uid: user.acc_id, 
+      { uid: user.iam_id, 
         email: user.email, 
         role: user.role, 
         username: user.username},
@@ -32,7 +32,7 @@ const authService = {
     );
 
     const refreshToken = jwt.sign(
-      { uid: user.acc_id },
+      { uid: user.iam_id },
       JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
@@ -62,7 +62,7 @@ const authService = {
       const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
       
       const accessToken = jwt.sign(
-        { uid: user.acc_id, 
+        { uid: user.iam_id, 
           email: user.email, 
           role: user.role, 
           username: user.username },
@@ -78,7 +78,7 @@ const authService = {
   },
 
   logOut: async (userId) => {
-    const user = await Iam.findOne({ where: { acc_id: userId } });
+    const user = await Iam.findOne({ where: { iam_id: userId } });
     if (!user) {
       throw new NotFoundError('User not found');
     }
@@ -94,7 +94,7 @@ const authService = {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await Iam.create({
-      acc_id: uuidv4(),
+      iam_id: uuidv4(),
       username,
       email,
       password: hashedPassword,
@@ -102,7 +102,7 @@ const authService = {
     });
 
     return {
-      acc_id: newUser.acc_id,
+      iam_id: newUser.iam_id,
       username: newUser.username,
       email: newUser.email,
       role: newUser.role

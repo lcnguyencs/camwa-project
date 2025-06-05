@@ -2,12 +2,13 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
 const Iam = sequelize.define('Iam', {
-  acc_id: {
+  iam_id: {
     type: DataTypes.STRING(100),
     primaryKey: true,
   },
   username: {
     type: DataTypes.STRING(45),
+        unique: true,
   },
   email: {
     type: DataTypes.STRING(100),
