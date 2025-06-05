@@ -9,16 +9,14 @@ module.exports = {
         name: 'Alice Johnson',
         map_location: 'A1-101',
         program_id: 'PROG001',
-        intake: '2023',
-        iam_id: 'STU001'
+        intake: '2023'
       },
       {
         student_id: 'STU002',
         name: 'Bob Wilson',
         map_location: 'B2-202',
         program_id: 'PROG002',
-        intake: '2023',
-        iam_id: 'STU002'
+        intake: '2023'
       }
     ]);
   },

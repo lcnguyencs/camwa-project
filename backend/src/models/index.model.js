@@ -113,8 +113,8 @@ Student.belongsToMany(IntakeModule, {
 });
 
 // 20. Iam and Student (One-to-One) - Represents student's account
-Student.belongsTo(Iam, { foreignKey: 'iam_id' });
-Iam.hasOne(Student, { foreignKey: 'iam_id' });
+Student.belongsTo(Iam, { foreignKey: 'student_id', targetKey: 'username' });
+Iam.hasOne(Student, { foreignKey: 'student_id', sourceKey: 'username' });
 
 // Program and IntakeModule Relationship (A Program has many IntakeModules)
 Program.hasMany(IntakeModule, { foreignKey: 'program_id' });
