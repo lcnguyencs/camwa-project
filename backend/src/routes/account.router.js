@@ -85,6 +85,71 @@ accountRouter.post(
   },
   iamController.createStudentsFromCSV
 );
+accountRouter.post(
+  '/create-lecturers-from-csv', 
+  verifyTokenAndRole(['ADMIN']), 
+  upload.single('file'),
+  iamController.createLecturersFromCSV
+);
+
+// Alternative endpoint for lecturers that can accept any field name
+accountRouter.post(
+  '/upload-lecturers-csv',
+  verifyTokenAndRole(['ADMIN']),
+  (req, res, next) => {
+    // Using multer directly with any field
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => cb(null, uploadsDir),
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'lecturers-' + uniqueSuffix + path.extname(file.originalname));
+      }
+    });
+    
+    const uploadAny = multer({ 
+      storage,
+      fileFilter: (req, file, cb) => {
+        if (file.originalname.toLowerCase().endsWith('.csv')) {
+          cb(null, true);
+        } else {
+          cb(new Error('Only CSV files are allowed!'), false);
+        }
+      }
+    }).any();
+    
+    uploadAny(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({ 
+          status: 'error', 
+          code: 400, 
+          message: 'File upload error', 
+          error: err.message 
+        });
+      }
+      
+      // Take the first file if any exists
+      if (req.files && req.files.length > 0) {
+        req.file = req.files[0];
+      }
+      
+      next();
+    });
+  },
+  iamController.createLecturersFromCSV
+);
+
+// Endpoint for using a default lecturer CSV file
+accountRouter.post(
+  '/create-lecturers-from-default-csv',
+  verifyTokenAndRole(['ADMIN']),
+  (req, res, next) => {
+    // Set the default CSV file path
+    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Create Lecturer List.csv');
+    req.file = { path: defaultCsvPath };
+    next();
+  },
+  iamController.createLecturersFromCSV
+);
 accountRouter.put('/:iamId', iamController.updateUser);
 accountRouter.delete('/:iamId', iamController.deleteUser);
 
