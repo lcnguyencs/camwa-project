@@ -18,10 +18,9 @@ const lecturerService = {
       throw new Error('Error retrieving lecturers: ' + error.message);
     }
   },
-
-  findLecturerById: async (staff_id) => {
+  findLecturerById: async (lecturer_id) => {
     try {
-      const lecturer = await Lecturer.findOne({ where: { staff_id } });
+      const lecturer = await Lecturer.findOne({ where: { lecturer_id } });
       if (!lecturer) {
         throw new Error('Lecturer not found');
       }
@@ -30,10 +29,9 @@ const lecturerService = {
       throw new Error('Error finding lecturer: ' + error.message);
     }
   },
-
-  deleteLecturer: async (staff_id) => {
+  deleteLecturer: async (lecturer_id) => {
     try {
-      const result = await Lecturer.destroy({ where: { staff_id } });
+      const result = await Lecturer.destroy({ where: { lecturer_id } });
       if (result === 0) {
         throw new Error('Lecturer not found');
       }
@@ -42,16 +40,15 @@ const lecturerService = {
       throw new Error('Error deleting lecturer: ' + error.message);
     }
   },
-
-  updateLecturer: async (staff_id, updatedData) => {
+  updateLecturer: async (lecturer_id, updatedData) => {
     try {
       const [updated] = await Lecturer.update(updatedData, {
-        where: { staff_id },
+        where: { lecturer_id },
       });
       if (updated === 0) {
         throw new Error('Lecturer not found or no changes made');
       }
-      const updatedLecturer = await Lecturer.findOne({ where: { staff_id } });
+      const updatedLecturer = await Lecturer.findOne({ where: { lecturer_id } });
       return updatedLecturer;
     } catch (error) {
       throw new Error('Error updating lecturer: ' + error.message);

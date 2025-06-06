@@ -93,12 +93,10 @@ const programService = {
       
       if (!program || !lecturer) {
         throw new Error('Program or Lecturer not found');
-      }
-
-      // Update lecturer's program_id
+      }      // Update lecturer's program_id
       await Lecturer.update(
         { program_id: program_id },
-        { where: { staff_id: lecturer_id } }
+        { where: { lecturer_id: lecturer_id } }
       );
 
       return { message: 'Lecturer assigned to program successfully' };

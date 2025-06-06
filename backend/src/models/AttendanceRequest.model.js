@@ -21,10 +21,9 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
     type: DataTypes.STRING(36),
     allowNull: false,
     references: { model: 'IntakeModule', key: 'intake_module_id' },
-  },
-  lecturer_id: {
+  },  lecturer_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Lecturer', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'lecturer_id' },
   },
   request_date: {
     type: DataTypes.DATE,

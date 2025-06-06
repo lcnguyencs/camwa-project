@@ -24,11 +24,10 @@ const Class = sequelize.define('Class', {
   },
   end_time: {
     type: DataTypes.TIME,
-  },
-  lecturer_id: {
+  },  lecturer_id: {
     type: DataTypes.STRING(20),
     allowNull: true,
-    references: { model: 'Lecturer', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'lecturer_id' },
   },
 }, {
   tableName: 'class',
@@ -44,7 +43,7 @@ const Class = sequelize.define('Class', {
 // // Association with Lecturer (One-to-Many)
 // Class.belongsTo('Lecturer', {
 //   foreignKey: 'lecturer_id',
-//   targetKey: 'staff_id',
+//   targetKey: 'lecturer_id',
 // });
 
 export default Class;

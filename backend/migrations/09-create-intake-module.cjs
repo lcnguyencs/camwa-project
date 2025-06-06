@@ -19,13 +19,12 @@ module.exports = {
       ects: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      lecturer_id: {
+      },      lecturer_id: {
         type: Sequelize.STRING(20),
         allowNull: false,
         references: {
           model: 'lecturer', 
-          key: 'staff_id'     
+          key: 'lecturer_id'     
         },
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE', 

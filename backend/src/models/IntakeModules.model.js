@@ -25,10 +25,9 @@ const IntakeModule = sequelize.define('IntakeModule', {
     type: DataTypes.STRING(20),
     references: { model: 'Program', key: 'program_id' },
   },
-  // Reference to the lecturer responsible for this intake module
-  lecturer_id: {
+  // Reference to the lecturer responsible for this intake module  lecturer_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Lecturer', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'lecturer_id' },
     allowNull: false,
   },
   // Reference to the course this intake module belongs to
@@ -66,7 +65,7 @@ IntakeModule.belongsTo(Semester, {
 
 IntakeModule.belongsTo(Lecturer, {
   foreignKey: 'lecturer_id',
-  targetKey: 'staff_id'
+  targetKey: 'lecturer_id'
 });
 
 export default IntakeModule;

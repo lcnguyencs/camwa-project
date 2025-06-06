@@ -10,11 +10,10 @@ const Course = sequelize.define('Course', {
   name: {
     type: DataTypes.STRING(50),
     allowNull: false,
-  },
-  lecturer_id: {
+  },  lecturer_id: {
     type: DataTypes.STRING(20),
     allowNull: false,
-    references: { model: 'Lecturer', key: 'staff_id' },
+    references: { model: 'Lecturer', key: 'lecturer_id' },
   },
   program_id: {
     type: DataTypes.STRING(20),
