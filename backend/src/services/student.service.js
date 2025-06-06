@@ -62,6 +62,81 @@ const studentService = {
       throw new Error('Error updating student: ' + error.message);
     }
   },
+
+  // Create multiple students from CSV file
+  createMultipleStudentsFromCSV: async (filePath) => {
+    try {
+      const fs = await import('fs/promises');
+      
+      // Check if file exists before attempting to read
+      try {
+        await fs.access(filePath);
+        console.log(`CSV file exists at: ${filePath}`);
+      } catch (fileError) {
+        throw new Error(`File not found: ${filePath}`);
+      }
+      
+      const Excel = (await import('exceljs')).default;
+      const workbook = new Excel.Workbook();
+      
+      console.log(`Attempting to read CSV from: ${filePath}`);
+      
+      // Parse the CSV file
+      await workbook.csv.readFile(filePath);
+      const worksheet = workbook.worksheets[0];
+      
+      console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+      
+      const results = {
+        successful: [],
+        failed: []
+      };
+      
+      // Skip the header row and process each row
+      for (let i = 2; i <= worksheet.rowCount; i++) {
+        const row = worksheet.getRow(i);
+        const studentId = row.getCell(1).value?.toString();
+        const email = row.getCell(2).value?.toString();
+        const intake = row.getCell(3).value?.toString();
+        const programId = row.getCell(4).value?.toString();
+        const name = row.getCell(5).value?.toString();
+        const mapLocation = row.getCell(6).value?.toString();
+        
+        // Skip empty rows
+        if (!studentId || !name) continue;
+        
+        try {
+          // Create student record
+          const studentData = {
+            student_id: studentId,
+            name: name,
+            map_location: mapLocation || '',
+            program_id: programId,
+            intake: parseInt(intake)
+          };
+          
+          // Use the existing createStudent method to create each student record
+          const newStudent = await studentService.createStudent(studentData);
+          results.successful.push({
+            studentId: newStudent.student_id,
+            name: newStudent.name,
+            programId: newStudent.program_id,
+            intake: newStudent.intake
+          });
+        } catch (error) {
+          results.failed.push({
+            studentId,
+            name,
+            error: error.message
+          });
+        }
+      }
+      
+      return results;
+    } catch (error) {
+      throw new Error('Error creating students from CSV: ' + error.message);
+    }
+  }
 };
 
 export default studentService;

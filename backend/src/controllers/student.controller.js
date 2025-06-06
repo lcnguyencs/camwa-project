@@ -54,6 +54,25 @@ const studentController = {
       res.status(400).json(responseError(error.message, 400));
     }
   },
+
+  // Create students from CSV file
+  createStudentsFromCSV: async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json(responseError('No CSV file provided', 400));
+      }
+
+      const results = await studentService.createMultipleStudentsFromCSV(req.file.path);
+      
+      return res.status(200).json(responseSuccess({
+        successful: results.successful.length,
+        failed: results.failed.length,
+        details: results
+      }, 'Students creation process completed'));
+    } catch (error) {
+      return res.status(500).json(responseError(error.message, 500));
+    }
+  }
 };
 
 export default studentController;
