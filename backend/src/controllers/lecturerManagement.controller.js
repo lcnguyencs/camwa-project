@@ -46,6 +46,26 @@ const lecturerController = {
       res.status(400).json(responseError(error.message, 400));
     }
   },
+  createLecturersFromCSV: async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json(responseError('No CSV file provided', 400));
+      }
+
+      console.log('File uploaded:', req.file.path);
+
+      const results = await lecturerService.createMultipleLecturersFromCSV(req.file.path);
+      
+      return res.status(200).json(responseSuccess({
+        successful: results.successful.length,
+        failed: results.failed.length,
+        details: results
+      }, 'Lecturers creation process completed'));
+    } catch (error) {
+      console.error('Error processing CSV:', error);
+      return res.status(500).json(responseError(error.message, 500));
+    }
+  }
 };
 
 export default lecturerController;
