@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { TokenService } from './token.service';
 
 interface LoginResponse {
   accessToken: string;
@@ -32,7 +33,10 @@ interface ApiResponse<T> {
 export class AuthService {
   private apiUrl = 'http://localhost:3000/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<ApiResponse<LoginResponse>>(`${this.apiUrl}/login`, { email, password })
@@ -62,18 +66,17 @@ export class AuthService {
   }
 
   getRole(): string | null {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return null;
-    return localStorage.getItem('role');
+    const decodedToken = this.tokenService.getDecodedToken();
+    return decodedToken?.role || null;
   }
 
   getDefaultRoute(): string {
     const role = this.getRole();
-    switch(role) {
+    switch (role) {
       case 'ADMIN':
-        return '/module-view-admin';
+        return '/account-view-admin';
       case 'FACULTY':
-        return '/module-view-fa';
+        return '/module-view-faculty';
       case 'ACADEMIC':
         return '/module-view-ac';
       case 'LECTURER':

@@ -7,11 +7,12 @@
       <div class="form-group row">
         <div class="field">
           <label>Account Name:</label>
-          <input type="text" style="width: 288px;"/>
+          <input type="text" style="width: 288px;" [(ngModel)]="accountData.username"/>
         </div>
         <div class="field">
           <label>Role:</label>
-          <select style="width: 288px;">
+          <select style="width: 288px;" [(ngModel)]="accountData.role">
+            <option value="" disabled selected>Select Role</option>
             <option *ngFor="let role of roles" [value]="role">
               {{ role }}
             </option>
@@ -22,19 +23,21 @@
       <div class="form-group row" style="margin-top: 6px;">
         <div class="field">
           <label>ID:</label>
-          <input type="text"/>
+          <input type="text" [(ngModel)]="accountData.accId"/>
         </div>
         <div class="field">
           <label>Intake:</label>
-          <select>
-            <option *ngFor="let int of intakes" [value]="int">{{ int }}</option>
+          <select [(ngModel)]="accountData.intake">
+            <option value="" disabled selected>Select Intake</option>
+            <option *ngFor="let intake of intakes" [value]="intake">{{ intake }}</option>
           </select>
         </div>
         <div class="field">
           <label>Program:</label>
-          <select>
-            <option *ngFor="let prog of programs" [value]="prog">
-              {{ prog }}
+          <select [(ngModel)]="accountData.program">
+            <option value="" disabled selected>Select Program</option>
+            <option *ngFor="let program of programs" [value]="program.program_id">
+              {{ program.name }}
             </option>
           </select>
         </div>
@@ -43,19 +46,25 @@
       <div class="form-group row">
         <div class="field">
           <label>Email:</label>
-          <input type="text" style="width: 395px;"/>
+          <input type="email" style="width: 395px;" [(ngModel)]="accountData.email"/>
         </div>
       </div>
 
       <div class="form-group row">
         <div class="field">
           <label>Password:</label>
-          <input type="text" style="width: 395px;"/>
+          <input type="password" style="width: 395px;" [(ngModel)]="accountData.password"/>
         </div>
       </div>
 
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
       <div class="buttons">
-        <button (click)="createModule()">Create</button>
+        <button (click)="createAccount()" [disabled]="isLoading">
+          {{ isLoading ? 'Creating...' : 'Create' }}
+        </button>
       </div>
   </div>
 </div>

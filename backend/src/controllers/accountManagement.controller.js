@@ -11,6 +11,15 @@ const iamController = {
     }
   },
 
+  getUniqueRoles: async (req, res) => {
+    try {
+      const roles = await accountService.getUniqueRoles();
+      res.status(200).json(responseSuccess(roles, 'Roles retrieved successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
+
   getUserById: async (req, res) => {
     try {
       const { accId } = req.params;
@@ -47,6 +56,23 @@ const iamController = {
       const { accId } = req.params;
       await accountService.deleteUser(accId);
       res.status(200).json(responseSuccess(null, 'User deleted successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
+
+  searchAccounts: async (req, res) => {
+    try {
+      const searchParams = {
+        accId: req.query.accId,
+        username: req.query.username,
+        program: req.query.program,
+        intake: req.query.intake,
+        role: req.query.role
+      };
+      
+      const accounts = await accountService.searchAccounts(searchParams);
+      res.status(200).json(responseSuccess(accounts, 'Accounts retrieved successfully'));
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
     }

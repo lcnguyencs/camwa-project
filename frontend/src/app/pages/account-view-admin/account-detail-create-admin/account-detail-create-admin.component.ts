@@ -1,114 +1,144 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActionTableComponent } from 'src/app/components/action-table/action-table.component';
 import { CommonModule } from '@angular/common';
 import { PopupAttendanceComponent } from 'src/app/components/popup-attendance/popup-attendance.component';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
+interface ApiResponse<T> {
+  status: string;
+  code: number;
+  message: string;
+  metaData: T;
+  doc: string;
+}
+
+interface Program {
+  program_id: string;
+  name: string;
+}
 
 @Component({
   selector: 'account-detail-create-admin',
   standalone: true, 
-  imports: [CommonModule, ActionTableComponent, PopupAttendanceComponent],
+  imports: [CommonModule, ActionTableComponent, PopupAttendanceComponent, FormsModule],
   templateUrl: './account-detail-create-admin.component.html',
   styleUrls: ['./account-detail-create-admin.component.scss'],
 })
-export class AccountDetailCreateAdminComponent {
-  activeSection = 'information';
+export class AccountDetailCreateAdminComponent implements OnInit {
+  private baseUrl = 'http://localhost:3000/api';
 
-  moduleName = '';
-  lecturer = '';
-  intake = '';
-  program = '';
-  semester = '';
-  year = '';
-  beginDate = '';
-  endDate = '';
+  roles: string[] = [];
+  intakes: number[] = [];
+  programs: Program[] = [];
 
-  studentID = '';
-  attendanceDate = '';
+  // Form data
+  accountData = {
+    username: '',
+    role: '',
+    accId: '',
+    intake: '',
+    program: '',
+    email: '',
+    password: ''
+  };
 
-  lecturers = ['NguyenVanA', 'NguyenVanB'];
-  roles = ['Lecturer', 'Admin', 'Student', 'Faculty Assistant','Academic Coordinator'];
-  intakes = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
-  programs = ['CSE', 'ECE', 'MEN', 'BBA', 'BFA', 'ARC'];
-  semesters = ['WS', 'SS'];
-  years = [2020, 2021, 2022, 2023, 2024, 2025, 2026];
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
-  studentColumns = [
-    { field: 'id', header: 'ID' },
-    { field: 'name', header: 'Name' },
-    { field: 'attendance', header: 'Attendance' },
-  ];
-  studentData = [
-    { id: '10001', name: 'PhamVanA', attendance: '5/10' },
-    { id: '10002', name: 'PhamVanB', attendance: '7/10' },
-    { id: '10003', name: 'PhamVanC', attendance: '10/10' },
-    { id: '10004', name: 'PhamVanD', attendance: '9/10' },
-  ];
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
-  attendanceColumns = [
-    { field: 'date', header: 'Date' },
-    { field: 'time', header: 'Time' },
-    { field: 'attendance', header: 'Attendance' },
-  ];
-  attendanceData = [
-    { date: '2/8/2024', time: '9:00-10:30', attendance: '5/10' },
-    { date: '2/8/2024', time: '13:30-15:00', attendance: '6/10' },
-    { date: '4/8/2024', time: '9:00-10:30', attendance: '9/10' },
-    { date: '4/8/2024', time: '13:30-15:00', attendance: '10/10' },
-  ];
-  attendanceStudents = [
-    { name: 'NguyenVanA', id: '00001', status: 'Present' },
-    { name: 'NguyenVanB', id: '00002', status: 'Present' },
-    { name: 'NguyenVanC', id: '00003', status: 'Absent' },
-    { name: 'NguyenVanD', id: '00004', status: 'Absent' },
-    { name: 'NguyenVanE', id: '00005', status: 'Absent' },
-  ];
-  
-  popupData: { date: string; time: string; students: any[] } | null = null;
-  
-  editAttendance(attendance: any) {
-    this.popupData = {
-      date: attendance.date,
-      time: attendance.time,
-      students: this.attendanceStudents,
+  ngOnInit() {
+    this.loadRoles();
+    this.loadIntakes();
+    this.loadPrograms();
+  }
+
+  loadRoles() {
+    this.http.get<ApiResponse<string[]>>(`${this.baseUrl}/account/roles`).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.roles = response.metaData;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading roles:', error);
+        this.errorMessage = 'Failed to load roles';
+      }
+    });
+  }
+
+  loadIntakes() {
+    this.http.get<ApiResponse<number[]>>(`${this.baseUrl}/intake`).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.intakes = response.metaData;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading intakes:', error);
+        this.errorMessage = 'Failed to load intakes';
+      }
+    });
+  }
+
+  loadPrograms() {
+    this.http.get<ApiResponse<Program[]>>(`${this.baseUrl}/program`).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.programs = response.metaData;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading programs:', error);
+        this.errorMessage = 'Failed to load programs';
+      }
+    });
+  }
+
+  createAccount() {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    // Validate required fields
+    if (!this.accountData.username || !this.accountData.role || !this.accountData.accId || 
+        !this.accountData.email || !this.accountData.password) {
+      this.errorMessage = 'Please fill in all required fields';
+      this.isLoading = false;
+      return;
+    }
+
+    // Create a new object with only the required fields
+    const accountPayload = {
+      username: this.accountData.username,
+      role: this.accountData.role,
+      accId: this.accountData.accId,
+      email: this.accountData.email,
+      password: this.accountData.password,
+      // intake: this.accountData.intake,
+      // program: this.accountData.program,
     };
-  }
-  closePopup() {
-    this.popupData = null;
-  }
-  showSection(section: string) {
-    this.activeSection = section;
-  }
 
-  createModule() {
-    console.log('Module created:', this.moduleName);
+    this.http.post<ApiResponse<any>>(`${this.baseUrl}/account`, accountPayload)
+      .subscribe({
+        next: (response) => {
+          if (response.status === 'success') {
+            // Navigate back to account list on success
+            this.router.navigate(['/account-view-admin']);
+          } else {
+            this.errorMessage = response.message || 'Failed to create account';
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error creating account:', error);
+          this.errorMessage = error.error?.message || 'An error occurred while creating the account';
+          this.isLoading = false;
+        }
+      });
   }
-  
-  updateModule() {
-    console.log('Module updated:', this.moduleName);
-  }
-
-  deleteModule() {
-    console.log('Module deleted');
-  }
-
-  searchStudent() {
-    console.log('Searching for student:', this.studentID);
-  }
-
-  addStudent() {
-    console.log('Adding student');
-  }
-
-  editStudent(student: any) {
-    console.log('Editing student:', student);
-  }
-
-  deleteStudent(student: any) {
-    console.log('Deleting student:', student);
-  }
-
-  searchAttendance() {
-    console.log('Searching attendance for date:', this.attendanceDate);
-  }
-
 }

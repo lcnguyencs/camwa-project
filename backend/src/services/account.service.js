@@ -1,6 +1,6 @@
-import Iam from '../models/Iam.model.js';
+import { Iam, Student } from '../models/index.js';
 import bcrypt from 'bcrypt';
-
+import { Op } from 'sequelize';
 
 const accountService = {
   getAllUsers: async () => {
@@ -17,6 +17,18 @@ const accountService = {
       }));
     } catch (error) {
       throw new Error('Error retrieving users: ' + error.message);
+    }
+  },
+
+  getUniqueRoles: async () => {
+    try {
+      const roles = await Iam.findAll({
+        attributes: ['role'],
+        group: ['role']
+      });
+      return roles.map(role => role.role);
+    } catch (error) {
+      throw new Error('Error retrieving roles: ' + error.message);
     }
   },
 
@@ -103,6 +115,53 @@ const accountService = {
       }
     } catch (error) {
       throw new Error('Error deleting user: ' + error.message);
+    }
+  },
+
+  searchAccounts: async (searchParams) => {
+    try {
+      const whereClause = {};
+      
+      if (searchParams.accId) {
+        whereClause.acc_id = searchParams.accId;
+      }
+      if (searchParams.username) {
+        whereClause.username = searchParams.username;
+      }
+      if (searchParams.role) {
+        whereClause.role = searchParams.role;
+      }
+
+      const accounts = await Iam.findAll({
+        attributes: ['acc_id', 'username', 'email', 'role'],
+        where: whereClause,
+        include: [{
+          model: Student,
+          as: 'Student',
+          required: false,
+          attributes: ['program_id', 'intake']
+        }]
+      });
+
+      console.log('Raw accounts:', accounts); // Debug log
+
+      const transformedAccounts = accounts.map(account => {
+        const transformed = {
+          id: account.acc_id,
+          name: account.username,
+          email: account.email,
+          role: account.role,
+          program: account.Student?.program_id || '',
+          intake: account.Student?.intake || ''
+        };
+        console.log('Transformed account:', transformed); // Debug log
+        return transformed;
+      });
+
+      return transformedAccounts;
+    } catch (error) {
+      console.error('Error in searchAccounts:', error);
+      throw error;
     }
   }
 };

@@ -114,7 +114,7 @@ const routeConfig: Routes = [
     canActivate: [AuthRoute]
   },
   {
-    path: "account-view-admin/account-detail-modify-admin",
+    path: "account-view-admin/account-detail-modify-admin/:id",
     component: AccountDetailModifyAdminComponent,
     title: "Admin Account Detail Modify View",
     canActivate: [AuthRoute]
