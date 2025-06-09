@@ -8,6 +8,14 @@ const courseManagement = {
         try {
             const courseData = req.body;
             const userId = req.user.uid;
+            const courseExists = await courseService.checkCourseExists(
+                courseData.name, 
+                courseData.lecturer_id
+            );
+            
+            if (courseExists) {
+                throw new Error("Course already exists with the same course ID and lecturer");
+            }
             const result = await courseService.createCourse(courseData, userId);
             const resData = responseSuccess(result, 'Course created successfully');
             res.status(resData.code).json(resData);
@@ -28,14 +36,12 @@ const courseManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },
-
-    // Assign Lecturer to Intake Module (Faculty Assistant only)
+    },    // Assign Lecturer to Intake Module (Faculty Assistant only)
     assignLecturerToIntakeModule: async (req, res, next) => {
         try {
             const intakeModuleId = req.params.intakeModuleId;
             const lecturerId = req.body.lecturerId;
-            const userId = req.user.id;
+            const userId = req.user.uid;
             const result = await courseService.assignLecturerToIntakeModule(intakeModuleId, lecturerId, userId);
             const resData = responseSuccess(result, 'Lecturer assigned to intake module successfully');
             res.status(resData.code).json(resData);
@@ -51,7 +57,7 @@ const courseManagement = {
         try {
             const intakeModuleId = req.params.intakeModuleId;
             const studentIds = req.body.studentIds;
-            const userId = req.user.id;
+            const userId = req.user.uid;
             const result = await courseService.assignStudentsToIntakeModule(intakeModuleId, studentIds, userId);
             const resData = responseSuccess(result, 'Students assigned to intake module successfully');
             res.status(resData.code).json(resData);
@@ -60,13 +66,11 @@ const courseManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },
-
-    // Create Classes for Intake Module (Faculty Assistant)
+    },    // Create Classes for Intake Module (Faculty Assistant)
     createClassesForIntakeModule: async (req, res, next) => {
         try {
             const intakeModuleId = req.params.intakeModuleId;
-            const userId = req.user.id;
+            const userId = req.user.uid;
             const result = await courseService.createClassesForIntakeModule(intakeModuleId, userId);
             const resData = responseSuccess(result, 'Classes created for intake module successfully');
             res.status(resData.code).json(resData);
@@ -123,36 +127,63 @@ const courseManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },
-
-    // Update Course (Admin/Faculty Assistant)
+    },    // Update Course (Admin/Faculty Assistant)
     updateCourse: async (req, res, next) => {
         try {
             const courseId = req.params.courseId;
             const updatedData = req.body;
-            const userId = req.user.id;
+            const userId = req.user.uid;
             const result = await courseService.updateCourse(courseId, updatedData, userId);
             const resData = responseSuccess(result, 'Course updated successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            console.error("Failed to update course:", error);
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },    // Delete Course (Admin only)
+    deleteCourse: async (req, res, next) => {
+        try {
+            const courseId = req.params.courseId;
+            const userId = req.user.uid;
+            const result = await courseService.deleteCourse(courseId, userId);
+            const resData = responseSuccess(result, 'Course deleted successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            console.error("Failed to delete course:", error);
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
 
-    // Delete Course (Admin only)
-    deleteCourse: async (req, res, next) => {
+    // Create courses from CSV file (Admin only)
+    createCoursesFromCSV: async (req, res) => {
         try {
-            const courseId = req.params.courseId;
-            const userId = req.user.id;
-            const result = await courseService.deleteCourse(courseId, userId);
-            const resData = responseSuccess(result, 'Course deleted successfully');
-            res.status(resData.code).json(resData);
+            // Check if file was uploaded
+            if (!req.file) {
+                return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+            }
+
+            console.log('File uploaded:', req.file);
+            console.log('File path:', req.file.path);
+            
+            // Get the user ID from the authenticated request
+            const userId = req.user.uid;
+            
+            // Process the CSV file and create courses
+            const results = await courseService.createMultipleCoursesFromCSV(req.file.path, userId);
+            
+            res.status(201).json(
+                responseSuccess(
+                    results, 
+                    `Created ${results.successful.length} courses successfully. ${results.failed.length} failed.`
+                )
+            );
         } catch (error) {
-            const resError = responseError(error);
-            res.status(resError.code).json(resError);
+            console.error('Error processing CSV:', error);
+            res.status(500).json(responseError(error.message, 500));
         }
-    },
+    }
 };
 
 export default courseManagement;

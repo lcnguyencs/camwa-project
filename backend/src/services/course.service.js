@@ -103,6 +103,22 @@ const courseService = {
         return intakeModule;
     },
 
+    checkCourseExists: async (courseName, lecturerId) => {
+    try {
+        const existingCourse = await Course.findOne({
+            where: {
+                name: courseName,
+                lecturer_id: lecturerId
+            }
+        });
+        
+        return !!existingCourse; // Returns true if course exists, false otherwise
+    } catch (error) {
+        console.error("Error checking course existence:", error);
+        throw error;
+        }
+    },
+
     // Create classes for an intake module (Admin)
     createClassesForIntakeModule: async (intakeModuleId, classCount = 15, userId) => {
         const intakeModule = await IntakeModule.findByPk(intakeModuleId);
@@ -184,6 +200,108 @@ const courseService = {
         return { message: 'Course successfully deleted' };  // Return success message
     },
 
+    // Create multiple courses from CSV file (Admin only)
+    createMultipleCoursesFromCSV: async (filePath, userId) => {
+        try {
+            const fs = await import('fs/promises');
+            
+            // Check if file exists before attempting to read
+            try {
+                await fs.access(filePath);
+                console.log(`CSV file exists at: ${filePath}`);
+            } catch (fileError) {
+                throw new Error(`File not found: ${filePath}`);
+            }
+            
+            const Excel = (await import('exceljs')).default;
+            const workbook = new Excel.Workbook();
+            
+            console.log(`Attempting to read CSV from: ${filePath}`);
+            
+            // Parse the CSV file
+            await workbook.csv.readFile(filePath);
+            const worksheet = workbook.worksheets[0];
+            
+            console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+            
+            const results = {
+                successful: [],
+                failed: []
+            };
+            
+            // Skip the header row and process each row
+            for (let i = 2; i <= worksheet.rowCount; i++) {
+                const row = worksheet.getRow(i);
+                const name = row.getCell(1).value?.toString();
+                const lecturerId = row.getCell(2).value?.toString();
+                const programId = row.getCell(3).value?.toString();
+                const intake = row.getCell(4).value?.toString();
+                const semesterId = row.getCell(5).value?.toString();
+                
+                // Skip empty rows or rows with missing required fields
+                if (!name || !lecturerId || !programId || !intake || !semesterId) {
+                    console.log(`Skipping row ${i} due to missing required fields`);
+                    continue;
+                }
+                
+                try {
+                    // Check if course with same name and lecturer already exists
+                    const courseExists = await courseService.checkCourseExists(name, lecturerId);
+                    if (courseExists) {
+                        results.failed.push({
+                            name,
+                            lecturerId,
+                            error: 'Course with this name and lecturer already exists'
+                        });
+                        continue;
+                    }
+                    
+                    // Create course record
+                    const courseData = {
+                        name: name,
+                        lecturer_id: lecturerId,
+                        program_id: programId,
+                        intake: parseInt(intake),
+                        semester_id: semesterId
+                    };
+                    
+                    // Use the existing createCourse method
+                    const newCourse = await courseService.createCourse(courseData, userId);
+                    
+                    results.successful.push({
+                        courseId: newCourse.course_id,
+                        name: newCourse.name,
+                        lecturerId: newCourse.lecturer_id,
+                        programId: newCourse.program_id,
+                        intake: newCourse.intake,
+                        semesterId: newCourse.semester_id
+                    });
+                } catch (error) {
+                    console.error(`Error creating course at row ${i}:`, error);
+                    results.failed.push({
+                        name,
+                        lecturerId,
+                        error: error.message
+                    });
+                }
+            }
+            
+            // Log the bulk creation action
+            await auditLogService.logAction(
+                userId, 
+                'bulkCreateCourses', 
+                { 
+                    successCount: results.successful.length, 
+                    failCount: results.failed.length 
+                }
+            );
+            
+            return results;
+        } catch (error) {
+            console.error('Error creating courses from CSV:', error);
+            throw new Error('Error creating courses from CSV: ' + error.message);
+        }
+    }
 };
 
 export default courseService;
