@@ -301,6 +301,128 @@ const courseService = {
             console.error('Error creating courses from CSV:', error);
             throw new Error('Error creating courses from CSV: ' + error.message);
         }
+    },
+
+    // Delete multiple courses from CSV file (Admin only)
+    deleteMultipleCoursesFromCSV: async (filePath, userId) => {
+        try {
+            const fs = await import('fs/promises');
+            
+            // Check if file exists before attempting to read
+            try {
+                await fs.access(filePath);
+                console.log(`CSV file exists at: ${filePath}`);
+            } catch (fileError) {
+                throw new Error(`File not found: ${filePath}`);
+            }
+            
+            const Excel = (await import('exceljs')).default;
+            const workbook = new Excel.Workbook();
+            
+            console.log(`Attempting to read CSV from: ${filePath}`);
+            
+            // Parse the CSV file
+            await workbook.csv.readFile(filePath);
+            const worksheet = workbook.worksheets[0];
+            
+            console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+            
+            const results = {
+                successful: [],
+                failed: []
+            };
+            
+            // Skip the header row and process each row
+            for (let i = 2; i <= worksheet.rowCount; i++) {
+                const row = worksheet.getRow(i);
+                const name = row.getCell(1).value?.toString();
+                const lecturerId = row.getCell(2).value?.toString();
+                const programId = row.getCell(3).value?.toString();
+                const intake = row.getCell(4).value?.toString();
+                const semesterId = row.getCell(5).value?.toString();
+                
+                // Skip empty rows or rows with missing critical identifiers
+                if (!name || !lecturerId) {
+                    console.log(`Skipping row ${i} due to missing name or lecturer_id`);
+                    continue;
+                }
+                
+                try {
+                    // Find courses that match the criteria
+                    const whereClause = {
+                        name: name,
+                        lecturer_id: lecturerId
+                    };
+                    
+                    // Add optional filters if provided
+                    if (programId) whereClause.program_id = programId;
+                    if (intake) whereClause.intake = parseInt(intake);
+                    if (semesterId) whereClause.semester_id = semesterId;
+                    
+                    // Find courses to delete first (to include in results)
+                    const coursesToDelete = await Course.findAll({ where: whereClause });
+                    
+                    if (coursesToDelete.length === 0) {
+                        results.failed.push({
+                            name,
+                            lecturerId,
+                            programId,
+                            intake,
+                            semesterId,
+                            error: 'No matching courses found'
+                        });
+                        continue;
+                    }
+                    
+                    // Delete the courses
+                    const deleteCount = await Course.destroy({ where: whereClause });
+                    
+                    // Record successful deletions
+                    coursesToDelete.forEach(course => {
+                        results.successful.push({
+                            courseId: course.course_id,
+                            name: course.name,
+                            lecturerId: course.lecturer_id,
+                            programId: course.program_id,
+                            intake: course.intake,
+                            semesterId: course.semester_id
+                        });
+                    });
+                    
+                    // Log each deletion
+                    await auditLogService.logAction(userId, 'deleteCourseFromCSV', { 
+                        criteria: whereClause, 
+                        count: deleteCount 
+                    });
+                    
+                } catch (error) {
+                    console.error(`Error deleting course at row ${i}:`, error);
+                    results.failed.push({
+                        name,
+                        lecturerId,
+                        programId,
+                        intake,
+                        semesterId,
+                        error: error.message
+                    });
+                }
+            }
+            
+            // Log the bulk deletion action
+            await auditLogService.logAction(
+                userId, 
+                'bulkDeleteCourses', 
+                { 
+                    successCount: results.successful.length, 
+                    failCount: results.failed.length 
+                }
+            );
+            
+            return results;
+        } catch (error) {
+            console.error('Error deleting courses from CSV:', error);
+            throw new Error('Error deleting courses from CSV: ' + error.message);
+        }
     }
 };
 

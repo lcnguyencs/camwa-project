@@ -116,4 +116,58 @@ courseRouter.post(
   courseController.createCoursesFromCSV
 );
 
+// Delete courses from CSV file - Endpoint with specific field name
+courseRouter.post(
+  '/delete-from-csv', 
+  verifyTokenAndRole(['ADMIN']), 
+  upload.single('file'),
+  courseController.deleteCoursesFromCSV
+);
+
+// Delete courses from CSV file - Alternative endpoint that can accept any field name
+courseRouter.post(
+  '/delete/upload-csv',
+  verifyTokenAndRole(['ADMIN']),
+  (req, res, next) => {
+    // Using multer directly with any field
+    const uploadAny = multer({ 
+      storage,
+      fileFilter,
+      limits: { fileSize: 1024 * 1024 * 5 }
+    }).any();
+    
+    uploadAny(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({ 
+          status: 'error', 
+          code: 400, 
+          message: 'File upload error', 
+          error: err.message 
+        });
+      }
+      
+      // Take the first file if any exists
+      if (req.files && req.files.length > 0) {
+        req.file = req.files[0];
+      }
+      
+      next();
+    });
+  },
+  courseController.deleteCoursesFromCSV
+);
+
+// Delete courses from a default CSV file
+courseRouter.post(
+  '/delete-from-default-csv',
+  verifyTokenAndRole(['ADMIN']),
+  (req, res, next) => {
+    // Set the default CSV file path for deletion
+    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Delete Course List.csv');
+    req.file = { path: defaultCsvPath };
+    next();
+  },
+  courseController.deleteCoursesFromCSV
+);
+
 export default courseRouter;

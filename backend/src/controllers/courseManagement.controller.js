@@ -183,6 +183,35 @@ const courseManagement = {
             console.error('Error processing CSV:', error);
             res.status(500).json(responseError(error.message, 500));
         }
+    },
+
+    // Delete courses from CSV file (Admin only)
+    deleteCoursesFromCSV: async (req, res) => {
+        try {
+            // Check if file was uploaded
+            if (!req.file) {
+                return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+            }
+
+            console.log('File uploaded for deletion:', req.file);
+            console.log('File path:', req.file.path);
+            
+            // Get the user ID from the authenticated request
+            const userId = req.user.uid;
+            
+            // Process the CSV file and delete courses
+            const results = await courseService.deleteMultipleCoursesFromCSV(req.file.path, userId);
+            
+            res.status(200).json(
+                responseSuccess(
+                    results, 
+                    `Deleted ${results.successful.length} courses successfully. ${results.failed.length} failed.`
+                )
+            );
+        } catch (error) {
+            console.error('Error processing CSV for deletion:', error);
+            res.status(500).json(responseError(error.message, 500));
+        }
     }
 };
 
