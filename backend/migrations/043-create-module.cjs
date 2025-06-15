@@ -5,7 +5,7 @@ module.exports = {
 
     await queryInterface.createTable('module', {
       module_id: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(36),
         primaryKey: true,
         allowNull: false,
       },
@@ -25,25 +25,37 @@ module.exports = {
       },
       program_id: {
         type: Sequelize.STRING(20),
+        allowNull: false,
         references: {
           model: 'program',      
           key: 'program_id'      
         },
         onUpdate: 'CASCADE',     
-        onDelete: 'SET NULL',     
+        onDelete: 'CASCADE',     
       },
       intake: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'intake',       
           key: 'year'            
         },
         onUpdate: 'CASCADE',     
-        onDelete: 'SET NULL',     
+        onDelete: 'CASCADE',     
       },
       semester_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
+        references: {
+          model: 'semester',      
+          key: 'sem_id'      
+        },
+        onUpdate: 'CASCADE',     
+        onDelete: 'CASCADE',     
+      },
+      camera_path: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
       },
     });
   },

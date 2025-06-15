@@ -6,7 +6,7 @@ import Semester from './Semester.model.js';
 import Program from './Program.model.js';
 import Lecturer from './Lecturer.model.js';
 
-const ProgramRegistration = sequelize.define('ProgramRegistration', {
+const ModuleRegistration = sequelize.define('ModuleRegistration', {
   module_reg_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -57,26 +57,26 @@ const ProgramRegistration = sequelize.define('ProgramRegistration', {
     },
   },
 }, {
-  tableName: 'program_registration',
+  tableName: 'module_registration',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
 });
 
 // Define associations
-ProgramRegistration.belongsTo(Student, { foreignKey: 'student_id' });
-Student.hasMany(ProgramRegistration, { foreignKey: 'student_id' });
+ModuleRegistration.belongsTo(Student, { foreignKey: 'student_id' });
+Student.hasMany(ModuleRegistration, { foreignKey: 'student_id' });
 
-ProgramRegistration.belongsTo(Module, { foreignKey: 'module_id' });
-Module.hasMany(ProgramRegistration, { foreignKey: 'module_id' });
+ModuleRegistration.belongsTo(Module, { foreignKey: 'module_id' });
+Module.hasMany(ModuleRegistration, { foreignKey: 'module_id' });
 
-ProgramRegistration.belongsTo(Semester, { foreignKey: 'semester_id' });
-Semester.hasMany(ProgramRegistration, { foreignKey: 'semester_id' });
+ModuleRegistration.belongsTo(Semester, { foreignKey: 'semester_id' });
+Semester.hasMany(ModuleRegistration, { foreignKey: 'semester_id' });
 
-ProgramRegistration.belongsTo(Program, { foreignKey: 'program_id' });
-Program.hasMany(ProgramRegistration, { foreignKey: 'program_id' });
+ModuleRegistration.belongsTo(Module, { foreignKey: 'program_id' });
+Module.hasMany(ModuleRegistration, { foreignKey: 'program_id' });
 
-ProgramRegistration.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
-Lecturer.hasMany(ProgramRegistration, { foreignKey: 'lecturer_id' });
+ModuleRegistration.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
+Lecturer.hasMany(ModuleRegistration, { foreignKey: 'lecturer_id' });
 
-export default ProgramRegistration;
+export default ModuleRegistration;

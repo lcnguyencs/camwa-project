@@ -1,14 +1,14 @@
-import programRegistrationService from '../services/programRegistration.service.js';
+import moduleRegistrationService from '../services/moduleRegistration.service.js';
 
-const programRegistrationController = {
-  // Create a new program registration
+const moduleRegistrationController = {
+  // Create a new module registration
   createRegistration: async (req, res) => {
     try {
       const registrationData = req.body;
-      const newRegistration = await programRegistrationService.createRegistration(registrationData);
+      const newRegistration = await moduleRegistrationService.createRegistration(registrationData);
       res.status(201).json({
         success: true,
-        message: 'Program registration created successfully',
+        message: 'Module registration created successfully',
         data: newRegistration
       });
     } catch (error) {
@@ -22,7 +22,7 @@ const programRegistrationController = {
   // Get all registrations
   getAllRegistrations: async (req, res) => {
     try {
-      const registrations = await programRegistrationService.getAllRegistrations();
+      const registrations = await moduleRegistrationService.getAllRegistrations();
       res.status(200).json({
         success: true,
         data: registrations
@@ -39,7 +39,7 @@ const programRegistrationController = {
   getRegistrationById: async (req, res) => {
     try {
       const { id } = req.params;
-      const registration = await programRegistrationService.findRegistrationById(parseInt(id, 10));
+      const registration = await moduleRegistrationService.findRegistrationById(parseInt(id, 10));
       res.status(200).json({
         success: true,
         data: registration
@@ -56,7 +56,7 @@ const programRegistrationController = {
   getRegistrationsByStudentId: async (req, res) => {
     try {
       const { student_id } = req.params;
-      const registrations = await programRegistrationService.findRegistrationsByStudentId(student_id);
+      const registrations = await moduleRegistrationService.findRegistrationsByStudentId(student_id);
       res.status(200).json({
         success: true,
         data: registrations
@@ -73,7 +73,7 @@ const programRegistrationController = {
   getRegistrationsByModuleId: async (req, res) => {
     try {
       const { module_id } = req.params;
-      const registrations = await programRegistrationService.findRegistrationsByModuleId(module_id);
+      const registrations = await moduleRegistrationService.findRegistrationsByModuleId(module_id);
       res.status(200).json({
         success: true,
         data: registrations
@@ -91,10 +91,10 @@ const programRegistrationController = {
     try {
       const { id } = req.params;
       const updatedData = req.body;
-      const updatedRegistration = await programRegistrationService.updateRegistration(parseInt(id, 10), updatedData);
+      const updatedRegistration = await moduleRegistrationService.updateRegistration(parseInt(id, 10), updatedData);
       res.status(200).json({
         success: true,
-        message: 'Program registration updated successfully',
+        message: 'Module registration updated successfully',
         data: updatedRegistration
       });
     } catch (error) {
@@ -109,7 +109,7 @@ const programRegistrationController = {
   deleteRegistration: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await programRegistrationService.deleteRegistration(parseInt(id, 10));
+      const result = await moduleRegistrationService.deleteRegistration(parseInt(id, 10));
       res.status(200).json({
         success: true,
         message: result.message
@@ -137,7 +137,7 @@ const programRegistrationController = {
       console.log('File path:', req.file.path);
       
       // Process the CSV file and create registrations
-      const results = await programRegistrationService.createRegistrationsFromCSV(req.file.path);
+      const results = await moduleRegistrationService.createRegistrationsFromCSV(req.file.path);
       
       res.status(201).json({
         success: true,
@@ -154,4 +154,4 @@ const programRegistrationController = {
   }
 };
 
-export default programRegistrationController;
+export default moduleRegistrationController;

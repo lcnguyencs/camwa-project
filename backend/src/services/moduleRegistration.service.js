@@ -1,25 +1,25 @@
-import ProgramRegistration from '../models/ProgramRegistration.model.js';
+import ModuleRegistration from '../models/ModuleRegistration.model.js';
 import Student from '../models/Student.model.js';
 import Module from '../models/Module.model.js';
 import Semester from '../models/Semester.model.js';
 import Program from '../models/Program.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 
-const programRegistrationService = {
-  // Create a new program registration
+const moduleRegistrationService = {
+  // Create a new module registration
   createRegistration: async (registrationData) => {
     try {
-      const newRegistration = await ProgramRegistration.create(registrationData);
+      const newRegistration = await ModuleRegistration.create(registrationData);
       return newRegistration;
     } catch (error) {
-      throw new Error('Error creating program registration: ' + error.message);
+      throw new Error('Error creating module registration: ' + error.message);
     }
   },
 
   // Get all registrations
   getAllRegistrations: async () => {
     try {
-      const registrations = await ProgramRegistration.findAll({
+      const registrations = await ModuleRegistration.findAll({
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
           { model: Module, attributes: ['module_id', 'name'] },
@@ -31,14 +31,14 @@ const programRegistrationService = {
       });
       return registrations;
     } catch (error) {
-      throw new Error('Error retrieving program registrations: ' + error.message);
+      throw new Error('Error retrieving module registrations: ' + error.message);
     }
   },
 
   // Find registration by ID
   findRegistrationById: async (module_reg_id) => {
     try {
-      const registration = await ProgramRegistration.findOne({
+      const registration = await ModuleRegistration.findOne({
         where: { module_reg_id },
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
@@ -50,19 +50,19 @@ const programRegistrationService = {
       });
       
       if (!registration) {
-        throw new Error('Program registration not found');
+        throw new Error('Module registration not found');
       }
       
       return registration;
     } catch (error) {
-      throw new Error('Error finding program registration: ' + error.message);
+      throw new Error('Error finding module registration: ' + error.message);
     }
   },
 
   // Find registrations by student ID
   findRegistrationsByStudentId: async (student_id) => {
     try {
-      const registrations = await ProgramRegistration.findAll({
+      const registrations = await ModuleRegistration.findAll({
         where: { student_id },
         include: [
           { model: Module, attributes: ['module_id', 'name'] }
@@ -79,7 +79,7 @@ const programRegistrationService = {
   // Find registrations by module ID
   findRegistrationsByModuleId: async (module_id) => {
     try {
-      const registrations = await ProgramRegistration.findAll({
+      const registrations = await ModuleRegistration.findAll({
         where: { module_id },
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
@@ -99,15 +99,15 @@ const programRegistrationService = {
   // Update a registration
   updateRegistration: async (module_reg_id, updatedData) => {
     try {
-      const [updated] = await ProgramRegistration.update(updatedData, {
+      const [updated] = await ModuleRegistration.update(updatedData, {
         where: { module_reg_id }
       });
       
       if (updated === 0) {
-        throw new Error('Program registration not found or no changes made');
+        throw new Error('Module registration not found or no changes made');
       }
       
-      const updatedRegistration = await ProgramRegistration.findOne({
+      const updatedRegistration = await ModuleRegistration.findOne({
         where: { module_reg_id },
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
@@ -120,27 +120,27 @@ const programRegistrationService = {
       
       return updatedRegistration;
     } catch (error) {
-      throw new Error('Error updating program registration: ' + error.message);
+      throw new Error('Error updating module registration: ' + error.message);
     }
   },
 
   // Delete a registration
   deleteRegistration: async (module_reg_id) => {
     try {
-      const deleted = await ProgramRegistration.destroy({
+      const deleted = await ModuleRegistration.destroy({
         where: { module_reg_id }
       });
       
       if (deleted === 0) {
-        throw new Error('Program registration not found');
+        throw new Error('Module registration not found');
       }
       
-      return { message: 'Program registration deleted successfully' };
+      return { message: 'Module registration deleted successfully' };
     } catch (error) {
-      throw new Error('Error deleting program registration: ' + error.message);
+      throw new Error('Error deleting module registration: ' + error.message);
     }
   },
-  // Create multiple program registrations from CSV file
+  // Create multiple module registrations from CSV file
   createRegistrationsFromCSV: async (filePath) => {
     try {
       const fs = await import('fs/promises');
@@ -202,7 +202,7 @@ const programRegistrationService = {
           };
           
           // Check if registration already exists
-          const existingRegistration = await ProgramRegistration.findOne({
+          const existingRegistration = await ModuleRegistration.findOne({
             where: {
               student_id,
               module_id,
@@ -221,7 +221,7 @@ const programRegistrationService = {
           }
           
           // Use the existing createRegistration method
-          const newRegistration = await programRegistrationService.createRegistration(registrationData);
+          const newRegistration = await moduleRegistrationService.createRegistration(registrationData);
           
           results.successful.push({
             module_reg_id: newRegistration.module_reg_id,
@@ -251,4 +251,4 @@ const programRegistrationService = {
   }
 };
 
-export default programRegistrationService;
+export default moduleRegistrationService;

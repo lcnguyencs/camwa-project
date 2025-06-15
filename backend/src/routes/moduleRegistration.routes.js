@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
-import programRegistrationController from '../controllers/programRegistration.controller.js';
+import moduleRegistrationController from '../controllers/moduleRegistration.controller.js';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -45,15 +45,15 @@ const upload = multer({
 const router = express.Router();
 
 // Admin and faculty routes
-router.post('/', verifyTokenAndRole(['ADMIN', 'FACULTY']), programRegistrationController.createRegistration);
-router.put('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), programRegistrationController.updateRegistration);
-router.delete('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), programRegistrationController.deleteRegistration);
+router.post('/', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrationController.createRegistration);
+router.put('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrationController.updateRegistration);
+router.delete('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrationController.deleteRegistration);
 
 // Routes accessible by admin, faculty, and lecturers
-router.get('/', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), programRegistrationController.getAllRegistrations);
-router.get('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), programRegistrationController.getRegistrationById);
-router.get('/student/:student_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), programRegistrationController.getRegistrationsByStudentId);
-router.get('/module/:module_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), programRegistrationController.getRegistrationsByModuleId);
+router.get('/', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getAllRegistrations);
+router.get('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationById);
+router.get('/student/:student_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByStudentId);
+router.get('/module/:module_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByModuleId);
 
 // CSV upload routes (Faculty Assistant only)
 // Standard endpoint with specific field name
@@ -61,7 +61,7 @@ router.post(
   '/create-from-csv', 
   verifyTokenAndRole(['ADMIN', 'FACULTY']), 
   upload.single('file'),
-  programRegistrationController.createRegistrationsFromCSV
+  moduleRegistrationController.createRegistrationsFromCSV
 );
 
 // Alternative endpoint that can accept any field name
@@ -93,7 +93,7 @@ router.post(
       next();
     });
   },
-  programRegistrationController.createRegistrationsFromCSV
+  moduleRegistrationController.createRegistrationsFromCSV
 );
 
 // Endpoint for using a default CSV file
@@ -106,7 +106,7 @@ router.post(
     req.file = { path: defaultCsvPath };
     next();
   },
-  programRegistrationController.createRegistrationsFromCSV
+  moduleRegistrationController.createRegistrationsFromCSV
 );
 
 export default router;

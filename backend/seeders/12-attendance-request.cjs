@@ -6,7 +6,7 @@ module.exports = {
     return queryInterface.bulkInsert('attendance_request', [
       {
         student_id: 'STU001',
-        module_id: 'MODULE001',
+        module_id: 'MOD001',
         intake_module_id: 'IM001',
         lecturer_id: 'STAFF001',
         request_date: '2023-09-14',
@@ -15,7 +15,7 @@ module.exports = {
       },
       {
         student_id: 'STU002',
-        module_id: 'MODULE002',
+        module_id: 'MOD002',
         intake_module_id: 'IM002',
         lecturer_id: 'STAFF002',
         request_date: '2023-09-15',

@@ -30,7 +30,11 @@ const Module = sequelize.define('Module', {
     type: DataTypes.STRING(36),
     allowNull: false,
     references: { model: 'Semester', key: 'sem_id' },
-  }
+  },
+   camera_path: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+  },  
 }, {
   timestamps: false,  // Disable createdAt and updatedAt fields
   tableName: 'module'  // Table name in the database
