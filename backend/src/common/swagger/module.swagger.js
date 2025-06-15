@@ -1,11 +1,11 @@
-const course = {
-    "/course/create": {
+const module = {
+    "/module/create": {
       post: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
-        summary: "Create a new course (Admin only)",
+        tags: ["Module"],
+        summary: "Create a new module (Admin only)",
         responses: {
-          200: { description: "Course created successfully" },
+          200: { description: "Module created successfully" },
           401: { description: "Unauthorized" },
         },
         requestBody: {
@@ -14,10 +14,10 @@ const course = {
               schema: {
                 type: "object",
                 properties: {
-                  courseName: { type: "string", description: "Name of the course" },
-                  description: { type: "string", description: "Description of the course" },
+                  moduleName: { type: "string", description: "Name of the module" },
+                  description: { type: "string", description: "Description of the module" },
                 },
-                required: ["courseName"],
+                required: ["moduleName"],
               },
             },
           },
@@ -25,22 +25,22 @@ const course = {
       },
     },
   
-    "/course/{courseId}": {
+    "/module/{moduleId}": {
       put: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
-        summary: "Update a course (Admin/Faculty Assistant)",
+        tags: ["Module"],
+        summary: "Update a module (Admin/Faculty Assistant)",
         parameters: [
           {
-            name: "courseId",
+            name: "moduleId",
             in: "path",
             required: true,
             schema: { type: "string" },
-            description: "ID of the course to update",
+            description: "ID of the module to update",
           },
         ],
         responses: {
-          200: { description: "Course updated successfully" },
+          200: { description: "Module updated successfully" },
           401: { description: "Unauthorized" },
         },
         requestBody: {
@@ -49,8 +49,8 @@ const course = {
               schema: {
                 type: "object",
                 properties: {
-                  courseName: { type: "string", description: "Updated name of the course" },
-                  description: { type: "string", description: "Updated description of the course" },
+                  moduleName: { type: "string", description: "Updated name of the module" },
+                  description: { type: "string", description: "Updated description of the module" },
                 },
               },
             },
@@ -59,28 +59,28 @@ const course = {
       },
       delete: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
-        summary: "Delete a course (Admin only)",
+        tags: ["Module"],
+        summary: "Delete a module (Admin only)",
         parameters: [
           {
-            name: "courseId",
+            name: "moduleId",
             in: "path",
             required: true,
             schema: { type: "string" },
-            description: "ID of the course to delete",
+            description: "ID of the module to delete",
           },
         ],
         responses: {
-          200: { description: "Course deleted successfully" },
+          200: { description: "Module deleted successfully" },
           401: { description: "Unauthorized" },
         },
       },
     },
   
-    "/course/{intakeModuleId}/assign-lecturer": {
+    "/module/{intakeModuleId}/assign-lecturer": {
       put: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
+        tags: ["Module"],
         summary: "Assign a lecturer to an intake module (Faculty Assistant only)",
         parameters: [
           {
@@ -111,10 +111,10 @@ const course = {
       },
     },
   
-    "/course/{intakeModuleId}/assign-students": {
+    "/module/{intakeModuleId}/assign-students": {
       put: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
+        tags: ["Module"],
         summary: "Assign students to an intake module (Faculty Assistant only)",
         parameters: [
           {
@@ -149,10 +149,10 @@ const course = {
       },
     },
   
-    "/course/{intakeModuleId}/classes": {
+    "/module/{intakeModuleId}/classes": {
       post: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
+        tags: ["Module"],
         summary: "Create classes for an intake module (Faculty Assistant only)",
         parameters: [
           {
@@ -192,10 +192,10 @@ const course = {
       },
     },
   
-    "/course/{intakeModuleId}/export-report": {
+    "/module/{intakeModuleId}/export-report": {
       get: {
         security: [{ BearerAuth: [] }],
-        tags: ["Course"],
+        tags: ["Module"],
         summary: "Export report for an intake module (Faculty Assistant only)",
         parameters: [
           {
@@ -214,5 +214,4 @@ const course = {
     },
   };
   
-  export default course;
-  
+  export default module;

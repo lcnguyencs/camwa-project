@@ -1,11 +1,11 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
-const Course = sequelize.define('Course', {
-  course_id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+const Module = sequelize.define('Module', {
+  module_id: {
+    type: DataTypes.STRING(36),
     primaryKey: true,
+    allowNull: false,
   },
   name: {
     type: DataTypes.STRING(50),
@@ -33,7 +33,7 @@ const Course = sequelize.define('Course', {
   }
 }, {
   timestamps: false,  // Disable createdAt and updatedAt fields
-  tableName: 'course'  // Table name in the database
+  tableName: 'module'  // Table name in the database
 });
 
-export default Course;
+export default Module;

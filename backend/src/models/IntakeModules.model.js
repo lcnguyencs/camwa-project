@@ -3,6 +3,7 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 import Program from './Program.model.js';
 import Semester from './Semester.model.js';
 import Lecturer from './Lecturer.model.js';
+import Module from './Module.model.js';
 
 const IntakeModule = sequelize.define('IntakeModule', {
   intake_module_id: {
@@ -30,11 +31,11 @@ const IntakeModule = sequelize.define('IntakeModule', {
     type: DataTypes.STRING(20),
     references: { model: 'Lecturer', key: 'lecturer_id' },
     allowNull: false,
-  },
-  // Reference to the course this intake module belongs to
-  course_id: {
-    type: DataTypes.INTEGER,
-    references: { model: 'Course', key: 'course_id' },
+  },  
+  // Reference to the module this intake module belongs to
+  module_id: {
+    type: DataTypes.STRING(20),
+    references: { model: 'Module', key: 'module_id' },
     allowNull: false,
   },
   // Reference to the intake year for this module
@@ -47,7 +48,7 @@ const IntakeModule = sequelize.define('IntakeModule', {
     type: DataTypes.STRING(36),
     references: { model: 'Semester', key: 'sem_id' },
     allowNull: false,
-  },
+  }
 }, {
   tableName: 'intake_module',
   timestamps: false,
@@ -67,6 +68,11 @@ IntakeModule.belongsTo(Semester, {
 IntakeModule.belongsTo(Lecturer, {
   foreignKey: 'lecturer_id',
   targetKey: 'lecturer_id'
+});
+
+IntakeModule.belongsTo(Module, {
+  foreignKey: 'module_id',
+  targetKey: 'module_id'
 });
 
 export default IntakeModule;

@@ -31,10 +31,9 @@ const Notification = sequelize.define('Notification', {
     validate: {
       isIn: [['unread', 'read']], 
     },
-  },
-  module_id: {
-    type: DataTypes.STRING(36),
-    references: { model: 'IntakeModules', key: 'intake_module_id' },
+  },  module_id: {
+    type: DataTypes.STRING(20),
+    references: { model: 'Module', key: 'module_id' },
   },
   priority: {
     type: DataTypes.INTEGER,

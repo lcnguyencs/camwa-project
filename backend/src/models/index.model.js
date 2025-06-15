@@ -12,7 +12,7 @@ import Iam from './Iam.model.js';
 import Notification from './Notification.model.js';
 import AttendanceRequest from './AttendanceRequest.model.js';
 import ExamTaking from './ExamTaking.model.js';
-import Course from './Course.model.js';
+import Module from './Module.model.js';
 
 // Define Associations
 
@@ -24,13 +24,13 @@ Student.belongsTo(Program, { foreignKey: 'program_id' });
 Intake.hasMany(Student, { foreignKey: 'intake' });
 Student.belongsTo(Intake, { foreignKey: 'intake' });
 
-// 3. Program and Course Relationship (A Program has many Courses)
-Program.hasMany(Course, { foreignKey: 'program_id' });
-Course.belongsTo(Program, { foreignKey: 'program_id' });
+// 3. Program and Module Relationship (A Program has many Modules)
+Program.hasMany(Module, { foreignKey: 'program_id' });
+Module.belongsTo(Program, { foreignKey: 'program_id' });
 
-// 4. Course and IntakeModule Relationship (A Course has many IntakeModules)
-Course.hasMany(IntakeModule, { foreignKey: 'course_id' });
-IntakeModule.belongsTo(Course, { foreignKey: 'course_id' });
+// 4. Module and IntakeModule Relationship (A Module has many IntakeModules)
+Module.hasMany(IntakeModule, { foreignKey: 'module_id' });
+IntakeModule.belongsTo(Module, { foreignKey: 'module_id' });
 
 // 5. Intake and IntakeModule Relationship (An Intake has many IntakeModules)
 Intake.hasMany(IntakeModule, { foreignKey: 'intake_id' });
@@ -139,5 +139,5 @@ export {
   Notification,
   AttendanceRequest,
   ExamTaking,
-  Course,
+  Module,
 };

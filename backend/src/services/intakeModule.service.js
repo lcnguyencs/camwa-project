@@ -119,14 +119,13 @@ const intakeModuleService = {
 
   createIntakeModule: async (moduleData) => {
     try {
-      const newModule = await IntakeModule.create({
-        intake_module_id: moduleData.moduleId,
+      const newModule = await IntakeModule.create({        intake_module_id: moduleData.moduleId,
         name: moduleData.name,
         capacity: moduleData.capacity,
         ects: moduleData.ects,
         lecturer_id: moduleData.lecturerId,
         program_id: moduleData.programId,
-        course_id: moduleData.courseId,
+        module_id: moduleData.moduleId,
         intake: moduleData.intake,
         semester_id: moduleData.semesterId
       });
@@ -155,13 +154,12 @@ const intakeModuleService = {
   
   updateIntakeModule: async (moduleId, moduleData) => {
     try {
-      const [updated] = await IntakeModule.update({
-        name: moduleData.name,
+      const [updated] = await IntakeModule.update({        name: moduleData.name,
         capacity: moduleData.capacity,
         ects: moduleData.ects,
         lecturer_id: moduleData.lecturerId,
         program_id: moduleData.programId,
-        course_id: moduleData.courseId,
+        module_id: moduleData.moduleId,
         intake: moduleData.intake,
         semester_id: moduleData.semesterId
       }, {

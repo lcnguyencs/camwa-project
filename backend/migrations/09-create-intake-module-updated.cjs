@@ -2,7 +2,8 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
+    // Create a modified version of 09-create-intake-module.cjs
+    // that uses module_id instead of course_id
     await queryInterface.createTable('intake_module', {
       intake_module_id: {
         type: Sequelize.STRING(36),
@@ -19,7 +20,8 @@ module.exports = {
       ects: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },      lecturer_id: {
+      },
+      lecturer_id: {
         type: Sequelize.STRING(20),
         allowNull: false,
         references: {
@@ -38,13 +40,12 @@ module.exports = {
         },
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE', 
-      },
-      course_id: {
-        type: Sequelize.INTEGER,
+      },      module_id: {
+        type: Sequelize.STRING(20),
         allowNull: false,
         references: {
-          model: 'course',     
-          key: 'course_id'     
+          model: 'module',     
+          key: 'module_id'     
         },
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE', 

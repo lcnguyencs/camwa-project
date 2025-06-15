@@ -34,14 +34,14 @@ module.exports = {
       },
       {
         iam_id: 'STU001',
-        username: 'student1',
+        username: 'STU001',
         email: 'student1@example.com',
         password: hashedStudentPassword,
         role: 'STUDENT'
       },
       {
         iam_id: 'STU002',
-        username: 'student2',
+        username: 'STU002',
         email: 'student2@example.com',
         password: hashedStudentPassword,
         role: 'STUDENT'

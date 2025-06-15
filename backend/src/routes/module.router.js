@@ -1,5 +1,5 @@
 import express from 'express';
-import courseController from '../controllers/courseManagement.controller.js';
+import moduleController from '../controllers/moduleManagement.controller.js';
 import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 import multer from 'multer';
 import path from 'path';
@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'course-' + uniqueSuffix + path.extname(file.originalname));
+    cb(null, 'module-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
@@ -42,36 +42,36 @@ const upload = multer({
   limits: { fileSize: 1024 * 1024 * 5 } // 5MB max file size
 });
 
-const courseRouter = express.Router();
+const moduleRouter = express.Router();
 
-// Create a course (Admin only)
-courseRouter.post('/create', verifyTokenAndRole(['ADMIN']), courseController.createCourse); 
+// Create a module (Admin only)
+moduleRouter.post('/create', verifyTokenAndRole(['ADMIN']), moduleController.createModule); 
 
-// Update and delete courses (Admin/Faculty Assistant)
-courseRouter.put('/update/:courseId', verifyTokenAndRole(['ADMIN']),  courseController.updateCourse); 
-courseRouter.delete('/delete/:courseId', verifyTokenAndRole(['ADMIN']),  courseController.deleteCourse); 
+// Update and delete modules (Admin/Faculty Assistant)
+moduleRouter.put('/update/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.updateModule); 
+moduleRouter.delete('/delete/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.deleteModule); 
 
 // Assign lecturers and students to intake modules (Faculty Assistant only)
-courseRouter.put('/:intakeModuleId/assign-lecturer', verifyTokenAndRole(['ADMIN', 'FACULTY']), courseController.assignLecturerToIntakeModule); 
-courseRouter.put('/:intakeModuleId/assign-students', verifyTokenAndRole(['ADMIN', 'FACULTY']), courseController.assignStudentsToIntakeModule); 
+moduleRouter.put('/:intakeModuleId/assign-lecturer', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.assignLecturerToIntakeModule); 
+moduleRouter.put('/:intakeModuleId/assign-students', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.assignStudentsToIntakeModule); 
 
 // Create classes for intake modules (Faculty Assistant only)
-courseRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['ADMIN', 'FACULTY']), courseController.createClassesForIntakeModule); 
+moduleRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.createClassesForIntakeModule); 
 
 // Export Intake Module Report (Faculty Assistant only)
-courseRouter.get('/:intakeModuleId/export-report', verifyTokenAndRole(['ADMIN', 'FACULTY']), courseController.exportIntakeModuleReport);
+moduleRouter.get('/:intakeModuleId/export-report', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.exportIntakeModuleReport);
 
 // New routes for CSV upload
 // Endpoint with specific field name
-courseRouter.post(
+moduleRouter.post(
   '/create-from-csv', 
   verifyTokenAndRole(['ADMIN']), 
   upload.single('file'),
-  courseController.createCoursesFromCSV
+  moduleController.createModulesFromCSV
 );
 
 // Alternative endpoint that can accept any field name
-courseRouter.post(
+moduleRouter.post(
   '/upload-csv',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
@@ -100,32 +100,32 @@ courseRouter.post(
       next();
     });
   },
-  courseController.createCoursesFromCSV
+  moduleController.createModulesFromCSV
 );
 
 // Endpoint for using a default CSV file
-courseRouter.post(
+moduleRouter.post(
   '/create-from-default-csv',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
     // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Create Course List.csv');
+    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Create Module List.csv');
     req.file = { path: defaultCsvPath };
     next();
   },
-  courseController.createCoursesFromCSV
+  moduleController.createModulesFromCSV
 );
 
-// Delete courses from CSV file - Endpoint with specific field name
-courseRouter.post(
+// Delete modules from CSV file - Endpoint with specific field name
+moduleRouter.post(
   '/delete-from-csv', 
   verifyTokenAndRole(['ADMIN']), 
   upload.single('file'),
-  courseController.deleteCoursesFromCSV
+  moduleController.deleteModulesFromCSV
 );
 
-// Delete courses from CSV file - Alternative endpoint that can accept any field name
-courseRouter.post(
+// Delete modules from CSV file - Alternative endpoint that can accept any field name
+moduleRouter.post(
   '/delete/upload-csv',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
@@ -154,20 +154,20 @@ courseRouter.post(
       next();
     });
   },
-  courseController.deleteCoursesFromCSV
+  moduleController.deleteModulesFromCSV
 );
 
-// Delete courses from a default CSV file
-courseRouter.post(
+// Delete modules from a default CSV file
+moduleRouter.post(
   '/delete-from-default-csv',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
     // Set the default CSV file path for deletion
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Delete Course List.csv');
+    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Delete Module List.csv');
     req.file = { path: defaultCsvPath };
     next();
   },
-  courseController.deleteCoursesFromCSV
+  moduleController.deleteModulesFromCSV
 );
 
-export default courseRouter;
+export default moduleRouter;

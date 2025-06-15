@@ -1,4 +1,4 @@
-import Course from '../models/Course.model.js';
+import Module from '../models/Module.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
 import IntakeModule from '../models/IntakeModules.model.js';
@@ -8,29 +8,29 @@ import auditLogService from '../services/auditLogService.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 import StudentIntakeModule from '../models/StudentIntakeModule.model.js';
 
-const courseService = {
-    // Create a new course (Admin only)
-    createCourse: async (courseData, userId) => {
-        const course = await Course.create(courseData);
-        await auditLogService.logAction(userId, 'createCourse', course);
-        return course;
+const moduleService = {
+    // Create a new module (Admin only)
+    createModule: async (moduleData, userId) => {
+        const module = await Module.create(moduleData);
+        await auditLogService.logAction(userId, 'createModule', module);
+        return module;
     },
 
-    // View all courses (Admin/Faculty Assistant)
-    viewCourses: async () => {
-        return await Course.findAll();
+    // View all modules (Admin/Faculty Assistant)
+    viewModules: async () => {
+        return await Module.findAll();
     },
 
-    // View courses by lecturer (Lecturer)
-    viewCoursesByLecturer: async (lecturerId) => {
+    // View modules by lecturer (Lecturer)
+    viewModulesByLecturer: async (lecturerId) => {
         return await IntakeModule.findAll({
             where: { lecturer_id: lecturerId },
-            include: [Course]
+            include: [Module]
         });
     },
 
     // View intake modules by student (Student)
-    viewCoursesForStudent: async (studentId) => {
+    viewModulesForStudent: async (studentId) => {
         return await IntakeModule.findAll({
             include: [{
                 model: Student,
@@ -60,7 +60,7 @@ const courseService = {
         // Send email notification to lecturer
         // await sendMail({
         //     to: lecturerEmail,  
-        //     subject: 'You Have Been Assigned to a New Course',
+        //     subject: 'You Have Been Assigned to a New Module',
         //     text: `You have been assigned to module ${intakeModuleId}.`,
         //     html: `<p>You have been assigned to module <b>${intakeModuleId}</b>.</p>`
         // });
@@ -95,7 +95,7 @@ const courseService = {
         // Send email notification to students
         // await sendMail({
         //     to: students.map(student => student.email),  // Send email to the students' actual emails
-        //     subject: 'You Have Been Enrolled in a New Course',
+        //     subject: 'You Have Been Enrolled in a New Module',
         //     text: `You have been enrolled in module ${intakeModuleId}.`,
         //     html: `<p>You have been enrolled in module <b>${intakeModuleId}</b>.</p>`
         // });
@@ -103,18 +103,18 @@ const courseService = {
         return intakeModule;
     },
 
-    checkCourseExists: async (courseName, lecturerId) => {
+    checkModuleExists: async (moduleName, lecturerId) => {
     try {
-        const existingCourse = await Course.findOne({
+        const existingModule = await Module.findOne({
             where: {
-                name: courseName,
+                name: moduleName,
                 lecturer_id: lecturerId
             }
         });
         
-        return !!existingCourse; // Returns true if course exists, false otherwise
+        return !!existingModule; // Returns true if module exists, false otherwise
     } catch (error) {
-        console.error("Error checking course existence:", error);
+        console.error("Error checking module existence:", error);
         throw error;
         }
     },
@@ -180,28 +180,28 @@ const courseService = {
     },
 
 
-    // Update a course by course_id (Admin/Faculty Assistant)
-    updateCourse: async (courseId, updatedData, userId) => {
-        const [affectedCount] = await Course.update(updatedData, { where: { course_id: courseId } });  // Update course in the database
+    // Update a module by module_id (Admin/Faculty Assistant)
+    updateModule: async (moduleId, updatedData, userId) => {
+        const [affectedCount] = await Module.update(updatedData, { where: { module_id: moduleId } });  // Update module in the database
         if (affectedCount === 0) {
-            throw new Error('Course not found or no changes made');  // Handle case where course was not found or no changes were made
+            throw new Error('Module not found or no changes made');  // Handle case where module was not found or no changes were made
         }
-        await auditLogService.logAction(userId, 'updateCourse', { courseId, updatedData });  // Log the update action with userId
-        return await Course.findByPk(courseId);  // Return the updated course object
+        await auditLogService.logAction(userId, 'updateModule', { moduleId, updatedData });  // Log the update action with userId
+        return await Module.findByPk(moduleId);  // Return the updated module object
     },
 
-    // Delete a course by course_id (Admin only)
-    deleteCourse: async (courseId, userId) => {
-        const affectedRows = await Course.destroy({ where: { course_id: courseId } });  // Delete course from the database
+    // Delete a module by module_id (Admin only)
+    deleteModule: async (moduleId, userId) => {
+        const affectedRows = await Module.destroy({ where: { module_id: moduleId } });  // Delete module from the database
         if (affectedRows === 0) {
-            throw new Error('Course not found');  // Handle case where course was not found
+            throw new Error('Module not found');  // Handle case where module was not found
         }
-        await auditLogService.logAction(userId, 'deleteCourse', { courseId });  // Log the deletion action with userId
-        return { message: 'Course successfully deleted' };  // Return success message
+        await auditLogService.logAction(userId, 'deleteModule', { moduleId });  // Log the deletion action with userId
+        return { message: 'Module successfully deleted' };  // Return success message
     },
 
-    // Create multiple courses from CSV file (Admin only)
-    createMultipleCoursesFromCSV: async (filePath, userId) => {
+    // Create multiple modules from CSV file (Admin only)
+    createMultipleModulesFromCSV: async (filePath, userId) => {
         try {
             const fs = await import('fs/promises');
             
@@ -232,32 +232,35 @@ const courseService = {
             // Skip the header row and process each row
             for (let i = 2; i <= worksheet.rowCount; i++) {
                 const row = worksheet.getRow(i);
-                const name = row.getCell(1).value?.toString();
-                const lecturerId = row.getCell(2).value?.toString();
-                const programId = row.getCell(3).value?.toString();
-                const intake = row.getCell(4).value?.toString();
-                const semesterId = row.getCell(5).value?.toString();
+                const moduleId = row.getCell(1).value?.toString();
+                const name = row.getCell(2).value?.toString();
+                const lecturerId = row.getCell(3).value?.toString();
+                const programId = row.getCell(4).value?.toString();
+                const intake = row.getCell(5).value?.toString();
+                const semesterId = row.getCell(6).value?.toString();
                 
                 // Skip empty rows or rows with missing required fields
-                if (!name || !lecturerId || !programId || !intake || !semesterId) {
+                if (!moduleId || !name || !lecturerId || !programId || !intake || !semesterId) {
                     console.log(`Skipping row ${i} due to missing required fields`);
                     continue;
                 }
                 
                 try {
-                    // Check if course with same name and lecturer already exists
-                    const courseExists = await courseService.checkCourseExists(name, lecturerId);
-                    if (courseExists) {
+                    // Check if module with same name and lecturer already exists
+                    const moduleExists = await moduleService.checkModuleExists(name, lecturerId);
+                    if (moduleExists) {
                         results.failed.push({
+                            moduleId,
                             name,
                             lecturerId,
-                            error: 'Course with this name and lecturer already exists'
+                            error: 'Module with this name and lecturer already exists'
                         });
                         continue;
                     }
                     
-                    // Create course record
-                    const courseData = {
+                    // Create module record
+                    const moduleData = {
+                        module_id: moduleId,
                         name: name,
                         lecturer_id: lecturerId,
                         program_id: programId,
@@ -265,20 +268,21 @@ const courseService = {
                         semester_id: semesterId
                     };
                     
-                    // Use the existing createCourse method
-                    const newCourse = await courseService.createCourse(courseData, userId);
+                    // Use the existing createModule method
+                    const newModule = await moduleService.createModule(moduleData, userId);
                     
                     results.successful.push({
-                        courseId: newCourse.course_id,
-                        name: newCourse.name,
-                        lecturerId: newCourse.lecturer_id,
-                        programId: newCourse.program_id,
-                        intake: newCourse.intake,
-                        semesterId: newCourse.semester_id
+                        moduleId: newModule.module_id,
+                        name: newModule.name,
+                        lecturerId: newModule.lecturer_id,
+                        programId: newModule.program_id,
+                        intake: newModule.intake,
+                        semesterId: newModule.semester_id
                     });
                 } catch (error) {
-                    console.error(`Error creating course at row ${i}:`, error);
+                    console.error(`Error creating module at row ${i}:`, error);
                     results.failed.push({
+                        moduleId,
                         name,
                         lecturerId,
                         error: error.message
@@ -289,7 +293,7 @@ const courseService = {
             // Log the bulk creation action
             await auditLogService.logAction(
                 userId, 
-                'bulkCreateCourses', 
+                'bulkCreateModules', 
                 { 
                     successCount: results.successful.length, 
                     failCount: results.failed.length 
@@ -298,13 +302,13 @@ const courseService = {
             
             return results;
         } catch (error) {
-            console.error('Error creating courses from CSV:', error);
-            throw new Error('Error creating courses from CSV: ' + error.message);
+            console.error('Error creating modules from CSV:', error);
+            throw new Error('Error creating modules from CSV: ' + error.message);
         }
     },
 
-    // Delete multiple courses from CSV file (Admin only)
-    deleteMultipleCoursesFromCSV: async (filePath, userId) => {
+    // Delete multiple modules from CSV file (Admin only)
+    deleteMultipleModulesFromCSV: async (filePath, userId) => {
         try {
             const fs = await import('fs/promises');
             
@@ -348,7 +352,7 @@ const courseService = {
                 }
                 
                 try {
-                    // Find courses that match the criteria
+                    // Find modules that match the criteria
                     const whereClause = {
                         name: name,
                         lecturer_id: lecturerId
@@ -359,44 +363,44 @@ const courseService = {
                     if (intake) whereClause.intake = parseInt(intake);
                     if (semesterId) whereClause.semester_id = semesterId;
                     
-                    // Find courses to delete first (to include in results)
-                    const coursesToDelete = await Course.findAll({ where: whereClause });
+                    // Find modules to delete first (to include in results)
+                    const modulesToDelete = await Module.findAll({ where: whereClause });
                     
-                    if (coursesToDelete.length === 0) {
+                    if (modulesToDelete.length === 0) {
                         results.failed.push({
                             name,
                             lecturerId,
                             programId,
                             intake,
                             semesterId,
-                            error: 'No matching courses found'
+                            error: 'No matching modules found'
                         });
                         continue;
                     }
                     
-                    // Delete the courses
-                    const deleteCount = await Course.destroy({ where: whereClause });
+                    // Delete the modules
+                    const deleteCount = await Module.destroy({ where: whereClause });
                     
                     // Record successful deletions
-                    coursesToDelete.forEach(course => {
+                    modulesToDelete.forEach(module => {
                         results.successful.push({
-                            courseId: course.course_id,
-                            name: course.name,
-                            lecturerId: course.lecturer_id,
-                            programId: course.program_id,
-                            intake: course.intake,
-                            semesterId: course.semester_id
+                            moduleId: module.module_id,
+                            name: module.name,
+                            lecturerId: module.lecturer_id,
+                            programId: module.program_id,
+                            intake: module.intake,
+                            semesterId: module.semester_id
                         });
                     });
                     
                     // Log each deletion
-                    await auditLogService.logAction(userId, 'deleteCourseFromCSV', { 
+                    await auditLogService.logAction(userId, 'deleteModuleFromCSV', { 
                         criteria: whereClause, 
                         count: deleteCount 
                     });
                     
                 } catch (error) {
-                    console.error(`Error deleting course at row ${i}:`, error);
+                    console.error(`Error deleting module at row ${i}:`, error);
                     results.failed.push({
                         name,
                         lecturerId,
@@ -411,7 +415,7 @@ const courseService = {
             // Log the bulk deletion action
             await auditLogService.logAction(
                 userId, 
-                'bulkDeleteCourses', 
+                'bulkDeleteModules', 
                 { 
                     successCount: results.successful.length, 
                     failCount: results.failed.length 
@@ -420,10 +424,10 @@ const courseService = {
             
             return results;
         } catch (error) {
-            console.error('Error deleting courses from CSV:', error);
-            throw new Error('Error deleting courses from CSV: ' + error.message);
+            console.error('Error deleting modules from CSV:', error);
+            throw new Error('Error deleting modules from CSV: ' + error.message);
         }
     }
 };
 
-export default courseService;
+export default moduleService;

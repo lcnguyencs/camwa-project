@@ -1,7 +1,7 @@
 import Program from '../models/Program.model.js'; 
 import Student from '../models/Student.model.js';
 import Lecturer from '../models/Lecturer.model.js';
-import Course from '../models/Course.model.js';
+import Module from '../models/Module.model.js';
 import ProgramRegistering from '../models/ProgramRegistering.model.js';
 
 const programService = {
@@ -105,52 +105,52 @@ const programService = {
     }
   },
 
-  // Assign a course to a program
-  assignCourseToProgram: async (program_id, course_id) => {
+  // Assign a module to a program
+  assignModuleToProgram: async (program_id, module_id) => {
     try {
       const program = await Program.findByPk(program_id);
-      const course = await Course.findByPk(course_id);
-      if (!program || !course) {
-        throw new Error('Program or Course not found');
+      const module = await Module.findByPk(module_id);
+      if (!program || !module) {
+        throw new Error('Program or Module not found');
       }
   
-      // Check if course already exists in this program
-      const existingCourse = await Course.findOne({
+      // Check if module already exists in this program
+      const existingModule = await Module.findOne({
         where: {
-          name: course.name,
+          name: module.name,
           program_id: program_id
         }
       });
   
-      if (existingCourse) {
-        throw new Error('This course is already assigned to the program');
+      if (existingModule) {
+        throw new Error('This module is already assigned to the program');
       }
       
-      // Create new course entry excluding course_id
-      const { course_id: id, ...courseData } = course.dataValues;
-      const newCourse = await Course.create({
-        ...courseData,
+      // Create new module entry excluding module_id
+      const { module_id: id, ...moduleData } = module.dataValues;
+      const newModule = await Module.create({
+        ...moduleData,
         program_id: program_id
       });
       
-      return { message: 'Course assigned to program successfully' };
+      return { message: 'Module assigned to program successfully' };
     } catch (error) {
-      throw new Error('Error assigning course to program: ' + error.message);
+      throw new Error('Error assigning module to program: ' + error.message);
     }
   },
   
-// View courses in a program
-viewCoursesInProgram: async (program_id) => {
+// View modules in a program
+viewModulesInProgram: async (program_id) => {
   try {
-    const courses = await Course.findAll({
+    const modules = await Module.findAll({
       where: { program_id: program_id }
     });
-    if (!courses) {
-      throw new Error('No courses found in this program');
+    if (!modules) {
+      throw new Error('No modules found in this program');
     }
-    return courses;
+    return modules;
   } catch (error) {
-    throw new Error('Error retrieving courses in program: ' + error.message);
+    throw new Error('Error retrieving modules in program: ' + error.message);
   }
 },
 

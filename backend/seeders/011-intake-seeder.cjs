@@ -2,13 +2,12 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('intake', null, {});
-    return queryInterface.bulkInsert('intake', [
+    await queryInterface.bulkDelete('intake', null, {});    return queryInterface.bulkInsert('intake', [
       {
-        year: '2023'
+        year: 2023
       },
       {
-        year: '2024'
+        year: 2024
       }
     ]);
   },

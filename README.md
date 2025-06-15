@@ -1,7 +1,7 @@
 # CAMWA – Class Attendance Management Web Application
 
 ## Overview
-CAMWA is a web-based system designed for efficiently managing class attendance. It allows lecturers to track attendance, students to view their attendance records, and admins to manage courses, programs, and users seamlessly. The system utilizes:
+CAMWA is a web-based system designed for efficiently managing class attendance. It allows lecturers to track attendance, students to view their attendance records, and admins to manage modules, programs, and users seamlessly. The system utilizes:
 
 - **Frontend**: Angular-based single-page application (SPA).
 - **Backend**: Node.js with Express and PostgreSQL.

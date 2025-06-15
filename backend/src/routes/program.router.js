@@ -11,8 +11,8 @@ programRouter.delete('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), pr
 programRouter.put('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.updateProgram);
 programRouter.post('/:program_id/students/:student_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignStudentToProgram);
 programRouter.post('/:program_id/lecturers/:lecturer_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignLecturerToProgram);
-programRouter.post('/:program_id/courses/:course_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignCourseToProgram);
-programRouter.get('/:program_id/courses',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.viewCoursesInProgram);
+programRouter.post('/:program_id/modules/:module_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignModuleToProgram);
+programRouter.get('/:program_id/modules',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.viewModulesInProgram);
 programRouter.get('/:program_id/lecturers',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.viewLecturersInProgram);
 programRouter.get('/:program_id/students',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.viewStudentsInProgram);
 

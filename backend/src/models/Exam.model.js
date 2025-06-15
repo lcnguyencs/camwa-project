@@ -1,10 +1,9 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
-const Exam = sequelize.define('Exam', {
-  module_id: {
-    type: DataTypes.STRING(36),
-    references: { model: 'IntakeModule', key: 'intake_module_id' },
+const Exam = sequelize.define('Exam', {  module_id: {
+    type: DataTypes.STRING(20),
+    references: { model: 'Module', key: 'module_id' },
     allowNull: false,
   },
   exam_date: {

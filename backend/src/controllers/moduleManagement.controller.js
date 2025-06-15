@@ -1,48 +1,50 @@
-import courseService from "../services/course.service.js";
-import { responseError, responseSuccess } from "../common/helpers/response.helper.js";
+import moduleService from '../services/module.service.js';
+import { responseSuccess, responseError } from '../common/helpers/response.helper.js';
 import ExcelJS from 'exceljs';
 
-const courseManagement = {
-    // Create Course (Admin only)
-    createCourse: async (req, res, next) => {
+const moduleManagement = {
+    // Create Module (Admin only)
+    createModule: async (req, res, next) => {
         try {
-            const courseData = req.body;
+            const moduleData = req.body;
             const userId = req.user.uid;
-            const courseExists = await courseService.checkCourseExists(
-                courseData.name, 
-                courseData.lecturer_id
+            const moduleExists = await moduleService.checkModuleExists(
+                moduleData.name, 
+                moduleData.lecturer_id
             );
             
-            if (courseExists) {
-                throw new Error("Course already exists with the same course ID and lecturer");
+            if (moduleExists) {
+                throw new Error('Module already exists with this name and lecturer');
             }
-            const result = await courseService.createCourse(courseData, userId);
-            const resData = responseSuccess(result, 'Course created successfully');
+            const result = await moduleService.createModule(moduleData, userId);
+            const resData = responseSuccess(result, 'Module created successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            console.error("Failed to create course:", error);
-            const resError = responseError(error, 'Failed to create course');
+            console.error("Failed to create module:", error);
+            const resError = responseError(error, 'Failed to create module');
             res.status(resError.code).json(resError);
         }
     },
 
-    // View Courses (List all courses, for Admin/Faculty Assistant)
-    viewCourses: async (req, res, next) => {
+    // View Modules (List all modules, for Admin/Faculty Assistant)
+    viewModules: async (req, res, next) => {
         try {
-            const result = await courseService.viewCourses();
-            const resData = responseSuccess(result, 'Courses retrieved successfully');
+            const result = await moduleService.viewModules();
+            const resData = responseSuccess(result, 'Modules retrieved successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Assign Lecturer to Intake Module (Faculty Assistant only)
+    },    
+
+    // Assign Lecturer to Intake Module (Faculty Assistant only)
     assignLecturerToIntakeModule: async (req, res, next) => {
         try {
             const intakeModuleId = req.params.intakeModuleId;
             const lecturerId = req.body.lecturerId;
             const userId = req.user.uid;
-            const result = await courseService.assignLecturerToIntakeModule(intakeModuleId, lecturerId, userId);
+            const result = await moduleService.assignLecturerToIntakeModule(intakeModuleId, lecturerId, userId);
             const resData = responseSuccess(result, 'Lecturer assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
@@ -58,7 +60,7 @@ const courseManagement = {
             const intakeModuleId = req.params.intakeModuleId;
             const studentIds = req.body.studentIds;
             const userId = req.user.uid;
-            const result = await courseService.assignStudentsToIntakeModule(intakeModuleId, studentIds, userId);
+            const result = await moduleService.assignStudentsToIntakeModule(intakeModuleId, studentIds, userId);
             const resData = responseSuccess(result, 'Students assigned to intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
@@ -66,12 +68,14 @@ const courseManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Create Classes for Intake Module (Faculty Assistant)
+    },    
+
+    // Create Classes for Intake Module (Faculty Assistant)
     createClassesForIntakeModule: async (req, res, next) => {
         try {
             const intakeModuleId = req.params.intakeModuleId;
             const userId = req.user.uid;
-            const result = await courseService.createClassesForIntakeModule(intakeModuleId, userId);
+            const result = await moduleService.createClassesForIntakeModule(intakeModuleId, userId);
             const resData = responseSuccess(result, 'Classes created for intake module successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
@@ -85,7 +89,7 @@ const courseManagement = {
     exportIntakeModuleReport: async (req, res, next) => {
         try {
             const intakeModuleId = req.params.intakeModuleId;
-            const reportData = await courseService.getIntakeModuleAnalytics(intakeModuleId);
+            const reportData = await moduleService.getIntakeModuleAnalytics(intakeModuleId);
 
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('Intake Module Report');
@@ -95,19 +99,23 @@ const courseManagement = {
                 { header: 'No.', key: 'no', width: 5 },
                 { header: 'Student Name', key: 'studentName', width: 30 },
                 { header: 'Student ID', key: 'studentId', width: 15 },
-                // Add dynamic columns for each attendance date
                 ...reportData.dates.map(date => ({ header: date, key: date, width: 15 }))
             ];
 
             // Fill in the rows
             reportData.students.forEach((student, index) => {
-                const row = {
+                const rowData = {
                     no: index + 1,
                     studentName: student.name,
-                    studentId: student.id,
-                    ...student.attendance // Spread attendance data with date keys
+                    studentId: student.id
                 };
-                worksheet.addRow(row);
+                
+                // Add attendance data for each date
+                reportData.dates.forEach(date => {
+                    rowData[date] = student.attendance[date] || 'Absent';
+                });
+                
+                worksheet.addRow(rowData);
             });
 
             // Set the response headers and send the Excel file
@@ -127,92 +135,92 @@ const courseManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Update Course (Admin/Faculty Assistant)
-    updateCourse: async (req, res, next) => {
+    },    
+
+    // Update Module (Admin/Faculty Assistant)
+    updateModule: async (req, res, next) => {
         try {
-            const courseId = req.params.courseId;
+            const moduleId = req.params.moduleId;
             const updatedData = req.body;
             const userId = req.user.uid;
-            const result = await courseService.updateCourse(courseId, updatedData, userId);
-            const resData = responseSuccess(result, 'Course updated successfully');
+            const result = await moduleService.updateModule(moduleId, updatedData, userId);
+            const resData = responseSuccess(result, 'Module updated successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            console.error("Failed to update course:", error);
+            console.error("Failed to update module:", error);
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Delete Course (Admin only)
-    deleteCourse: async (req, res, next) => {
+    },    
+
+    // Delete Module (Admin only)
+    deleteModule: async (req, res, next) => {
         try {
-            const courseId = req.params.courseId;
+            const moduleId = req.params.moduleId;
             const userId = req.user.uid;
-            const result = await courseService.deleteCourse(courseId, userId);
-            const resData = responseSuccess(result, 'Course deleted successfully');
+            const result = await moduleService.deleteModule(moduleId, userId);
+            const resData = responseSuccess(result, 'Module deleted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            console.error("Failed to delete course:", error);
+            console.error("Failed to delete module:", error);
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
     },
 
-    // Create courses from CSV file (Admin only)
-    createCoursesFromCSV: async (req, res) => {
+    // Create modules from CSV file (Admin only)
+    createModulesFromCSV: async (req, res) => {
         try {
-            // Check if file was uploaded
+            // Check if a file was uploaded
             if (!req.file) {
-                return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+                return res.status(400).json({
+                    status: 'error',
+                    code: 400,
+                    message: 'No CSV file uploaded'
+                });
             }
-
-            console.log('File uploaded:', req.file);
-            console.log('File path:', req.file.path);
             
-            // Get the user ID from the authenticated request
             const userId = req.user.uid;
+            const filePath = req.file.path;
             
-            // Process the CSV file and create courses
-            const results = await courseService.createMultipleCoursesFromCSV(req.file.path, userId);
+            // Process the CSV file
+            const result = await moduleService.createMultipleModulesFromCSV(filePath, userId);
             
-            res.status(201).json(
-                responseSuccess(
-                    results, 
-                    `Created ${results.successful.length} courses successfully. ${results.failed.length} failed.`
-                )
-            );
+            const resData = responseSuccess(result, 'Modules created from CSV successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            console.error('Error processing CSV:', error);
-            res.status(500).json(responseError(error.message, 500));
+            console.error("Failed to create modules from CSV:", error);
+            const resError = responseError(error, 'Failed to process CSV file');
+            res.status(resError.code).json(resError);
         }
     },
 
-    // Delete courses from CSV file (Admin only)
-    deleteCoursesFromCSV: async (req, res) => {
+    // Delete modules from CSV file (Admin only)
+    deleteModulesFromCSV: async (req, res) => {
         try {
-            // Check if file was uploaded
+            // Check if a file was uploaded
             if (!req.file) {
-                return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+                return res.status(400).json({
+                    status: 'error',
+                    code: 400,
+                    message: 'No CSV file uploaded'
+                });
             }
-
-            console.log('File uploaded for deletion:', req.file);
-            console.log('File path:', req.file.path);
             
-            // Get the user ID from the authenticated request
             const userId = req.user.uid;
+            const filePath = req.file.path;
             
-            // Process the CSV file and delete courses
-            const results = await courseService.deleteMultipleCoursesFromCSV(req.file.path, userId);
+            // Process the CSV file
+            const result = await moduleService.deleteMultipleModulesFromCSV(filePath, userId);
             
-            res.status(200).json(
-                responseSuccess(
-                    results, 
-                    `Deleted ${results.successful.length} courses successfully. ${results.failed.length} failed.`
-                )
-            );
+            const resData = responseSuccess(result, 'Modules deleted from CSV successfully');
+            res.status(resData.code).json(resData);
         } catch (error) {
-            console.error('Error processing CSV for deletion:', error);
-            res.status(500).json(responseError(error.message, 500));
+            console.error("Failed to delete modules from CSV:", error);
+            const resError = responseError(error, 'Failed to process CSV file');
+            res.status(resError.code).json(resError);
         }
     }
 };
 
-export default courseManagement;
+export default moduleManagement;
