@@ -19,12 +19,12 @@ module.exports = {
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE', 
       },
-      class_id: {
+      module_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
         references: {
-          model: 'class',
-          key: 'class_id'
+          model: 'module',
+          key: 'module_id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
@@ -38,7 +38,8 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-      },      lecturer_id: {
+      },      
+      lecturer_id: {
         type: Sequelize.STRING(20),
         references: {
           model: 'lecturer',
@@ -63,7 +64,7 @@ module.exports = {
 
     try {
       await queryInterface.addIndex('attendance_request',
-        ['class_id', 'intake_module_id', 'student_id'],
+        ['module_id', 'intake_module_id', 'student_id'],
         { unique: true, name: 'unique_attendance_request_index' }
       );
     } catch (error) {

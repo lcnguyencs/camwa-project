@@ -27,11 +27,11 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
-      class_id: {
+      module_id: {
         type: Sequelize.STRING(36),
         references: {
-          model: 'class',
-          key: 'class_id'
+          model: 'module',
+          key: 'module_id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',

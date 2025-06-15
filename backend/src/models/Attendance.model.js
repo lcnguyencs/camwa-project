@@ -15,9 +15,9 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.STRING(36),
     references: { model: 'IntakeModules', key: 'intake_module_id' },
   },
-  class_id: {
+  module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'Class', key: 'class_id' },
+    references: { model: 'Module', key: 'module_id' },
   },
   class_date: {
     type: DataTypes.DATE,
@@ -36,7 +36,7 @@ const Attendance = sequelize.define('Attendance', {
   indexes: [
     { fields: ['student_id'] },
     { fields: ['intake_module_id'] },
-    { fields: ['class_id'] }
+    { fields: ['module_id'] }
   ]
 });
 

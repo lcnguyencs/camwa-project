@@ -1,6 +1,5 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
-import Class from '../models/Class.model.js';
 import ExamTaking from '../models/ExamTaking.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
@@ -53,13 +52,15 @@ const attendanceService = {
     // Delete attendance by attendance_id
     deleteAttendance: async (attendanceId) => {
         return await Attendance.destroy({ where: { attendance_id: attendanceId } });
-    },
-
-    // Calculate attendance eligibility for a student based on the 80% rule
+    },    // Calculate attendance eligibility for a student based on the 80% rule
     calculateEligibility: async (studentId, moduleId, examDate) => {
         try {
-            // Count total classes for the given module
-            const totalClasses = await Class.count({ where: { intake_module_id: moduleId } });
+            // Count entries in Attendance table for this module
+            const totalClasses = await Attendance.count({ 
+                where: { module_id: moduleId },
+                distinct: true,
+                col: 'attendance_id'
+            });
 
             // If there are no classes scheduled, return a default response
             if (totalClasses === 0) {
@@ -106,14 +107,12 @@ const attendanceService = {
             where: { student_id: studentId, intake_module_id: moduleId}
         });
         return examStatus ? examStatus.is_eligible ? 'Eligible' : 'Not Eligible' : 'No Record';
-    },
-
-    // Handle attendance discrepancy - request correction
-    requestAttendanceCorrection: async (studentId, moduleId, classId, requestDetails) => {
+    },    // Handle attendance discrepancy - request correction
+    requestAttendanceCorrection: async (studentId, moduleId, intakeModuleId, requestDetails) => {
         const request = await AttendanceRequest.create({
             student_id: studentId,
-            intake_module_id: moduleId,
-            class_id: classId,
+            intake_module_id: intakeModuleId,
+            module_id: moduleId,
             status: 'pending',
             ...requestDetails
         });

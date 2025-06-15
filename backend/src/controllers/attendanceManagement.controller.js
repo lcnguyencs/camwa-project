@@ -88,14 +88,12 @@ const attendanceManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },
-
-    // Request Attendance Correction
+    },    // Request Attendance Correction
     requestAttendanceCorrection: async (req, res, next) => {
         try {
-            const { studentId, moduleId, classId} = req.body;
+            const { studentId, moduleId, intakeModuleId} = req.body;
             const requestDetails = req.body;
-            const result = await attendanceService.requestAttendanceCorrection(studentId, moduleId, classId, requestDetails);
+            const result = await attendanceService.requestAttendanceCorrection(studentId, moduleId, intakeModuleId, requestDetails);
             const resData = responseSuccess(result, 'Attendance correction request submitted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {

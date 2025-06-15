@@ -4,7 +4,6 @@ import Intake from './Intake.model.js';
 import ProgramRegistering from './ProgramRegistering.model.js';
 import IntakeModules from './IntakeModule.model.js'; 
 import Semester from './Semester.model.js';
-import Class from './Class.model.js';
 import Exam from './Exam.model.js';
 import Lecturer from './Lecturer.model.js';
 import Attendance from './Attendance.model.js';
@@ -44,9 +43,7 @@ IntakeModule.belongsTo(Semester, { foreignKey: 'semester_id' });
 Lecturer.hasMany(IntakeModule, { foreignKey: 'lecturer_id' });
 IntakeModule.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 
-// 8. Lecturer and Class Relationship (A Lecturer teaches many Classes)
-Lecturer.hasMany(Class, { foreignKey: 'lecturer_id' });
-Class.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
+// 8. Lecturer and Class Relationship has been removed (Class model no longer exists)
 
 // 9. Student and Attendance Relationship (A Student has many Attendance records)
 Student.hasMany(Attendance, { foreignKey: 'student_id' });
@@ -64,9 +61,7 @@ ExamTaking.belongsTo(Student, { foreignKey: 'student_id' });
 IntakeModule.hasMany(ExamTaking, { foreignKey: 'intake_module_id' });
 ExamTaking.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
 
-// 13. IntakeModules and Class Relationship (An IntakeModule has many Classes)
-IntakeModules.hasMany(Class, { foreignKey: 'intake_module_id' });
-Class.belongsTo(IntakeModules, { foreignKey: 'intake_module_id' });
+// 13. IntakeModules and Class Relationship has been removed (Class model no longer exists)
 
 // 14. Iam and Notification Relationship (An Iam entity sends many Notifications)
 Iam.hasMany(Notification, { foreignKey: 'sender_id' });

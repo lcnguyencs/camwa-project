@@ -2,7 +2,6 @@ import Module from '../models/Module.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
 import IntakeModule from '../models/IntakeModules.model.js';
-import Class from '../models/Class.model.js';
 import Attendance from '../models/Attendance.model.js';
 import auditLogService from '../services/auditLogService.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
@@ -119,31 +118,7 @@ const moduleService = {
         }
     },
 
-    // Create classes for an intake module (Admin)
-    createClassesForIntakeModule: async (intakeModuleId, classCount = 15, userId) => {
-        const intakeModule = await IntakeModule.findByPk(intakeModuleId);
-        if (!intakeModule) {
-            throw new Error('Intake module not found');
-        }
-
-        // Create classes for the intake module
-        const classes = [];
-        for (let i = 1; i <= classCount; i++) {
-            classes.push({
-                intake_module_id: intakeModuleId,
-                class_number: i,
-                class_date: new Date(), // Here you can set a specific date or logic for the class date
-            });
-        }
-        // Insert all the classes into the database in bulk
-        await Class.bulkCreate(classes); 
-
-         // Optionally log the action
-        await auditLogService.logAction(userId, 'createClasses', { intakeModuleId, classCount });
-        
-        return classes;
-    },
-
+    
     // Get Intake Module Analytics for Export
     getIntakeModuleAnalytics: async (intakeModuleId) => {
         // Retrieve students enrolled in the intake module

@@ -65,10 +65,7 @@ const programRegistrationService = {
       const registrations = await ProgramRegistration.findAll({
         where: { student_id },
         include: [
-          { model: Module, attributes: ['module_id', 'name'] },
-          { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
-          { model: Program, attributes: ['program_id', 'name'] },
-          { model: Lecturer, attributes: ['lecturer_id', 'name'] }
+          { model: Module, attributes: ['module_id', 'name'] }
         ],
         order: [['created_at', 'DESC']]
       });

@@ -12,16 +12,17 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
     references: { model: 'Student', key: 'student_id' },
     allowNull: false,
   },
-  class_id: {
+  module_id: {
     type: DataTypes.STRING(36),
     allowNull: false,
-    references: { model: 'Class', key: 'class_id' },
+    references: { model: 'Module', key: 'module_id' },
   },
   intake_module_id: {
     type: DataTypes.STRING(36),
     allowNull: false,
     references: { model: 'IntakeModule', key: 'intake_module_id' },
-  },  lecturer_id: {
+  },  
+  lecturer_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Lecturer', key: 'lecturer_id' },
   },
@@ -41,7 +42,7 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
   tableName: 'attendance_request',
   timestamps: false,
   indexes: [
-    { unique: true, fields: ['class_id', 'intake_module_id', 'student_id'], name: 'unique_attendance_request_index' },
+    { unique: true, fields: ['module_id', 'intake_module_id', 'student_id'], name: 'unique_attendance_request_index' },
     { fields: ['student_id'] },  
     { fields: ['request_date'] },
   ]
