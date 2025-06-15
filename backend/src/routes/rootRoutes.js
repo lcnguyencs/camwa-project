@@ -14,6 +14,7 @@ import accountRouter from './account.router.js';
 import dashboardRouter from './dashboard.router.js';
 import semesterRouter from './semesterRoutes.js';
 import intakeRouter from './intakeRoutes.js';
+import programRegistrationRoutes from './programRegistration.routes.js';``
 
 
 const rootRoutes = express.Router();
@@ -66,5 +67,6 @@ rootRoutes.use('/semester', semesterRouter);
 
 rootRoutes.use('/intake', intakeRouter);
 
+rootRoutes.use('/program-registrations', programRegistrationRoutes);
 
 export default rootRoutes;
