@@ -12,6 +12,8 @@ import facilityFacultyRouter from './faculty.router.js';
 import testTokenController from '../controllers/testTokenController.js';
 import accountRouter from './account.router.js';
 import dashboardRouter from './dashboard.router.js';
+import semesterRouter from './semesterRoutes.js';
+import intakeRouter from './intakeRoutes.js';
 
 
 const rootRoutes = express.Router();
@@ -59,6 +61,10 @@ rootRoutes.post('/test-token', testTokenController.getTestToken);
 
 //Account routes
 rootRoutes.use('/account', accountRouter);
+
+rootRoutes.use('/semester', semesterRouter);
+
+rootRoutes.use('/intake', intakeRouter);
 
 
 export default rootRoutes;

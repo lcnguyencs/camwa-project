@@ -4,11 +4,14 @@ import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 
 const programRouter = express.Router();
 
-programRouter.post('/',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.createProgram);
+// Admin-only operations for create, update, delete
+programRouter.post('/', verifyTokenAndRole(['ADMIN']), programController.createProgram);
+programRouter.delete('/:program_id', verifyTokenAndRole(['ADMIN']), programController.deleteProgram);
+programRouter.put('/:program_id', verifyTokenAndRole(['ADMIN']), programController.updateProgram);
+
+// Read operations accessible by both ADMIN and FACULTY
 programRouter.get('/',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.getAllPrograms);
 programRouter.get('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.findProgramById);
-programRouter.delete('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.deleteProgram);
-programRouter.put('/:program_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.updateProgram);
 programRouter.post('/:program_id/students/:student_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignStudentToProgram);
 programRouter.post('/:program_id/lecturers/:lecturer_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignLecturerToProgram);
 programRouter.post('/:program_id/modules/:module_id',verifyTokenAndRole(['ADMIN', 'FACULTY']), programController.assignModuleToProgram);

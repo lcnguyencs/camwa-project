@@ -8,9 +8,6 @@ module.exports = {
         type: Sequelize.STRING(36),
         primaryKey: true
       },
-      sem_type: {
-        type: Sequelize.STRING(20)
-      },
       start_date: {
         type: Sequelize.DATE
       },

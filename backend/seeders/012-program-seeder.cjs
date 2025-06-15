@@ -6,13 +6,11 @@ module.exports = {
     return queryInterface.bulkInsert('program', [
       {
         program_id: 'PROG001',
-        name: 'Computer Science',
-        duration: 4
+        name: 'Computer Science'
       },
       {
         program_id: 'PROG002',
-        name: 'Information Technology',
-        duration: 3
+        name: 'Information Technology'      
       }
     ]);
   },
