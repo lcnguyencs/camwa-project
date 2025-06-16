@@ -1,6 +1,7 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
 import ExamTaking from '../models/ExamTaking.model.js';
+import ModuleRegistration from '../models/ModuleRegistration.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const attendanceService = {
@@ -33,6 +34,17 @@ const attendanceService = {
         if (!['present', 'absent', 'late', 'excused'].includes(attendanceData.attendance_status)) {
             throw new Error('Invalid attendance status');
         }
+
+        // Check if the student is registered for the module
+        const registration = await ModuleRegistration.findOne({
+            where: {
+                student_id: attendanceData.student_id,
+                module_id: attendanceData.module_id
+            }
+        });        if (!registration) {
+            throw new Error(`Student ${attendanceData.student_id} is not registered for module ${attendanceData.module_id}`);
+        }
+
         return await Attendance.create(attendanceData);
     },    // View attendance by module
     viewAttendanceByModule: async (moduleId) => {

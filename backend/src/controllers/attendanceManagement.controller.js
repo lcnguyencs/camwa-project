@@ -1,19 +1,29 @@
 import attendanceService from "../services/attendance.service.js";
 import { responseError, responseSuccess } from "../common/helpers/response.helper.js";
 
-const attendanceManagement = {
-    // Create Attendance (Automated or Manual)
+const attendanceManagement = {    // Create Attendance (Automated or Manual)
     createAttendance: async (req, res, next) => {
         try {
             const attendanceData = req.body;
+            
+            // Validate required fields
+            if (!attendanceData.student_id || !attendanceData.module_id || !attendanceData.attendance_status) {
+                return res.status(400).json(responseError('Missing required fields: student_id, module_id, and attendance_status are required', 400));
+            }
+            
             const result = await attendanceService.submitAttendance(attendanceData);
             const resData = responseSuccess(result, 'Attendance recorded successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            // Handle registration validation error with appropriate status code
+            if (error.message && error.message.includes('not registered for this module')) {
+                return res.status(400).json(responseError(error.message, 400));
+            }
+            
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // View Attendance Records by Module or Student
+    },// View Attendance Records by Module or Student
     viewAttendance: async (req, res, next) => {
         try {
             const { moduleId, studentId } = req.query;
