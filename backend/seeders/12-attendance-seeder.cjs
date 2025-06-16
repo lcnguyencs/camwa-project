@@ -3,22 +3,28 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('attendance', null, {});
+    const now = new Date();
     return queryInterface.bulkInsert('attendance', [
       {
         student_id: 'STU001',
-        intake_module_id: 'IM001',
         module_id: 'MOD001',
-        class_date: '2023-09-15',
         attendance_status: 'present',
-        is_deleted: false
+        created_at: now,
+        updated_at: now
       },
       {
         student_id: 'STU002',
-        intake_module_id: 'IM002',
         module_id: 'MOD002',
-        class_date: '2023-09-16',
         attendance_status: 'absent',
-        is_deleted: false
+        created_at: now,
+        updated_at: now
+      },
+      {
+        student_id: 'STU001',
+        module_id: 'MOD002',
+        attendance_status: 'late',
+        created_at: now,
+        updated_at: now
       }
     ]);
   },

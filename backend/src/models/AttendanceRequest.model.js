@@ -7,6 +7,11 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
     primaryKey: true,
     autoIncrement: true,
   },
+  attendance_id: {
+    type: DataTypes.INTEGER,
+    references: { model: 'Attendance', key: 'attendance_id' },
+    allowNull: false,
+  },
   student_id: {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
@@ -17,34 +22,45 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
     allowNull: false,
     references: { model: 'Module', key: 'module_id' },
   },
-  intake_module_id: {
-    type: DataTypes.STRING(36),
+  request_status: {
+    type: DataTypes.ENUM('pending', 'approved', 'rejected'),
     allowNull: false,
-    references: { model: 'IntakeModule', key: 'intake_module_id' },
-  },  
-  lecturer_id: {
-    type: DataTypes.STRING(20),
-    references: { model: 'Lecturer', key: 'lecturer_id' },
-  },
-  request_date: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
-  status: {
-    type: DataTypes.STRING(10),
     defaultValue: 'pending',
+  },
+  proposed_status: {
+    type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
+    allowNull: false,
+  },
+  approved_status: {
+    type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
+    allowNull: true,
   },
   reason: {
     type: DataTypes.TEXT,
   },
+  processed_by: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+  },
+  processed_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
 }, {
   tableName: 'attendance_request',
-  timestamps: false,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: false,
   indexes: [
-    { unique: true, fields: ['module_id', 'intake_module_id', 'student_id'], name: 'unique_attendance_request_index' },
-    { fields: ['student_id'] },  
-    { fields: ['request_date'] },
+    { fields: ['attendance_id'] },
+    { fields: ['student_id'] },
+    { fields: ['module_id'] },
+    { fields: ['request_status'] }
   ]
 });
 

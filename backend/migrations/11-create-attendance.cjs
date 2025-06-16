@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
     await queryInterface.createTable('attendance', {
       attendance_id: {
         type: Sequelize.INTEGER,
@@ -18,15 +17,6 @@ module.exports = {
         onUpdate: 'CASCADE', 
         onDelete: 'SET NULL', 
       },
-      intake_module_id: {
-        type: Sequelize.STRING(36),
-        references: {
-          model: 'intake_module',
-          key: 'intake_module_id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-      },
       module_id: {
         type: Sequelize.STRING(36),
         references: {
@@ -36,19 +26,26 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
-      class_date: {
-        type: Sequelize.DATE,
-      },
       attendance_status: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.ENUM('present', 'absent', 'late', 'excused'),
+        allowNull: false,
       },
-      is_deleted: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn('now'),
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn('now'),
       },
     });
-  },
-  down: async (queryInterface, Sequelize) => {
+
+    // Add indexes for performance
+    await queryInterface.addIndex('attendance', ['student_id']);
+    await queryInterface.addIndex('attendance', ['module_id']);
+  },  down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('attendance');
   }
 };

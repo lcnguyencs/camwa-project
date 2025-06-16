@@ -13,14 +13,12 @@ const attendanceManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },
-
-    // View Attendance Records by Class or Student
+    },    // View Attendance Records by Module or Student
     viewAttendance: async (req, res, next) => {
         try {
             const { moduleId, studentId } = req.query;
             if (!moduleId && !studentId) {
-                return res.status(400).json({ message: 'Either classId or studentId must be provided' });
+                return res.status(400).json({ message: 'Either moduleId or studentId must be provided' });
             }
             let result;
             if (moduleId) {
@@ -91,10 +89,69 @@ const attendanceManagement = {
     },    // Request Attendance Correction
     requestAttendanceCorrection: async (req, res, next) => {
         try {
-            const { studentId, moduleId, intakeModuleId} = req.body;
-            const requestDetails = req.body;
-            const result = await attendanceService.requestAttendanceCorrection(studentId, moduleId, intakeModuleId, requestDetails);
+            const { attendanceId, studentId, moduleId, proposedStatus, reason } = req.body;
+            
+            if (!attendanceId || !studentId || !moduleId || !proposedStatus) {
+                return res.status(400).json({ message: 'Missing required fields' });
+            }
+            
+            const requestDetails = {
+                proposed_status: proposedStatus,
+                reason: reason
+            };
+            
+            const result = await attendanceService.requestAttendanceCorrection(
+                attendanceId, 
+                studentId, 
+                moduleId, 
+                requestDetails
+            );
+            
             const resData = responseSuccess(result, 'Attendance correction request submitted successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },    // Approve/Deny Attendance Correction Request
+    handleCorrectionRequest: async (req, res, next) => {
+        try {
+            const requestId = req.params.requestId;
+            const { approvalStatus, processedBy } = req.body; // true for approval, false for denial
+            
+            if (approvalStatus === undefined) {
+                return res.status(400).json({ message: 'Approval status is required' });
+            }
+            
+            const result = await attendanceService.handleCorrectionRequest(
+                requestId, 
+                approvalStatus, 
+                processedBy || req.user?.username || 'system'
+            );
+            
+            const resData = responseSuccess(
+                result, 
+                `Correction request ${approvalStatus ? 'approved' : 'rejected'} successfully`
+            );
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },    // Get attendance requests by status
+    getAttendanceRequestsByStatus: async (req, res, next) => {
+        try {
+            const { status, moduleId } = req.query;
+            
+            if (!status || !['pending', 'approved', 'rejected'].includes(status)) {
+                return res.status(400).json({ message: 'Valid status parameter is required' });
+            }
+            
+            const result = await attendanceService.getAttendanceRequestsByStatus(status, moduleId);
+            const resData = responseSuccess(
+                result, 
+                `${status.charAt(0).toUpperCase() + status.slice(1)} attendance requests retrieved successfully`
+            );
             res.status(resData.code).json(resData);
         } catch (error) {
             const resError = responseError(error);
@@ -102,19 +159,31 @@ const attendanceManagement = {
         }
     },
 
-    // Approve/Deny Attendance Correction Request
-    handleCorrectionRequest: async (req, res, next) => {
+    // Create attendance records from CSV file (Faculty Assistant only)
+    createAttendanceFromCSV: async (req, res, next) => {
         try {
-            const requestId = req.params.requestId;
-            const { approvalStatus } = req.body; // true for approval, false for denial
-            const result = await attendanceService.handleCorrectionRequest(requestId, approvalStatus);
-            const resData = responseSuccess(result, `Correction request ${approvalStatus ? 'approved' : 'denied'} successfully`);
-            res.status(resData.code).json(resData);
+            // Check if file was uploaded
+            if (!req.file) {
+                return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+            }
+
+            console.log('File uploaded for attendance:', req.file);
+            console.log('File path:', req.file.path);
+            
+            // Process the CSV file and create attendance records
+            const results = await attendanceService.createAttendanceFromCSV(req.file.path);
+            
+            res.status(201).json(
+                responseSuccess(
+                    results, 
+                    `Created ${results.successful.length} attendance records successfully. ${results.failed.length} failed.`
+                )
+            );
         } catch (error) {
-            const resError = responseError(error);
-            res.status(resError.code).json(resError);
+            console.error('Error processing attendance CSV:', error);
+            res.status(500).json(responseError(error.message, 500));
         }
-    },
+    }
 };
 
 export default attendanceManagement;
