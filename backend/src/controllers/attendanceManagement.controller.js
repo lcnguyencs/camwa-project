@@ -5,10 +5,17 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
     createAttendance: async (req, res, next) => {
         try {
             const attendanceData = req.body;
+            const userId = req.user?.uid;
+            const userRole = req.user?.role;
             
             // Validate required fields
             if (!attendanceData.student_id || !attendanceData.module_id || !attendanceData.attendance_status) {
                 return res.status(400).json(responseError('Missing required fields: student_id, module_id, and attendance_status are required', 400));
+            }
+            
+            // Check if a student user is trying to record attendance for someone else
+            if (userRole === 'STUDENT' && userId !== attendanceData.student_id) {
+                return res.status(403).json(responseError('Students can only record their own attendance', 403));
             }
             
             const result = await attendanceService.submitAttendance(attendanceData);
@@ -23,7 +30,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },// View Attendance Records by Module or Student
+    },    // View Attendance Records by Module or Student
     viewAttendance: async (req, res, next) => {
         try {
             const { moduleId, studentId } = req.query;

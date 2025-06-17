@@ -45,27 +45,27 @@ const upload = multer({
 const attendanceRouter = express.Router();
 
 // Create and manage attendance records (for Admin or Faculty Assistant)
-attendanceRouter.post('/create', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), attendanceController.createAttendance);
-attendanceRouter.get('/view', verifyTokenAndRole(['ADMIN', 'faculty_assistant', 'LECTURER', 'student']), attendanceController.viewAttendance);
-attendanceRouter.put('/:attendanceId', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), attendanceController.updateAttendance);
-attendanceRouter.delete('/:attendanceId', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), attendanceController.deleteAttendance);
+attendanceRouter.post('/create', verifyTokenAndRole(['ADMIN', 'FACULTY','STUDENT']), attendanceController.createAttendance);
+attendanceRouter.get('/view', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), attendanceController.viewAttendance);
+attendanceRouter.put('/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.updateAttendance);
+attendanceRouter.delete('/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.deleteAttendance);
 
 // Calculate and view eligibility for exams
-attendanceRouter.get('/eligibility/calculate', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), attendanceController.calculateEligibility);
-attendanceRouter.get('/eligibility/status', verifyTokenAndRole(['student', 'lecturer', 'ADMIN']), attendanceController.viewExamEligibilityStatus);
+attendanceRouter.get('/eligibility/calculate', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.calculateEligibility);
+attendanceRouter.get('/eligibility/status', verifyTokenAndRole(['STUDENT', 'lecturer', 'ADMIN']), attendanceController.viewExamEligibilityStatus);
 
 // Attendance request management
-attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'faculty_assistant', 'LECTURER']), attendanceController.getAttendanceRequestsByStatus);
+attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), attendanceController.getAttendanceRequestsByStatus);
 
 // Attendance correction requests
-attendanceRouter.post('/student/correction', verifyTokenAndRole(['ADMIN', 'student']), attendanceController.requestAttendanceCorrection);
-attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), attendanceController.handleCorrectionRequest);
+attendanceRouter.post('/STUDENT/correction', verifyTokenAndRole(['ADMIN', 'STUDENT']), attendanceController.requestAttendanceCorrection);
+attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.handleCorrectionRequest);
 
 // CSV upload routes (Faculty Assistant only)
 // Standard endpoint with specific field name
 attendanceRouter.post(
   '/create-from-csv', 
-  verifyTokenAndRole(['ADMIN', 'faculty_assistant']), 
+  verifyTokenAndRole(['ADMIN', 'FACULTY']), 
   upload.single('file'),
   attendanceController.createAttendanceFromCSV
 );
@@ -73,7 +73,7 @@ attendanceRouter.post(
 // Alternative endpoint that can accept any field name
 attendanceRouter.post(
   '/upload-csv',
-  verifyTokenAndRole(['ADMIN', 'faculty_assistant']),
+  verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
     const uploadAny = multer({ 
@@ -106,7 +106,7 @@ attendanceRouter.post(
 // Endpoint for using a default CSV file
 attendanceRouter.post(
   '/create-from-default-csv',
-  verifyTokenAndRole(['ADMIN', 'faculty_assistant']),
+  verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
     // Set the default CSV file path
     const defaultCsvPath = path.resolve(__dirname, '../../../..', 'FA - Create Attendance List.csv');
