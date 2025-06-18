@@ -5,6 +5,11 @@ import ModuleRegistration from '../models/ModuleRegistration.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
 const attendanceService = {
+    // Get attendance by id
+    getAttendanceById: async (attendanceId) => {
+        return await Attendance.findByPk(attendanceId);
+    },
+    
     // Create a new attendance request
     createAttendanceRequest: async (attendanceData) => {
         return await AttendanceRequest.create(attendanceData);

@@ -30,13 +30,31 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // View Attendance Records by Module or Student
+    },    // View Attendance Records by Module or Student   
     viewAttendance: async (req, res, next) => {
         try {
             const { moduleId, studentId } = req.query;
+            const userId = req.user?.uid;
+            const userRole = req.user?.role;
+            
             if (!moduleId && !studentId) {
-                return res.status(400).json({ message: 'Either moduleId or studentId must be provided' });
+                return res.status(400).json(responseError('Either moduleId or studentId must be provided', 400));
             }
+            
+            // If user is a student, they can only view their own attendance
+            if (userRole === 'STUDENT') {
+                // If studentId is provided, ensure it matches the user's ID
+                if (studentId && studentId !== userId) {
+                    return res.status(403).json(responseError('Students can only view their own attendance records', 403));
+                }
+                
+                // Force studentId to be the user's ID regardless of what was in the request
+                const result = await attendanceService.viewAttendanceByStudent(userId);
+                const resData = responseSuccess(result, 'Attendance records retrieved successfully');
+                return res.status(resData.code).json(resData);
+            }
+            
+            // For non-student users, proceed normally
             let result;
             if (moduleId) {
                 result = await attendanceService.viewAttendanceByModule(moduleId);
@@ -50,13 +68,29 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             res.status(resError.code).json(resError);
         }
     },
-    
-
-    // Update Attendance (for corrections)
+        // Update Attendance (for corrections)
     updateAttendance: async (req, res, next) => {
         try {
             const attendanceId = req.params.attendanceId;
             const updatedData = req.body;
+            const userId = req.user?.uid;
+            const userRole = req.user?.role;
+            
+            // If the user is a student, verify they can only update their own attendance
+            if (userRole === 'STUDENT') {
+                // First retrieve the attendance record to check ownership
+                const attendance = await attendanceService.getAttendanceById(attendanceId);
+                
+                if (!attendance) {
+                    return res.status(404).json(responseError('Attendance record not found', 404));
+                }
+                
+                // Check if this attendance record belongs to the student
+                if (attendance.student_id !== userId) {
+                    return res.status(403).json(responseError('Students can only update their own attendance records', 403));
+                }
+            }
+            
             const result = await attendanceService.updateAttendance(attendanceId, updatedData);
             const resData = responseSuccess(result, 'Attendance updated successfully');
             res.status(resData.code).json(resData);
@@ -90,12 +124,25 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },
-
-    // View Exam Eligibility Status
+    },    // View Exam Eligibility Status
     viewExamEligibilityStatus: async (req, res, next) => {
         try {
             const { studentId, moduleId } = req.query;
+            const userId = req.user?.uid;
+            const userRole = req.user?.role;
+            
+            // For student users, ensure they can only view their own eligibility status
+            if (userRole === 'STUDENT') {
+                if (studentId && studentId !== userId) {
+                    return res.status(403).json(responseError('Students can only view their own eligibility status', 403));
+                }
+                
+                // Force studentId to be the user's ID
+                const result = await attendanceService.viewExamEligibilityStatus(userId, moduleId);
+                const resData = responseSuccess(result, 'Exam eligibility status retrieved successfully');
+                return res.status(resData.code).json(resData);
+            }
+            
             const result = await attendanceService.viewExamEligibilityStatus(studentId, moduleId);
             const resData = responseSuccess(result, 'Exam eligibility status retrieved successfully');
             res.status(resData.code).json(resData);
@@ -103,13 +150,25 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Request Attendance Correction
+    },    // Request Attendance Correction    
     requestAttendanceCorrection: async (req, res, next) => {
         try {
-            const { attendanceId, studentId, moduleId, proposedStatus, reason } = req.body;
+            const attendanceRequestData = req.body;
+            const attendanceId = attendanceRequestData.attendance_id;
+            const studentId = attendanceRequestData.student_id;
+            const moduleId = attendanceRequestData.module_id;
+            const proposedStatus = attendanceRequestData.proposed_status;
+            const reason = attendanceRequestData.reason;;
+            const userId = req.user?.uid;
+            const userRole = req.user?.role;
             
             if (!attendanceId || !studentId || !moduleId || !proposedStatus) {
-                return res.status(400).json({ message: 'Missing required fields' });
+                return res.status(400).json(responseError('Missing required fields', 400));
+            }
+            
+            // If the user is a student, verify they can only request corrections for their own attendance
+            if (userRole === 'STUDENT' && userId !== studentId) {
+                return res.status(403).json(responseError('Students can only request corrections for their own attendance', 403));
             }
             
             const requestDetails = {

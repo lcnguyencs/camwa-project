@@ -58,7 +58,7 @@ attendanceRouter.get('/eligibility/status', verifyTokenAndRole(['STUDENT', 'lect
 attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), attendanceController.getAttendanceRequestsByStatus);
 
 // Attendance correction requests
-attendanceRouter.post('/STUDENT/correction', verifyTokenAndRole(['ADMIN', 'STUDENT']), attendanceController.requestAttendanceCorrection);
+attendanceRouter.post('/request-correction', verifyTokenAndRole(['ADMIN', 'STUDENT']), attendanceController.requestAttendanceCorrection);
 attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.handleCorrectionRequest);
 
 // CSV upload routes (Faculty Assistant only)
