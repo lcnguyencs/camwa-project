@@ -113,44 +113,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
         }
     },
 
-    // Calculate Exam Eligibility
-    calculateEligibility: async (req, res, next) => {
-        try {
-            const { studentId, moduleId, examDate } = req.query;
-            const result = await attendanceService.calculateEligibility(studentId, moduleId, examDate);
-            const resData = responseSuccess(result, 'Eligibility calculated successfully');
-            res.status(resData.code).json(resData);
-        } catch (error) {
-            const resError = responseError(error);
-            res.status(resError.code).json(resError);
-        }
-    },    // View Exam Eligibility Status
-    viewExamEligibilityStatus: async (req, res, next) => {
-        try {
-            const { studentId, moduleId } = req.query;
-            const userId = req.user?.uid;
-            const userRole = req.user?.role;
-            
-            // For student users, ensure they can only view their own eligibility status
-            if (userRole === 'STUDENT') {
-                if (studentId && studentId !== userId) {
-                    return res.status(403).json(responseError('Students can only view their own eligibility status', 403));
-                }
-                
-                // Force studentId to be the user's ID
-                const result = await attendanceService.viewExamEligibilityStatus(userId, moduleId);
-                const resData = responseSuccess(result, 'Exam eligibility status retrieved successfully');
-                return res.status(resData.code).json(resData);
-            }
-            
-            const result = await attendanceService.viewExamEligibilityStatus(studentId, moduleId);
-            const resData = responseSuccess(result, 'Exam eligibility status retrieved successfully');
-            res.status(resData.code).json(resData);
-        } catch (error) {
-            const resError = responseError(error);
-            res.status(resError.code).json(resError);
-        }
-    },    // Request Attendance Correction    
+    // Request Attendance Correction    
     requestAttendanceCorrection: async (req, res, next) => {
         try {
             const attendanceRequestData = req.body;

@@ -1,6 +1,5 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
-import ExamTaking from '../models/ExamTaking.model.js';
 import ModuleRegistration from '../models/ModuleRegistration.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 
@@ -69,76 +68,7 @@ const attendanceService = {
     // Delete attendance by attendance_id
     deleteAttendance: async (attendanceId) => {
         return await Attendance.destroy({ where: { attendance_id: attendanceId } });
-    },    // Calculate attendance eligibility for a student based on the 80% rule
-    calculateEligibility: async (studentId, moduleId, examDate) => {
-        try {
-            // Count entries in Attendance table for this module
-            const totalClasses = await Attendance.count({ 
-                where: { module_id: moduleId },
-                distinct: true,
-                col: 'attendance_id'
-            });
-
-            // If there are no classes scheduled, return a default response
-            if (totalClasses === 0) {
-                return { attendancePercentage: 0, eligibilityStatus: 'No Classes Scheduled' };
-            }
-
-            // Count the number of classes the student attended
-            const attendedClasses = await Attendance.count({
-                where: {
-                    student_id: studentId,
-                    module_id: moduleId,
-                    attendance_status: 'present'
-                }
-            });
-            
-            // Count classes marked as excused (these don't count against attendance)
-            const excusedClasses = await Attendance.count({
-                where: {
-                    student_id: studentId,
-                    module_id: moduleId,
-                    attendance_status: 'excused'
-                }
-            });
-            
-            // Calculate attendance percentage (counting only present against total minus excused)
-            const effectiveClassCount = totalClasses - excusedClasses;
-            const attendancePercentage = effectiveClassCount > 0 ? (attendedClasses / effectiveClassCount) * 100 : 0;
-
-            // Determine eligibility based on the 80% rule
-            const isEligible = attendancePercentage >= 80;
-            const eligibilityStatus = isEligible ? 'Eligible' : 'Not Eligible';
-
-            // Update or insert exam eligibility in the ExamTaking table
-            await ExamTaking.upsert({
-                student_id: studentId,
-                module_id: moduleId,
-                exam_date: examDate,  // Use provided exam date or keep it null if unknown
-                is_eligible: isEligible
-            });
-
-            return { 
-                attendancePercentage, 
-                eligibilityStatus,
-                presentCount: attendedClasses,
-                excusedCount: excusedClasses,
-                totalClasses: totalClasses 
-            };
-        } catch (error) {
-            console.error('Error calculating eligibility:', error);
-            throw new Error('Failed to calculate eligibility');
-        }
-    },
-
-
-    // Retrieve exam eligibility status for a student
-    viewExamEligibilityStatus: async (studentId, moduleId) => {
-        const examStatus = await ExamTaking.findOne({
-            where: { student_id: studentId, module_id: moduleId}
-        });
-        return examStatus ? examStatus.is_eligible ? 'Eligible' : 'Not Eligible' : 'No Record';
-    },// Handle attendance discrepancy - request correction
+    },    // Handle attendance discrepancy - request correction
     requestAttendanceCorrection: async (attendanceId, studentId, moduleId, requestDetails) => {
         if (!requestDetails.proposed_status || 
             !['present', 'absent', 'late', 'excused'].includes(requestDetails.proposed_status)) {

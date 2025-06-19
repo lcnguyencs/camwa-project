@@ -50,10 +50,6 @@ attendanceRouter.get('/view', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER'
 attendanceRouter.put('/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.updateAttendance);
 attendanceRouter.delete('/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.deleteAttendance);
 
-// Calculate and view eligibility for exams
-attendanceRouter.get('/eligibility/calculate', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.calculateEligibility);
-attendanceRouter.get('/eligibility/status', verifyTokenAndRole(['STUDENT', 'lecturer', 'ADMIN']), attendanceController.viewExamEligibilityStatus);
-
 // Attendance request management
 attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), attendanceController.getAttendanceRequestsByStatus);
 
