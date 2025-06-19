@@ -168,8 +168,10 @@ const attendanceService = {
         });
 
         return request;
-    },    // Approve or deny attendance correction
-    handleCorrectionRequest: async (requestId, approvalStatus, processedBy) => {
+    },
+    
+    // Approve or deny attendance correction
+    handleCorrectionRequest: async (requestId, approved_status, processedBy) => {
         const request = await AttendanceRequest.findByPk(requestId);
         if (!request) {
             throw new Error('Attendance request not found');
@@ -179,47 +181,47 @@ const attendanceService = {
             throw new Error('This request has already been processed');
         }
 
-        const newStatus = approvalStatus ? 'approved' : 'rejected';
+        // Compare approved_status with proposed_status to determine if it's an approval
+        const isApproved = approved_status === request.proposed_status;
+        const newStatus = isApproved ? 'approved' : 'rejected';
 
         // Update the correction request with processed information
         const updateData = {
             request_status: newStatus,
             processed_by: processedBy,
-            processed_at: new Date()
+            processed_at: new Date(),
+            approved_status: approved_status
         };
         
-        // If approved, also set the approved_status and update the attendance record
-        if (approvalStatus) {
-            updateData.approved_status = request.proposed_status;
-            
+        // If approved (approved_status matches proposed_status), update the attendance record
+        if (isApproved) {
             // Update the actual attendance record
             await Attendance.update(
                 { 
-                    attendance_status: request.proposed_status,
+                    attendance_status: approved_status,
                     updated_at: new Date()
                 },
                 { where: { attendance_id: request.attendance_id } }
             );
             
-            console.log(`Correction request ${requestId} approved and attendance updated to ${request.proposed_status}.`);
+            console.log(`Correction request ${requestId} approved and attendance updated to ${approved_status}.`);
         } else {
-            console.log(`Correction request ${requestId} rejected.`);
+            console.log(`Correction request ${requestId} rejected. Proposed status was ${request.proposed_status}, admin approved status is ${approved_status}.`);
         }
         
         // Update the request record
-        await AttendanceRequest.update(updateData, { where: { request_id: requestId } });
-
-        // Send email notification about the correction decision
+        await AttendanceRequest.update(updateData, { where: { request_id: requestId } });        // Send email notification about the correction decision
         await sendMail({
             to: 'student@example.com',  // Replace with student's email in a real scenario
-            subject: `Attendance Correction ${approvalStatus ? 'Approved' : 'Rejected'}`,
-            text: `Your attendance correction request for module ${request.module_id} has been ${approvalStatus ? 'approved' : 'rejected'}.`,
-            html: `<p>Your attendance correction request for module ${request.module_id} has been ${approvalStatus ? 'approved' : 'rejected'}.</p>`
-        });
-
-        return {
+            subject: `Attendance Correction ${isApproved ? 'Approved' : 'Rejected'}`,
+            text: `Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.`,
+            html: `<p>Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.</p>`
+        });return {
             status: newStatus,
-            message: approvalStatus ? 'Correction Approved' : 'Correction Rejected'
+            message: isApproved ? 'Correction Approved' : 'Correction Rejected',
+            proposed_status: request.proposed_status,
+            approved_status: approved_status,
+            isApproved: isApproved
         };
     },    // Get all attendance requests by status
     getAttendanceRequestsByStatus: async (status, moduleId = null) => {

@@ -9,7 +9,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const userRole = req.user?.role;
             
             // Validate required fields
-            if (!attendanceData.student_id || !attendanceData.module_id || !attendanceData.attendance_status) {
+            if (!attendanceData.attendance_id || !attendanceData.student_id || !attendanceData.module_id || !attendanceData.attendance_status) {
                 return res.status(400).json(responseError('Missing required fields: student_id, module_id, and attendance_status are required', 400));
             }
             
@@ -158,7 +158,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const studentId = attendanceRequestData.student_id;
             const moduleId = attendanceRequestData.module_id;
             const proposedStatus = attendanceRequestData.proposed_status;
-            const reason = attendanceRequestData.reason;;
+            const reason = attendanceRequestData.reason;
             const userId = req.user?.uid;
             const userRole = req.user?.role;
             
@@ -193,21 +193,28 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
     handleCorrectionRequest: async (req, res, next) => {
         try {
             const requestId = req.params.requestId;
-            const { approvalStatus, processedBy } = req.body; // true for approval, false for denial
+            const correctionData = req.body;
+            const approved_status = correctionData.approved_status;
+            const processedBy = correctionData.processedBy || req.user?.username || 'system';
             
-            if (approvalStatus === undefined) {
-                return res.status(400).json({ message: 'Approval status is required' });
+            if (!approved_status) {
+                return res.status(400).json(responseError('Approved status is required', 400));
+            }
+            
+            // Validate that approved_status is a valid status value
+            if (!['present', 'absent', 'late', 'excused'].includes(approved_status)) {
+                return res.status(400).json(responseError('Invalid attendance status', 400));
             }
             
             const result = await attendanceService.handleCorrectionRequest(
                 requestId, 
-                approvalStatus, 
-                processedBy || req.user?.username || 'system'
+                approved_status,
+                processedBy
             );
             
             const resData = responseSuccess(
                 result, 
-                `Correction request ${approvalStatus ? 'approved' : 'rejected'} successfully`
+                `Correction request ${result.status === 'approved' ? 'approved' : 'rejected'} successfully`
             );
             res.status(resData.code).json(resData);
         } catch (error) {

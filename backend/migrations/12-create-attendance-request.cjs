@@ -67,11 +67,9 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.fn('now'),
       },
-    });
-
-    try {
+    });    try {
       await queryInterface.addIndex('attendance_request',
-        ['module_id', 'student_id'],
+        ['attendance_id'],
         { unique: true, name: 'unique_attendance_request_index' }
       );
     } catch (error) {
