@@ -1,7 +1,6 @@
 import Student from './Student.model.js';
 import Program from './Program.model.js';
 import Intake from './Intake.model.js';
-import ProgramRegistering from './ProgramRegistering.model.js';
 import IntakeModules from './IntakeModule.model.js'; 
 import Semester from './Semester.model.js';
 import Exam from './Exam.model.js';
@@ -79,20 +78,6 @@ AttendanceRequest.belongsTo(Iam, { foreignKey: 'lecturer_id' });
 Student.hasMany(AttendanceRequest, { foreignKey: 'student_id' });
 AttendanceRequest.belongsTo(Student, { foreignKey: 'student_id' });
 
-// 18. Program and Student (Many-to-Many through ProgramRegistering) - Represents student enrollment in programs
-Program.belongsToMany(Student, {
-  through: ProgramRegistering,
-  foreignKey: 'program_id',
-  otherKey: 'student_id',
-  as: 'students'
-});
-Student.belongsToMany(Program, {
-  through: ProgramRegistering,
-  foreignKey: 'student_id',
-  otherKey: 'program_id',
-  as: 'programs'
-});
-
 // 19. IntakeModule and Student (Many-to-Many through ModuleEnroll) - Represents student enrollment in intake modules
 IntakeModule.belongsToMany(Student, {
   through: 'ModuleEnroll', // Replace with actual model if defined
@@ -123,10 +108,7 @@ export {
   Student,
   Program,
   Intake,
-  ProgramRegistering,
-  IntakeModule,
   Semester,
-  Class,
   Exam,
   Lecturer,
   Attendance,

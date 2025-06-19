@@ -2,7 +2,6 @@ import Program from '../models/Program.model.js';
 import Student from '../models/Student.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Module from '../models/Module.model.js';
-import ProgramRegistering from '../models/ProgramRegistering.model.js';
 
 const programService = {
   createProgram: async (programData) => {
@@ -71,13 +70,6 @@ const programService = {
       if (!program || !student) {
         throw new Error('Program or Student not found');
       }
-
-      // Create new program registration entry
-      await ProgramRegistering.create({
-        student_id: student_id,
-        program_id: program_id,
-        intake: new Date().getFullYear() // Current year as intake
-      });
 
       return { message: 'Student registered to program successfully' };
     } catch (error) {
