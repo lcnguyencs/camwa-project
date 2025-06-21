@@ -4,6 +4,8 @@ import Module from '../models/Module.model.js';
 import Semester from '../models/Semester.model.js';
 import Program from '../models/Program.model.js';
 import Lecturer from '../models/Lecturer.model.js';
+import sequelize from '../common/sequelize/connect.sequelize.js';
+import sequelize from '../config/database.js';
 
 const moduleRegistrationService = {
   // Create a new module registration
@@ -58,16 +60,16 @@ const moduleRegistrationService = {
       throw new Error('Error finding module registration: ' + error.message);
     }
   },
-
   // Find registrations by student ID
   findRegistrationsByStudentId: async (student_id) => {
     try {
       const registrations = await ModuleRegistration.findAll({
         where: { student_id },
         include: [
-          { model: Module, attributes: ['module_id', 'name'] }
+          { model: Module, attributes: ['module_id', 'name'] },
+          { model: Lecturer, attributes: ['lecturer_id', 'name'] }
         ],
-        order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']]      
       });
       
       return registrations;

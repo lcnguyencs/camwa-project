@@ -51,9 +51,11 @@ router.delete('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrati
 
 // Routes accessible by admin, faculty, and lecturers
 router.get('/', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getAllRegistrations);
-router.get('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationById);
 router.get('/student/:student_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByStudentId);
 router.get('/module/:module_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByModuleId);
+router.get('/lecturer/:lecturer_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByLecturerId);
+// This route must be last to avoid conflicts with the above specific routes
+router.get('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationById);
 
 // CSV upload routes (Faculty Assistant only)
 // Standard endpoint with specific field name

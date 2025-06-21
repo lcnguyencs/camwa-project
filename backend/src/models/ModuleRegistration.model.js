@@ -73,8 +73,8 @@ Module.hasMany(ModuleRegistration, { foreignKey: 'module_id' });
 ModuleRegistration.belongsTo(Semester, { foreignKey: 'semester_id' });
 Semester.hasMany(ModuleRegistration, { foreignKey: 'semester_id' });
 
-ModuleRegistration.belongsTo(Module, { foreignKey: 'program_id' });
-Module.hasMany(ModuleRegistration, { foreignKey: 'program_id' });
+ModuleRegistration.belongsTo(Program, { foreignKey: 'program_id' });
+Program.hasMany(ModuleRegistration, { foreignKey: 'program_id' });
 
 ModuleRegistration.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 Lecturer.hasMany(ModuleRegistration, { foreignKey: 'lecturer_id' });

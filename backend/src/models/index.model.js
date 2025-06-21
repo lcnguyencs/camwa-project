@@ -10,6 +10,7 @@ import Notification from './Notification.model.js';
 import AttendanceRequest from './AttendanceRequest.model.js';
 import Module from './Module.model.js';
 import Exam from './Exam.model.js';
+import ModuleRegistration from './ModuleRegistration.model.js';
 
 // Define Associations
 
@@ -116,4 +117,5 @@ export {
   AttendanceRequest,
   Module,
   Exam,
+  ModuleRegistration,
 };
