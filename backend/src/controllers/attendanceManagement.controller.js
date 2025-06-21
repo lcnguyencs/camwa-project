@@ -9,7 +9,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const userRole = req.user?.role;
             
             // Validate required fields
-            if (!attendanceData.attendance_id || !attendanceData.student_id || !attendanceData.module_id || !attendanceData.attendance_status) {
+            if (!attendanceData.student_id || !attendanceData.module_id || !attendanceData.attendance_status) {
                 return res.status(400).json(responseError('Missing required fields: student_id, module_id, and attendance_status are required', 400));
             }
             
@@ -229,7 +229,101 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             console.error('Error processing attendance CSV:', error);
             res.status(500).json(responseError(error.message, 500));
         }
-    }
+    },    // Get exam eligibility for a student in a module
+    // This endpoint only retrieves existing eligibility records or calculated values
+    // It does not update the eligibility records in the database
+    getExamEligibility: async (req, res, next) => {
+        try {
+            const { moduleId, studentId } = req.query;
+            const userId = req.user?.uid;
+            const userRole = req.user?.role;
+            
+            if (!moduleId && !studentId) {
+                return res.status(400).json(responseError('Either moduleId or studentId must be provided', 400));
+            }
+            
+            // If user is a student, they can only view their own exam eligibility
+            if (userRole === 'STUDENT') {
+                // If studentId is provided, ensure it matches the user's ID
+                if (studentId && studentId !== userId) {
+                    return res.status(403).json(responseError('Students can only view their own exam eligibility records', 403));
+                }
+                
+                // If no studentId is provided, default to the user's ID
+                const studId = studentId || userId;
+                
+                if (moduleId) {
+                    // Get exam eligibility for a specific module - just retrieves, doesn't update
+                    const eligibility = await attendanceService.checkExamEligibility(studId, moduleId);
+                    
+                    // Include a note about eligibility records that may need to be updated by admin
+                    if (eligibility.examRecord._calculated) {
+                        eligibility.message = "This eligibility calculation is not yet saved. An administrator needs to update exam eligibility records.";
+                    }
+                    
+                    const resData = responseSuccess(eligibility, 'Exam eligibility retrieved successfully');
+                    res.status(resData.code).json(resData);
+                } else {
+                    // Get all exam eligibility records for the student
+                    const eligibilities = await attendanceService.getExamEligibilityByStudent(studId);
+                    const resData = responseSuccess(eligibilities, 'Exam eligibility records retrieved successfully');
+                    res.status(resData.code).json(resData);
+                }
+            } else {
+                // For admins, lecturers, and other staff
+                if (moduleId && studentId) {
+                    // Get exam eligibility for a specific student in a specific module
+                    const eligibility = await attendanceService.checkExamEligibility(studentId, moduleId);
+                    
+                    // Include a note about eligibility records that may need to be updated by admin
+                    if (eligibility.examRecord._calculated) {
+                        eligibility.message = "This eligibility calculation is not yet saved. Use the update API endpoint to save this calculation.";
+                    }
+                    
+                    const resData = responseSuccess(eligibility, 'Exam eligibility retrieved successfully');
+                    res.status(resData.code).json(resData);
+                } else if (moduleId) {
+                    // Get all exam eligibility records for a module
+                    const eligibilities = await attendanceService.getExamEligibilityByModule(moduleId);
+                    const resData = responseSuccess(eligibilities, 'Exam eligibility records for module retrieved successfully');
+                    res.status(resData.code).json(resData);
+                } else if (studentId) {
+                    // Get all exam eligibility records for a student
+                    const eligibilities = await attendanceService.getExamEligibilityByStudent(studentId);
+                    const resData = responseSuccess(eligibilities, 'Exam eligibility records for student retrieved successfully');
+                    res.status(resData.code).json(resData);
+                }
+            }
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },
+      // Update exam eligibility for all students in a module
+    // This is the only endpoint that should update exam eligibility records
+    // It should only be callable by admin or faculty
+    updateExamEligibility: async (req, res, next) => {
+        try {
+            const { moduleId } = req.params;
+            const userRole = req.user?.role;
+            
+            if (!moduleId) {
+                return res.status(400).json(responseError('Module ID is required', 400));
+            }
+            
+            // Only ADMIN and FACULTY can update exam eligibility
+            if (userRole !== 'ADMIN' && userRole !== 'FACULTY') {
+                return res.status(403).json(responseError('Only administrators or faculty members can update exam eligibility', 403));
+            }
+            
+            const results = await attendanceService.updateExamEligibilityForModule(moduleId);
+            const resData = responseSuccess(results, 'Exam eligibility updated successfully for module');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },
 };
 
 export default attendanceManagement;

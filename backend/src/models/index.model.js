@@ -9,6 +9,7 @@ import Iam from './Iam.model.js';
 import Notification from './Notification.model.js';
 import AttendanceRequest from './AttendanceRequest.model.js';
 import Module from './Module.model.js';
+import Exam from './Exam.model.js';
 
 // Define Associations
 
@@ -66,6 +67,10 @@ AttendanceRequest.belongsTo(Iam, { foreignKey: 'lecturer_id' });
 Student.hasMany(AttendanceRequest, { foreignKey: 'student_id' });
 AttendanceRequest.belongsTo(Student, { foreignKey: 'student_id' });
 
+// 15. Exam and Module Relationship (An Exam belongs to one Module)
+Exam.belongsTo(Module, { foreignKey: 'module_id' });
+Module.hasMany(Exam, { foreignKey: 'module_id' });
+
 // 16. IntakeModule and Student (Many-to-Many through ModuleEnroll) - Represents student enrollment in intake modules
 IntakeModule.belongsToMany(Student, {
   through: 'ModuleEnroll', // Replace with actual model if defined
@@ -92,6 +97,13 @@ IntakeModule.belongsTo(Program, { foreignKey: 'program_id' });
 Semester.hasMany(IntakeModule, { foreignKey: 'semster_id' });
 IntakeModule.belongsTo(Semester, { foreignKey: 'sem_id' });
 
+// Exam model relationships
+Module.hasMany(Exam, { foreignKey: 'module_id' });
+Exam.belongsTo(Module, { foreignKey: 'module_id' });
+
+Student.hasMany(Exam, { foreignKey: 'student_id' });
+Exam.belongsTo(Student, { foreignKey: 'student_id' });
+
 export {
   Student,
   Program,
@@ -103,4 +115,5 @@ export {
   Notification,
   AttendanceRequest,
   Module,
+  Exam,
 };

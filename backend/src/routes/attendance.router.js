@@ -112,4 +112,10 @@ attendanceRouter.post(
   attendanceController.createAttendanceFromCSV
 );
 
+// Exam eligibility endpoints
+// Get endpoint is accessible to all users with appropriate permissions
+attendanceRouter.get('/exam-eligibility', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), attendanceController.getExamEligibility);
+// Update endpoint is restricted to ADMIN and FACULTY only
+attendanceRouter.post('/exam-eligibility/module/:moduleId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.updateExamEligibility);
+
 export default attendanceRouter;

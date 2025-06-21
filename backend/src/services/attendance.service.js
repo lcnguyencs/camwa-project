@@ -1,7 +1,9 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
 import ModuleRegistration from '../models/ModuleRegistration.model.js';
+import Exam from '../models/Exam.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
+import { Op, Sequelize } from 'sequelize';
 
 const attendanceService = {
     // Get attendance by id
@@ -255,7 +257,189 @@ const attendanceService = {
             console.error('Error creating attendance from CSV:', error);
             throw new Error('Error creating attendance from CSV: ' + error.message);
         }
-    }
+    },
+    
+    // Calculate attendance rate for a student in a specific module
+    calculateAttendanceRate: async (studentId, moduleId) => {
+        try {
+            const attendanceRecords = await Attendance.findAll({
+                where: {
+                    student_id: studentId,
+                    module_id: moduleId
+                }
+            });
+            
+            if (attendanceRecords.length === 0) {
+                return 0; // No attendance records found
+            }
+            
+            const totalClasses = attendanceRecords.length;
+            const presentClasses = attendanceRecords.filter(record => 
+                record.attendance_status === 'present' || record.attendance_status === 'late' || record.attendance_status === 'excused'
+            ).length;
+            
+            const attendanceRate = (presentClasses / totalClasses) * 100;
+            return parseFloat(attendanceRate.toFixed(2)); // Return with 2 decimal places
+        } catch (error) {
+            console.error('Error calculating attendance rate:', error);
+            throw new Error('Error calculating attendance rate: ' + error.message);
+        }
+    },    // Check if a student is eligible for an exam in a specific module
+    // This function will only retrieve eligibility data, not update it
+    checkExamEligibility: async (studentId, moduleId) => {
+        try {
+            // Check if the student is registered for the module
+            const registration = await ModuleRegistration.findOne({
+                where: {
+                    student_id: studentId,
+                    module_id: moduleId
+                }
+            });
+            
+            if (!registration) {
+                throw new Error(`Student ${studentId} is not registered for module ${moduleId}`);
+            }
+            
+            // Calculate the current attendance rate (this doesn't update the database)
+            const attendanceRate = await attendanceService.calculateAttendanceRate(studentId, moduleId);
+            const isEligible = attendanceRate >= 80;
+            
+            // Find the existing exam record but don't create or update it
+            const examRecord = await Exam.findOne({
+                where: {
+                    student_id: studentId,
+                    module_id: moduleId
+                }
+            });
+            
+            return {
+                attendanceRate,
+                isEligible,
+                // Return the existing record if found, otherwise return calculated values
+                examRecord: examRecord || {
+                    student_id: studentId,
+                    module_id: moduleId,
+                    attendance_rate: attendanceRate,
+                    is_eligible: isEligible,
+                    // Mark that this record hasn't been saved yet
+                    _calculated: true
+                }
+            };
+        } catch (error) {
+            console.error('Error checking exam eligibility:', error);
+            throw new Error('Error checking exam eligibility: ' + error.message);
+        }
+    },
+      // Get all exam eligibility records for a module
+    getExamEligibilityByModule: async (moduleId) => {
+        try {
+            return await Exam.findAll({
+                where: {
+                    module_id: moduleId
+                },
+                order: [
+                    ['student_id', 'ASC']
+                ]
+            });
+        } catch (error) {
+            console.error('Error getting exam eligibility by module:', error);
+            // Return an empty array instead of throwing to prevent crashes
+            console.error(error);
+            return [];
+        }
+    },
+    
+    // Get all exam eligibility records for a student
+    getExamEligibilityByStudent: async (studentId) => {
+        try {
+            return await Exam.findAll({
+                where: {
+                    student_id: studentId
+                },
+                order: [
+                    ['module_id', 'ASC']
+                ]
+            });
+        } catch (error) {
+            console.error('Error getting exam eligibility by student:', error);
+            // Return an empty array instead of throwing to prevent crashes
+            console.error(error);
+            return [];
+        }
+    },    // Update exam eligibility for all students in a module
+    // This is the function that should be called via admin API to explicitly update exam eligibility
+    updateExamEligibilityForModule: async (moduleId) => {
+        try {
+            // Get all students registered for the module
+            const registrations = await ModuleRegistration.findAll({
+                where: {
+                    module_id: moduleId
+                }
+            });
+            
+            if (registrations.length === 0) {
+                throw new Error(`No students registered for module ${moduleId}`);
+            }
+            
+            const results = [];
+            
+            // Calculate and update eligibility for each student
+            for (const registration of registrations) {
+                try {
+                    // Calculate attendance rate for this student
+                    const attendanceRate = await attendanceService.calculateAttendanceRate(
+                        registration.student_id, 
+                        moduleId
+                    );
+                    
+                    // Determine eligibility based on 80% threshold
+                    const isEligible = attendanceRate >= 80;
+                    
+                    // Find existing record or create a new one
+                    let examRecord = await Exam.findOne({
+                        where: {
+                            student_id: registration.student_id,
+                            module_id: moduleId
+                        }
+                    });
+                    
+                    if (examRecord) {
+                        // Update existing record
+                        examRecord.attendance_rate = attendanceRate;
+                        examRecord.is_eligible = isEligible;
+                        await examRecord.save();
+                    } else {
+                        // Create new record
+                        examRecord = await Exam.create({
+                            student_id: registration.student_id,
+                            module_id: moduleId,
+                            attendance_rate: attendanceRate,
+                            is_eligible: isEligible
+                        });
+                    }
+                    
+                    results.push({
+                        attendanceRate,
+                        isEligible,
+                        examRecord
+                    });
+                } catch (studentError) {
+                    console.error(`Error processing student ${registration.student_id}:`, studentError);
+                    // Add error info but continue with other students
+                    results.push({
+                        student_id: registration.student_id,
+                        module_id: moduleId,
+                        error: studentError.message
+                    });
+                }
+            }
+            
+            return results;
+        } catch (error) {
+            console.error('Error updating exam eligibility for module:', error);
+            return []; // Return empty array instead of throwing to prevent app crash
+        }
+    },
 };
 
 export default attendanceService;
