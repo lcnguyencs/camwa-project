@@ -51,6 +51,7 @@ router.delete('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrati
 
 // Routes accessible by admin, faculty, and lecturers
 router.get('/', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getAllRegistrations);
+router.get('/my-modules', verifyTokenAndRole(['LECTURER']), moduleRegistrationController.getMyRegistrationModules);
 router.get('/student/:student_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByStudentId);
 router.get('/module/:module_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByModuleId);
 router.get('/lecturer/:lecturer_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByLecturerId);

@@ -28,26 +28,6 @@ const ModuleRegistration = sequelize.define('ModuleRegistration', {
       key: 'module_id'
     },
   },
-  module_name: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-  },
-  semester_id: {
-    type: DataTypes.STRING(36),
-    allowNull: false,
-    references: {
-      model: 'Semester',
-      key: 'sem_id'
-    },
-  },
-  program_id: {
-    type: DataTypes.STRING(20),
-    allowNull: false,
-    references: {
-      model: 'Program',
-      key: 'program_id'
-    },
-  },
   lecturer_id: {
     type: DataTypes.STRING(20),
     allowNull: false,
@@ -69,12 +49,6 @@ Student.hasMany(ModuleRegistration, { foreignKey: 'student_id' });
 
 ModuleRegistration.belongsTo(Module, { foreignKey: 'module_id' });
 Module.hasMany(ModuleRegistration, { foreignKey: 'module_id' });
-
-ModuleRegistration.belongsTo(Semester, { foreignKey: 'semester_id' });
-Semester.hasMany(ModuleRegistration, { foreignKey: 'semester_id' });
-
-ModuleRegistration.belongsTo(Program, { foreignKey: 'program_id' });
-Program.hasMany(ModuleRegistration, { foreignKey: 'program_id' });
 
 ModuleRegistration.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
 Lecturer.hasMany(ModuleRegistration, { foreignKey: 'lecturer_id' });

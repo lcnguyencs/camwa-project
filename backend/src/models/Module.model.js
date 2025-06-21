@@ -40,4 +40,14 @@ const Module = sequelize.define('Module', {
   tableName: 'module'  // Table name in the database
 });
 
+// Import related models for associations
+import Lecturer from './Lecturer.model.js';
+import Program from './Program.model.js';
+import Semester from './Semester.model.js';
+
+// Define associations
+Module.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
+Module.belongsTo(Program, { foreignKey: 'program_id' });
+Module.belongsTo(Semester, { foreignKey: 'semester_id' });
+
 export default Module;

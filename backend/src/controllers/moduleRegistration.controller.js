@@ -86,6 +86,42 @@ const moduleRegistrationController = {
     }
   },
 
+  // Get registrations by lecturer ID with student counts
+  getRegistrationsByLecturerId: async (req, res) => {
+    try {
+      const { lecturer_id } = req.params;
+      const lecturerModules = await moduleRegistrationService.getLecturerModulesWithStudentCount(lecturer_id);
+      res.status(200).json({
+        success: true,
+        message: 'Lecturer modules with student counts retrieved successfully',
+        data: lecturerModules
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Get my registration modules (for authenticated lecturer)
+  getMyRegistrationModules: async (req, res) => {
+    try {
+      const lecturer_id = req.user.uid; // Get lecturer ID from authenticated user
+      const lecturerModules = await moduleRegistrationService.getLecturerModulesWithStudentCount(lecturer_id);
+      res.status(200).json({
+        success: true,
+        message: 'My modules with student counts retrieved successfully',
+        data: lecturerModules
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
   // Update a registration
   updateRegistration: async (req, res) => {
     try {

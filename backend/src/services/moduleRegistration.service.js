@@ -5,7 +5,6 @@ import Semester from '../models/Semester.model.js';
 import Program from '../models/Program.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import sequelize from '../common/sequelize/connect.sequelize.js';
-import sequelize from '../config/database.js';
 
 const moduleRegistrationService = {
   // Create a new module registration
@@ -17,16 +16,20 @@ const moduleRegistrationService = {
       throw new Error('Error creating module registration: ' + error.message);
     }
   },
-
   // Get all registrations
   getAllRegistrations: async () => {
     try {
       const registrations = await ModuleRegistration.findAll({
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
-          { model: Module, attributes: ['module_id', 'name'] },
-          { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
-          { model: Program, attributes: ['program_id', 'name'] },
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'],
+            include: [
+              { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
+              { model: Program, attributes: ['program_id', 'name'] }
+            ]
+          },
           { model: Lecturer, attributes: ['lecturer_id', 'name'] }
         ],
         order: [['created_at', 'DESC']]
@@ -36,7 +39,6 @@ const moduleRegistrationService = {
       throw new Error('Error retrieving module registrations: ' + error.message);
     }
   },
-
   // Find registration by ID
   findRegistrationById: async (module_reg_id) => {
     try {
@@ -44,9 +46,14 @@ const moduleRegistrationService = {
         where: { module_reg_id },
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
-          { model: Module, attributes: ['module_id', 'name'] },
-          { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
-          { model: Program, attributes: ['program_id', 'name'] },
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'],
+            include: [
+              { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
+              { model: Program, attributes: ['program_id', 'name'] }
+            ]
+          },
           { model: Lecturer, attributes: ['lecturer_id', 'name'] }
         ]
       });
@@ -59,15 +66,16 @@ const moduleRegistrationService = {
     } catch (error) {
       throw new Error('Error finding module registration: ' + error.message);
     }
-  },
-  // Find registrations by student ID
+  },  // Find registrations by student ID
   findRegistrationsByStudentId: async (student_id) => {
     try {
       const registrations = await ModuleRegistration.findAll({
         where: { student_id },
         include: [
-          { model: Module, attributes: ['module_id', 'name'] },
-          { model: Lecturer, attributes: ['lecturer_id', 'name'] }
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'], 
+          }
         ],
         order: [['created_at', 'DESC']]      
       });
@@ -77,7 +85,6 @@ const moduleRegistrationService = {
       throw new Error('Error finding student registrations: ' + error.message);
     }
   },
-
   // Find registrations by module ID
   findRegistrationsByModuleId: async (module_id) => {
     try {
@@ -85,8 +92,14 @@ const moduleRegistrationService = {
         where: { module_id },
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
-          { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
-          { model: Program, attributes: ['program_id', 'name'] },
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'],
+            include: [
+              { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
+              { model: Program, attributes: ['program_id', 'name'] }
+            ]
+          },
           { model: Lecturer, attributes: ['lecturer_id', 'name'] }
         ],
         order: [['created_at', 'DESC']]
@@ -95,6 +108,35 @@ const moduleRegistrationService = {
       return registrations;
     } catch (error) {
       throw new Error('Error finding module registrations: ' + error.message);
+    }
+  },  // Get lecturer's modules with student counts
+  getLecturerModulesWithStudentCount: async (lecturer_id) => {
+    try {
+      const registrations = await ModuleRegistration.findAll({
+        where: { lecturer_id },
+        attributes: [
+          'module_id',
+          [sequelize.fn('COUNT', sequelize.col('ModuleRegistration.student_id')), 'student_count']
+        ],
+        include: [
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'],
+          }
+        ],
+        group: [
+          'ModuleRegistration.module_id', 
+          'Module.module_id',
+          'Module.name',
+          'Module.semester_id', 
+          'Module.program_id'
+        ],
+        order: [[{ model: Module }, 'name', 'ASC']]
+      });
+      
+      return registrations;
+    } catch (error) {
+      throw new Error('Error finding lecturer modules with student count: ' + error.message);
     }
   },
 
@@ -108,14 +150,18 @@ const moduleRegistrationService = {
       if (updated === 0) {
         throw new Error('Module registration not found or no changes made');
       }
-      
-      const updatedRegistration = await ModuleRegistration.findOne({
+        const updatedRegistration = await ModuleRegistration.findOne({
         where: { module_reg_id },
         include: [
           { model: Student, attributes: ['student_id', 'name'] },
-          { model: Module, attributes: ['module_id', 'name'] },
-          { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
-          { model: Program, attributes: ['program_id', 'name'] },
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'],
+            include: [
+              { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
+              { model: Program, attributes: ['program_id', 'name'] }
+            ]
+          },
           { model: Lecturer, attributes: ['lecturer_id', 'name'] }
         ]
       });
@@ -170,36 +216,47 @@ const moduleRegistrationService = {
         successful: [],
         failed: []
       };
-      
-      // Skip the header row and process each row
+        // Skip the header row and process each row
       for (let i = 2; i <= worksheet.rowCount; i++) {
         const row = worksheet.getRow(i);
         // Map CSV columns based on the format: StudentID,Email,Intake,Program,Name,moduleId,ModuleName,lecturer,semester
         const student_id = row.getCell(1).value?.toString(); // StudentID
         const module_id = row.getCell(6).value?.toString(); // moduleId
-        const module_name = row.getCell(7).value?.toString(); // ModuleName
-        const semester_id = row.getCell(9).value?.toString(); // semester
-        const program_id = row.getCell(4).value?.toString(); // Program
         const lecturer_id = row.getCell(8).value?.toString(); // lecturer
         
         // Skip empty rows or rows with missing required fields
-        if (!student_id || !module_id || !module_name || !semester_id || !program_id || !lecturer_id) {
+        if (!student_id || !module_id || !lecturer_id) {
           console.log(`Skipping row ${i} due to missing required fields`);
           results.failed.push({
             row: i,
-            error: 'Missing required fields'
+            error: 'Missing required fields (student_id, module_id, lecturer_id)'
           });
           continue;
         }
         
         try {
-          // Create registration record
+          // Verify that the module exists and get its details
+          const moduleExists = await Module.findOne({
+            where: { module_id },
+            include: [
+              { model: Semester, attributes: ['sem_id', 'start_date', 'end_date'] },
+              { model: Program, attributes: ['program_id', 'name'] }
+            ]
+          });
+          
+          if (!moduleExists) {
+            results.failed.push({
+              student_id,
+              module_id,
+              error: 'Module not found'
+            });
+            continue;
+          }
+          
+          // Create registration record with only the required fields
           const registrationData = {
             student_id,
             module_id,
-            module_name,
-            semester_id,
-            program_id,
             lecturer_id
           };
           
@@ -207,8 +264,7 @@ const moduleRegistrationService = {
           const existingRegistration = await ModuleRegistration.findOne({
             where: {
               student_id,
-              module_id,
-              semester_id
+              module_id
             }
           });
           
@@ -216,7 +272,6 @@ const moduleRegistrationService = {
             results.failed.push({
               student_id,
               module_id,
-              semester_id,
               error: 'Registration already exists'
             });
             continue;
@@ -229,9 +284,6 @@ const moduleRegistrationService = {
             module_reg_id: newRegistration.module_reg_id,
             student_id: newRegistration.student_id,
             module_id: newRegistration.module_id,
-            module_name: newRegistration.module_name,
-            semester_id: newRegistration.semester_id,
-            program_id: newRegistration.program_id,
             lecturer_id: newRegistration.lecturer_id
           });
         } catch (error) {
@@ -239,7 +291,6 @@ const moduleRegistrationService = {
           results.failed.push({
             student_id,
             module_id,
-            semester_id,
             error: error.message
           });
         }
