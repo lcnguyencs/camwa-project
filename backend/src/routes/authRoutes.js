@@ -1,6 +1,6 @@
 import express from 'express';
 import { loginUser, refreshToken, logOutUser } from '../controllers/authController.js';
-import { authenticateJWT, verifyTokenAndRole } from '../middleware/authMiddleware.js';
+import { authenticateJWT, verifyTokenAndRole, getUserRole } from '../middleware/authMiddleware.js';
 
 const authRoutes = express.Router();
 
@@ -10,6 +10,9 @@ authRoutes.post('/refresh-token', refreshToken);
 
 // Protected routes - require authentication
 authRoutes.post('/logout', authenticateJWT, logOutUser);
+
+// Test route to verify token and get role
+authRoutes.get('/verify-role', getUserRole);
 
 // Role-based dashboard routes
 authRoutes.get('/ADMIN-dashboard', verifyTokenAndRole(['ADMIN']), (req, res) => {

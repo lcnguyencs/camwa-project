@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import Iam from '../models/Iam.model.js';
+import AcademicCoordinator from '../models/AcademicCoordinator.model.js';
 import { UnauthorizedError, NotFoundError } from '../common/helpers/error.helper.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -14,18 +15,30 @@ const authService = {
     const user = await Iam.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundError('User not found');
-    }
-
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    }    const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       throw new UnauthorizedError('Invalid credentials');
+    }
+
+    // Determine the role to use in the token
+    let roleForToken = user.role;
+    
+    // If user has AC role, get the current_role from AcademicCoordinator table
+    if (user.role === 'AC') {
+      const academicCoordinator = await AcademicCoordinator.findOne({ 
+        where: { ac_id: user.iam_id } 
+      });
+      
+      if (academicCoordinator) {
+        roleForToken = academicCoordinator.current_role;
+      }
     }
 
     // Generate tokens
     const accessToken = jwt.sign(
       { uid: user.iam_id, 
         email: user.email, 
-        role: user.role, 
+        role: roleForToken, 
         username: user.username},
       JWT_SECRET,
       { expiresIn: '1h' }
@@ -38,12 +51,10 @@ const authService = {
     );
 
     // Store refresh token in database
-    await user.update({ refresh_token: refreshToken });
-
-    return {
+    await user.update({ refresh_token: refreshToken });    return {
       accessToken,
       refreshToken,
-      role: user.role,
+      role: roleForToken,
       username: user.username
     };
   },
@@ -56,15 +67,27 @@ const authService = {
     const user = await Iam.findOne({ where: { refresh_token: refreshToken } });
     if (!user) {
       throw new UnauthorizedError('Invalid refresh token');
-    }
-
-    try {
+    }    try {
       const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+      
+      // Determine the role to use in the token
+      let roleForToken = user.role;
+      
+      // If user has AC role, get the current_role from AcademicCoordinator table
+      if (user.role === 'AC') {
+        const academicCoordinator = await AcademicCoordinator.findOne({ 
+          where: { ac_id: user.iam_id } 
+        });
+        
+        if (academicCoordinator) {
+          roleForToken = academicCoordinator.current_role;
+        }
+      }
       
       const accessToken = jwt.sign(
         { uid: user.iam_id, 
           email: user.email, 
-          role: user.role, 
+          role: roleForToken, 
           username: user.username },
         JWT_SECRET,
         { expiresIn: '1h' }
