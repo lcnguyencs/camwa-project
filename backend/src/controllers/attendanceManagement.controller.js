@@ -324,6 +324,125 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             res.status(resError.code).json(resError);
         }
     },
+
+    // Update exam eligibility for all students in all modules
+    // This endpoint updates exam eligibility records for all modules at once
+    // It should only be callable by admin or faculty
+    updateExamEligibilityForAllModules: async (req, res, next) => {
+        try {
+            const userRole = req.user?.role;
+            
+            // Only ADMIN and FACULTY can update exam eligibility
+            if (userRole !== 'ADMIN' && userRole !== 'FACULTY') {
+                return res.status(403).json(responseError('Only administrators or faculty members can update exam eligibility', 403));
+            }
+              const results = await attendanceService.updateExamEligibilityForAllModules();
+            const resData = responseSuccess(
+                results, 
+                `Exam eligibility updated for all modules. Processed ${results.summary.total_modules_processed} modules. ${results.summary.total_students_success} students eligible, ${results.summary.total_students_failed} students ineligible for exams.`
+            );
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },    // Update exam eligibility for all students in lecturer's modules only
+    // This endpoint updates exam eligibility records for lecturer's modules only
+    // It should only be callable by lecturers for their own modules
+    updateExamEligibilityForMyModules: async (req, res, next) => {
+        try {
+            const userRole = req.user?.role;
+            const lecturerId = req.user?.uid;
+            
+            // Only LECTURER can access this endpoint
+            if (userRole !== 'LECTURER') {
+                return res.status(403).json(responseError('This endpoint is only accessible by lecturers', 403));
+            }
+            
+            if (!lecturerId) {
+                return res.status(400).json(responseError('Lecturer ID is required', 400));
+            }
+            
+            const results = await attendanceService.updateExamEligibilityForLecturerModules(lecturerId);
+            const resData = responseSuccess(
+                results, 
+                `Exam eligibility updated for your modules. Processed ${results.summary.total_modules_processed} modules. ${results.summary.total_students_success} students eligible, ${results.summary.total_students_failed} students ineligible for exams.`
+            );
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },    // Export exam eligibility data to Excel files
+    // This endpoint exports exam eligibility data to Excel files (one per module)
+    // Only accessible by ADMIN and FACULTY
+    exportExamEligibilityToExcel: async (req, res, next) => {        try {
+            const userRole = req.user?.role;
+            
+            // Only ADMIN and FACULTY can access this endpoint
+            if (!['ADMIN', 'FACULTY'].includes(userRole)) {
+                return res.status(403).json(responseError('This endpoint is only accessible by administrators and faculty', 403));
+            }
+            
+            const exportResults = await attendanceService.exportExamEligibilityToExcel();
+            
+            const resData = responseSuccess(
+                {
+                    export_summary: {
+                        total_modules_processed: exportResults.totalModules,
+                        successful_exports: exportResults.successfulExports,
+                        failed_exports: exportResults.failedExports,
+                        export_directory: exportResults.exportDirectory
+                    },
+                    export_results: exportResults.results
+                }, 
+                `Export completed successfully. Generated ${exportResults.successfulExports} Excel files out of ${exportResults.totalModules} modules processed.`
+            );
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Export exam eligibility data to Excel files for lecturer's modules
+    // This endpoint exports exam eligibility data to Excel files for a lecturer's modules only
+    // Only accessible by LECTURER
+    exportExamEligibilityForMyModulesToExcel: async (req, res, next) => {
+        try {
+            const userRole = req.user?.role;
+            const lecturerId = req.user?.uid;
+            
+            // Only LECTURER can access this endpoint
+            if (userRole !== 'LECTURER') {
+                return res.status(403).json(responseError('This endpoint is only accessible by lecturers', 403));
+            }
+            
+            if (!lecturerId) {
+                return res.status(400).json(responseError('Lecturer ID is required', 400));
+            }
+            
+            const exportResults = await attendanceService.exportExamEligibilityForLecturerToExcel(lecturerId);
+            
+            const resData = responseSuccess(
+                {
+                    lecturer_id: lecturerId,
+                    export_summary: {
+                        total_modules_processed: exportResults.totalModules,
+                        successful_exports: exportResults.successfulExports,
+                        failed_exports: exportResults.failedExports,
+                        export_directory: exportResults.exportDirectory
+                    },
+                    export_results: exportResults.results
+                }, 
+                `Export completed successfully for lecturer ${lecturerId}. Generated ${exportResults.successfulExports} Excel files out of ${exportResults.totalModules} modules processed.`
+            );
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },
 };
 
 export default attendanceManagement;

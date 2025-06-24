@@ -24,6 +24,31 @@ studentRouter.get('/:student_id', studentController.findStudentById);
 studentRouter.delete('/:student_id', studentController.deleteStudent);
 studentRouter.put('/:student_id', studentController.updateStudent);
 
+// Student-specific API endpoints
+// Get student's registered modules with attendance rates
+studentRouter.get('/:student_id/modules-with-attendance', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), 
+  studentController.getStudentModulesWithAttendanceRate
+);
+
+// Get my modules with attendance rates (for authenticated student)
+studentRouter.get('/my/modules-with-attendance', 
+  verifyTokenAndRole(['STUDENT']), 
+  studentController.getMyModulesWithAttendanceRate
+);
+
+// Get student's exam eligibility status
+studentRouter.get('/:student_id/exam-eligibility-status', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), 
+  studentController.getStudentExamEligibilityStatus
+);
+
+// Get my exam eligibility status (for authenticated student)
+studentRouter.get('/my/exam-eligibility-status', 
+  verifyTokenAndRole(['STUDENT']), 
+  studentController.getMyExamEligibilityStatus
+);
+
 // New endpoints for CSV upload
 
 // Endpoint with specific field name

@@ -85,15 +85,30 @@ const moduleRegistrationController = {
       });
     }
   },
-
   // Get registrations by lecturer ID with student counts
   getRegistrationsByLecturerId: async (req, res) => {
     try {
       const { lecturer_id } = req.params;
-      const lecturerModules = await moduleRegistrationService.getLecturerModulesWithStudentCount(lecturer_id);
+      const userRole = req.user.role;
+      const authenticatedLecturerId = req.user.uid;
+      
+      // For LECTURER role, only allow viewing their own classes
+      // For ADMIN/FACULTY roles, allow viewing any lecturer's classes
+      let targetLecturerId = lecturer_id;
+      if (userRole === 'LECTURER') {
+        // Lecturers can only view their own classes
+        if (lecturer_id !== authenticatedLecturerId) {
+          return res.status(403).json({
+            success: false,
+            message: 'Access denied: You can only view your own classes'
+          });
+        }
+        targetLecturerId = authenticatedLecturerId;
+      }
+        const lecturerModules = await moduleRegistrationService.getLecturerModulesWithStudentCount(targetLecturerId);
       res.status(200).json({
         success: true,
-        message: 'Lecturer modules with student counts retrieved successfully',
+        message: 'Lecturer modules with student counts and attendance rates retrieved successfully',
         data: lecturerModules
       });
     } catch (error) {
@@ -107,12 +122,28 @@ const moduleRegistrationController = {
   // Get my registration modules (for authenticated lecturer)
   getMyRegistrationModules: async (req, res) => {
     try {
-      const lecturer_id = req.user.uid; // Get lecturer ID from authenticated user
-      const lecturerModules = await moduleRegistrationService.getLecturerModulesWithStudentCount(lecturer_id);
+      const lecturer_id = req.user.uid; // Get lecturer ID from authenticated user      const lecturerModules = await moduleRegistrationService.getLecturerModulesWithStudentCount(lecturer_id);
       res.status(200).json({
         success: true,
-        message: 'My modules with student counts retrieved successfully',
+        message: 'My modules with student counts and attendance rates retrieved successfully',
         data: lecturerModules
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Get all registration modules with attendance rates (Admin/Faculty only)
+  getAllModulesWithAttendanceRate: async (req, res) => {
+    try {
+      const allModules = await moduleRegistrationService.getAllModulesWithStudentCountAndAttendanceRate();
+      res.status(200).json({
+        success: true,
+        message: 'All registered modules with student counts and attendance rates retrieved successfully',
+        data: allModules
       });
     } catch (error) {
       res.status(400).json({
@@ -165,8 +196,7 @@ const moduleRegistrationController = {
       if (!req.file) {
         return res.status(400).json({
           success: false,
-          message: 'No CSV file uploaded. Make sure to include a file field with your CSV file.'
-        });
+          message: 'No CSV file uploaded. Make sure to include a file field with your CSV file.'        });
       }
 
       console.log('File uploaded:', req.file);
@@ -182,6 +212,64 @@ const moduleRegistrationController = {
       });
     } catch (error) {
       console.error('Error processing CSV:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Export student list of a module to Excel file
+  exportStudentList: async (req, res) => {
+    try {
+      const { module_id } = req.params;
+      const userRole = req.user?.role;
+      const userId = req.user?.uid;
+
+      if (!module_id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Module ID is required'
+        });
+      }
+
+      let lecturerId = null;
+
+      // If user is a lecturer, they can only export their own modules
+      if (userRole === 'LECTURER') {
+        lecturerId = userId;
+        
+        // Verify the lecturer teaches this module
+        const lecturerModules = await moduleRegistrationService.findRegistrationsByModuleId(module_id);
+        const hasAccess = lecturerModules.some(reg => reg.lecturer_id === lecturerId);
+        
+        if (!hasAccess) {
+          return res.status(403).json({
+            success: false,
+            message: 'You can only export student lists for modules you teach'
+          });
+        }
+      }
+
+      // Export the student list
+      const exportResult = await moduleRegistrationService.exportStudentListToExcel(module_id, lecturerId);
+      
+      res.status(200).json({
+        success: true,
+        message: `Student list exported successfully for module ${module_id}. File contains ${exportResult.studentsCount} students.`,
+        data: {
+          module_id: exportResult.module_id,
+          module_name: exportResult.module_name,
+          lecturer_id: exportResult.lecturer_id,
+          lecturer_name: exportResult.lecturer_name,
+          fileName: exportResult.fileName,
+          filePath: exportResult.filePath,
+          studentsCount: exportResult.studentsCount,
+          exportDirectory: exportResult.exportDirectory
+        }
+      });
+    } catch (error) {
+      console.error('Error exporting student list:', error);
       res.status(500).json({
         success: false,
         message: error.message

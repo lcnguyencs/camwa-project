@@ -4,7 +4,9 @@ import Module from '../models/Module.model.js';
 import Semester from '../models/Semester.model.js';
 import Program from '../models/Program.model.js';
 import Lecturer from '../models/Lecturer.model.js';
+import Attendance from '../models/Attendance.model.js';
 import sequelize from '../common/sequelize/connect.sequelize.js';
+import { Op } from 'sequelize';
 
 const moduleRegistrationService = {
   // Create a new module registration
@@ -109,7 +111,7 @@ const moduleRegistrationService = {
     } catch (error) {
       throw new Error('Error finding module registrations: ' + error.message);
     }
-  },  // Get lecturer's modules with student counts
+  },  // Get lecturer's modules with student counts and attendance rates
   getLecturerModulesWithStudentCount: async (lecturer_id) => {
     try {
       const registrations = await ModuleRegistration.findAll({
@@ -134,9 +136,118 @@ const moduleRegistrationService = {
         order: [[{ model: Module }, 'name', 'ASC']]
       });
       
-      return registrations;
+      // Calculate attendance rate for each module
+      const modulesWithAttendanceRate = await Promise.all(
+        registrations.map(async (registration) => {
+          const moduleId = registration.module_id;
+          
+          // Get total attendance records for this module
+          const totalAttendanceCount = await Attendance.count({
+            where: { module_id: moduleId }
+          });
+            // Get non-absent attendance records for this module (present, late, excused)
+          const nonAbsentAttendanceCount = await Attendance.count({
+            where: { 
+              module_id: moduleId,
+              attendance_status: {
+                [Op.in]: ['present', 'late', 'excused']
+              }
+            }
+          });
+
+          const absentCount = totalAttendanceCount - nonAbsentAttendanceCount;
+
+          // Calculate attendance rate
+          const attendanceRate = totalAttendanceCount > 0 
+            ? ((nonAbsentAttendanceCount / totalAttendanceCount) * 100).toFixed(2)
+            : '0.00';
+          
+          return {
+            ...registration.toJSON(),
+            attendance_rate: `${attendanceRate}%`,
+            total_attendance_records: totalAttendanceCount,
+            absent_count: absentCount
+          };
+        })
+      );
+      
+      return modulesWithAttendanceRate;
     } catch (error) {
-      throw new Error('Error finding lecturer modules with student count: ' + error.message);
+      throw new Error('Error finding lecturer modules with student count and attendance rate: ' + error.message);
+    }
+  },
+
+  // Get all modules with student counts and attendance rates (Admin/Faculty only)
+  getAllModulesWithStudentCountAndAttendanceRate: async () => {
+    try {
+      const registrations = await ModuleRegistration.findAll({
+        attributes: [
+          'module_id',
+          'lecturer_id',
+          [sequelize.fn('COUNT', sequelize.col('ModuleRegistration.student_id')), 'student_count']
+        ],
+        include: [
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name', 'semester_id', 'program_id'],
+          },
+          { 
+            model: Lecturer, 
+            attributes: ['lecturer_id', 'name']
+          }
+        ],
+        group: [
+          'ModuleRegistration.module_id',
+          'ModuleRegistration.lecturer_id',
+          'Module.module_id',
+          'Module.name',
+          'Module.semester_id', 
+          'Module.program_id',
+          'Lecturer.lecturer_id',
+          'Lecturer.name'
+        ],
+        order: [[{ model: Module }, 'name', 'ASC']]
+      });
+      
+      // Calculate attendance rate for each module
+      const modulesWithAttendanceRate = await Promise.all(
+        registrations.map(async (registration) => {
+          const moduleId = registration.module_id;
+          
+          // Get total attendance records for this module
+          const totalAttendanceCount = await Attendance.count({
+            where: { module_id: moduleId }
+          });
+          
+          // Get non-absent attendance records for this module (present, late, excused)
+          const nonAbsentAttendanceCount = await Attendance.count({
+            where: { 
+              module_id: moduleId,
+              attendance_status: {
+                [Op.in]: ['present', 'late', 'excused']
+              }
+            }
+          });
+
+          const absentCount = totalAttendanceCount - nonAbsentAttendanceCount;
+
+          // Calculate attendance rate
+          const attendanceRate = totalAttendanceCount > 0 
+            ? ((nonAbsentAttendanceCount / totalAttendanceCount) * 100).toFixed(2)
+            : '0.00';
+          
+          return {
+            ...registration.toJSON(),
+            attendance_rate: `${attendanceRate}%`,
+            total_attendance_records: totalAttendanceCount,
+            absent_count: absentCount
+          };
+        })
+      );
+      
+      return modulesWithAttendanceRate;
+    } catch (error) {
+      throw new Error('Error finding all modules with student count and attendance rate: ' + error.message);
     }
   },
 
@@ -301,7 +412,126 @@ const moduleRegistrationService = {
       console.error('Error creating registrations from CSV:', error);
       throw new Error('Error creating registrations from CSV: ' + error.message);
     }
-  }
+  },
+
+  // Export student list of a module to Excel file
+  exportStudentListToExcel: async (moduleId, lecturerId = null) => {
+    try {
+      const path = await import('path');
+      const fs = await import('fs/promises');
+      const Excel = (await import('exceljs')).default;
+
+      // Build query conditions
+      const whereCondition = { module_id: moduleId };
+      if (lecturerId) {
+        whereCondition.lecturer_id = lecturerId;
+      }
+
+      // Get all registrations for the module
+      const registrations = await ModuleRegistration.findAll({
+        where: whereCondition,
+        include: [
+          { 
+            model: Student, 
+            attributes: ['student_id', 'name'] 
+          },
+          { 
+            model: Module, 
+            attributes: ['module_id', 'name'] 
+          },
+          { 
+            model: Lecturer, 
+            attributes: ['lecturer_id', 'name'] 
+          }
+        ],
+        order: [['student_id', 'ASC']]
+      });
+
+      if (registrations.length === 0) {
+        throw new Error(`No students found for module ${moduleId}${lecturerId ? ` with lecturer ${lecturerId}` : ''}`);
+      }
+
+      // Create the export directory if it doesn't exist
+      const exportDir = path.resolve(process.cwd(), 'student lists');
+      try {
+        await fs.access(exportDir);
+      } catch {
+        await fs.mkdir(exportDir, { recursive: true });
+      }
+
+      // Get module info from the first registration
+      const moduleInfo = registrations[0].Module;
+      const lecturerInfo = registrations[0].Lecturer;
+
+      // Create Excel workbook and worksheet
+      const workbook = new Excel.Workbook();
+      const worksheet = workbook.addWorksheet(`${moduleId}_Student_List`);
+
+      // Set up headers
+      worksheet.columns = [
+        { header: 'Module ID', key: 'module_id', width: 15 },
+        { header: 'Module Name', key: 'module_name', width: 30 },
+        { header: 'Lecturer ID', key: 'lecturer_id', width: 15 },
+        { header: 'Student ID', key: 'student_id', width: 15 },
+        { header: 'Student Name', key: 'student_name', width: 25 },
+        { header: 'Created At', key: 'created_at', width: 20 },
+        { header: 'Updated At', key: 'updated_at', width: 20 }
+      ];
+
+      // Style the headers
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
+      };
+
+      // Add data to worksheet
+      registrations.forEach(registration => {
+        const row = worksheet.addRow({
+          module_id: moduleId,
+          module_name: moduleInfo.name,
+          lecturer_id: registration.lecturer_id,
+          student_id: registration.student_id,
+          student_name: registration.Student.name,
+          created_at: registration.created_at?.toISOString().split('T')[0] || 'N/A',
+          updated_at: registration.updated_at?.toISOString().split('T')[0] || 'N/A'
+        });
+        
+        // Add alternating row colors for better readability
+        if (row.number % 2 === 0) {
+          row.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8F8F8' }
+          };
+        }
+      });
+
+      // Auto-fit columns
+      worksheet.columns.forEach(column => {
+        column.width = Math.max(column.width || 10, 12);
+      });
+
+      // Save the file with naming pattern: Student_List_of_{module_id}.xlsx
+      const fileName = `Student_List_of_${moduleId}.xlsx`;
+      const filePath = path.join(exportDir, fileName);
+      await workbook.xlsx.writeFile(filePath);      return {
+        module_id: moduleId,
+        module_name: moduleInfo.name,
+        lecturer_id: registrations[0].lecturer_id,
+        lecturer_name: lecturerInfo.name,
+        fileName: fileName,
+        filePath: filePath,
+        studentsCount: registrations.length,
+        exportDirectory: exportDir
+      };
+
+    } catch (error) {
+      console.error('Error exporting student list to Excel:', error);
+      throw new Error('Error exporting student list to Excel: ' + error.message);
+    }
+  },
 };
 
 export default moduleRegistrationService;

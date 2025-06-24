@@ -117,5 +117,13 @@ attendanceRouter.post(
 attendanceRouter.get('/exam-eligibility', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), attendanceController.getExamEligibility);
 // Update endpoint is restricted to ADMIN and FACULTY only
 attendanceRouter.post('/exam-eligibility/module/:moduleId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.updateExamEligibility);
+// Update exam eligibility for all modules at once (Admin/Faculty only)
+attendanceRouter.post('/exam-eligibility/update-all-modules', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.updateExamEligibilityForAllModules);
+// Update exam eligibility for lecturer's own modules only (Lecturer only)
+attendanceRouter.post('/exam-eligibility/update-my-modules', verifyTokenAndRole(['LECTURER']), attendanceController.updateExamEligibilityForMyModules);
+// Export exam eligibility data to Excel files (Admin/Faculty only)
+attendanceRouter.post('/exam-eligibility/export', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.exportExamEligibilityToExcel);
+// Export exam eligibility data to Excel files for lecturer's modules only (Lecturer only)
+attendanceRouter.post('/exam-eligibility/export-my-modules', verifyTokenAndRole(['LECTURER']), attendanceController.exportExamEligibilityForMyModulesToExcel);
 
 export default attendanceRouter;

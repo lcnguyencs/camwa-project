@@ -1,6 +1,9 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
 import ModuleRegistration from '../models/ModuleRegistration.model.js';
+import Student from '../models/Student.model.js';
+import Module from '../models/Module.model.js';
+import Lecturer from '../models/Lecturer.model.js';
 import Exam from '../models/Exam.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 import { Op, Sequelize } from 'sequelize';
@@ -438,6 +441,547 @@ const attendanceService = {
         } catch (error) {
             console.error('Error updating exam eligibility for module:', error);
             return []; // Return empty array instead of throwing to prevent app crash
+        }
+    },
+
+    // Update exam eligibility for all modules at once
+    // This function will update exam eligibility for all students in all modules
+    updateExamEligibilityForAllModules: async () => {
+        try {
+            // Get all unique module IDs from module registrations
+            const modules = await ModuleRegistration.findAll({
+                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('module_id')), 'module_id']],
+                raw: true
+            });
+
+            if (modules.length === 0) {
+                throw new Error('No modules found with registrations');
+            }
+
+            const allResults = [];
+            let successCount = 0;
+            let failureCount = 0;            // Process each module
+            for (const module of modules) {
+                try {
+                    console.log(`Processing module: ${module.module_id}`);
+                    
+                    // Use the existing updateExamEligibilityForModule method
+                    const moduleResults = await attendanceService.updateExamEligibilityForModule(module.module_id);
+                      // Count eligible and ineligible students for this module
+                    const moduleEligible = moduleResults.filter(result => !result.error && result.isEligible === true).length;
+                    const moduleIneligible = moduleResults.filter(result => !result.error && result.isEligible === false).length;
+                    const moduleErrors = moduleResults.filter(result => result.error).length;
+                    
+                    // Calculate success attendance rate for this module
+                    const totalStudentsProcessed = moduleEligible + moduleIneligible;
+                    const moduleSuccessRate = totalStudentsProcessed > 0 
+                        ? ((moduleEligible / totalStudentsProcessed) * 100).toFixed(2) + '%'
+                        : '0%';
+                    
+                    successCount += moduleEligible;
+                    failureCount += moduleIneligible;allResults.push({
+                        module_id: module.module_id,
+                        students_processed: moduleResults.length,
+                        students_success: moduleEligible,
+                        students_failed: moduleIneligible,
+                        students_with_errors: moduleErrors,
+                        success_attendance_rate: moduleSuccessRate,
+                        results: moduleResults
+                    });                } catch (moduleError) {
+                    console.error(`Error processing module ${module.module_id}:`, moduleError);
+                    allResults.push({
+                        module_id: module.module_id,
+                        error: moduleError.message,
+                        students_processed: 0,
+                        students_success: 0,
+                        students_failed: 0,
+                        students_with_errors: 1,
+                        success_attendance_rate: '0%'
+                    });
+                }
+            }
+
+            return {
+                summary: {
+                    total_modules_processed: modules.length,
+                    total_students_success: successCount, // Students with >= 80% attendance (eligible)
+                    total_students_failed: failureCount, // Students with < 80% attendance (ineligible)
+                    success_rate: (successCount + failureCount) > 0 ? ((successCount / (successCount + failureCount)) * 100).toFixed(2) + '%' : '0%'
+                },
+                modules: allResults
+            };
+
+        } catch (error) {
+            console.error('Error updating exam eligibility for all modules:', error);
+            throw new Error('Error updating exam eligibility for all modules: ' + error.message);
+        }
+    },
+
+    // Update exam eligibility for all modules taught by a specific lecturer
+    // This function will update exam eligibility for all students in all modules taught by the lecturer
+    updateExamEligibilityForLecturerModules: async (lecturerId) => {
+        try {
+            // Get all unique module IDs for the specific lecturer from module registrations
+            const modules = await ModuleRegistration.findAll({
+                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('module_id')), 'module_id']],
+                where: { lecturer_id: lecturerId },
+                raw: true
+            });
+
+            if (modules.length === 0) {
+                throw new Error(`No modules found for lecturer ${lecturerId}`);
+            }
+
+            const allResults = [];
+            let successCount = 0;
+            let failureCount = 0;
+
+            // Process each module
+            for (const module of modules) {
+                try {
+                    console.log(`Processing module: ${module.module_id} for lecturer: ${lecturerId}`);
+                    
+                    // Use the existing updateExamEligibilityForModule method
+                    const moduleResults = await attendanceService.updateExamEligibilityForModule(module.module_id);
+                      // Count eligible and ineligible students for this module
+                    const moduleEligible = moduleResults.filter(result => !result.error && result.isEligible === true).length;
+                    const moduleIneligible = moduleResults.filter(result => !result.error && result.isEligible === false).length;
+                    const moduleErrors = moduleResults.filter(result => result.error).length;
+                    
+                    // Calculate success attendance rate for this module
+                    const totalStudentsProcessed = moduleEligible + moduleIneligible;
+                    const moduleSuccessRate = totalStudentsProcessed > 0 
+                        ? ((moduleEligible / totalStudentsProcessed) * 100).toFixed(2) + '%'
+                        : '0%';
+                    
+                    successCount += moduleEligible;
+                    failureCount += moduleIneligible;
+
+                    allResults.push({
+                        module_id: module.module_id,
+                        students_processed: moduleResults.length,
+                        students_success: moduleEligible,
+                        students_failed: moduleIneligible,
+                        students_with_errors: moduleErrors,
+                        success_attendance_rate: moduleSuccessRate,
+                        results: moduleResults
+                    });                } catch (moduleError) {
+                    console.error(`Error processing module ${module.module_id}:`, moduleError);
+                    allResults.push({
+                        module_id: module.module_id,
+                        error: moduleError.message,
+                        students_processed: 0,
+                        students_success: 0,
+                        students_failed: 0,
+                        students_with_errors: 1,
+                        success_attendance_rate: '0%'
+                    });
+                }
+            }
+
+            return {
+                lecturer_id: lecturerId,
+                summary: {
+                    total_modules_processed: modules.length,
+                    total_students_success: successCount, // Students with >= 80% attendance (eligible)
+                    total_students_failed: failureCount, // Students with < 80% attendance (ineligible)
+                    success_rate: (successCount + failureCount) > 0 ? ((successCount / (successCount + failureCount)) * 100).toFixed(2) + '%' : '0%'
+                },
+                modules: allResults
+            };
+
+        } catch (error) {
+            console.error('Error updating exam eligibility for lecturer modules:', error);
+            throw new Error('Error updating exam eligibility for lecturer modules: ' + error.message);
+        }
+    },    // Export exam eligibility data to Excel files for each module
+    exportExamEligibilityToExcel: async () => {
+        try {
+            const path = await import('path');
+            const fs = await import('fs/promises');
+            const Excel = (await import('exceljs')).default;
+
+            // First, update exam eligibility for all modules to get the latest data
+            const eligibilityData = await attendanceService.updateExamEligibilityForAllModules();
+
+            // Create the export directory if it doesn't exist
+            const exportDir = path.resolve(process.cwd(), 'eligibility for exam');
+            try {
+                await fs.access(exportDir);
+            } catch {
+                await fs.mkdir(exportDir, { recursive: true });
+            }
+
+            const exportResults = [];            // Process each module from the eligibility data
+            for (const moduleData of eligibilityData.modules) {
+                try {
+                    console.log(`Exporting eligibility data for module: ${moduleData.module_id}`);
+                    console.log(`Module data structure:`, JSON.stringify(moduleData, null, 2));
+                    
+                    // Check if there's an error with this module
+                    if (moduleData.error) {
+                        console.log(`Module ${moduleData.module_id} has error: ${moduleData.error}`);
+                        exportResults.push({
+                            module_id: moduleData.module_id,
+                            error: `Module processing error: ${moduleData.error}`,
+                            fileName: null,
+                            filePath: null
+                        });
+                        continue;
+                    }
+                    
+                    if (!moduleData.results || moduleData.results.length === 0) {
+                        console.log(`No students found for module: ${moduleData.module_id}`);
+                        console.log(`Module results:`, moduleData.results);
+                        continue;
+                    }
+
+                    // Get additional module and student information
+                    const moduleInfo = await ModuleRegistration.findOne({
+                        where: { module_id: moduleData.module_id },
+                        include: [
+                            { 
+                                model: Module, 
+                                attributes: ['module_id', 'name'] 
+                            },
+                            { 
+                                model: Lecturer, 
+                                attributes: ['lecturer_id', 'name'] 
+                            }
+                        ]
+                    });
+
+                    if (!moduleInfo) {
+                        console.log(`No module info found for: ${moduleData.module_id}`);
+                        continue;
+                    }
+
+                    // Create Excel workbook and worksheet
+                    const workbook = new Excel.Workbook();
+                    const worksheet = workbook.addWorksheet(`${moduleData.module_id}_Eligibility`);
+
+                    // Set up headers
+                    worksheet.columns = [
+                        { header: 'Module ID', key: 'module_id', width: 15 },
+                        { header: 'Module Name', key: 'module_name', width: 30 },
+                        { header: 'Lecturer ID', key: 'lecturer_id', width: 15 },
+                        { header: 'Student ID', key: 'student_id', width: 15 },
+                        { header: 'Student Name', key: 'student_name', width: 25 },
+                        { header: 'Attendance Rate', key: 'attendanceRate', width: 18 },
+                        { header: 'Is Eligible', key: 'isEligible', width: 12 }
+                    ];
+
+                    // Style the headers
+                    worksheet.getRow(1).font = { bold: true };
+                    worksheet.getRow(1).fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFE0E0E0' }
+                    };
+
+                    // Collect data for each student from the eligibility results
+                    const studentData = [];
+                    for (const studentResult of moduleData.results) {
+                        try {
+                            // Skip error entries
+                            if (studentResult.error) {
+                                console.log(`Skipping student with error: ${studentResult.error}`);
+                                continue;
+                            }
+
+                            // Get student information
+                            const student = await Student.findByPk(studentResult.examRecord.student_id, {
+                                attributes: ['student_id', 'name']
+                            });
+
+                            if (!student) {
+                                console.log(`Student not found: ${studentResult.examRecord.student_id}`);
+                                continue;
+                            }
+
+                            studentData.push({
+                                module_id: moduleData.module_id,
+                                module_name: moduleInfo.Module.name,
+                                lecturer_id: moduleInfo.lecturer_id,
+                                student_id: student.student_id,
+                                student_name: student.name,
+                                attendanceRate: `${studentResult.attendanceRate.toFixed(2)}%`,
+                                isEligible: studentResult.isEligible ? 'YES' : 'NO'
+                            });
+                        } catch (studentError) {
+                            console.error(`Error processing student data:`, studentError);
+                            continue;
+                        }
+                    }
+
+                    if (studentData.length === 0) {
+                        console.log(`No valid student data for module: ${moduleData.module_id}`);
+                        continue;
+                    }
+
+                    // Add data to worksheet
+                    studentData.forEach(data => {
+                        const row = worksheet.addRow(data);
+                        
+                        // Color code the eligibility column
+                        const eligibilityCell = row.getCell('isEligible');
+                        if (data.isEligible === 'YES') {
+                            eligibilityCell.fill = {
+                                type: 'pattern',
+                                pattern: 'solid',
+                                fgColor: { argb: 'FF90EE90' } // Light green
+                            };
+                        } else if (data.isEligible === 'NO') {
+                            eligibilityCell.fill = {
+                                type: 'pattern',
+                                pattern: 'solid',
+                                fgColor: { argb: 'FFFFCCCB' } // Light red
+                            };
+                        }
+                    });
+
+                    // Auto-fit columns
+                    worksheet.columns.forEach(column => {
+                        column.width = Math.max(column.width || 10, 12);
+                    });
+
+                    // Save the file
+                    const fileName = `${moduleData.module_id}_eligibility_for_exam.xlsx`;
+                    const filePath = path.join(exportDir, fileName);
+                    await workbook.xlsx.writeFile(filePath);
+
+                    exportResults.push({
+                        module_id: moduleData.module_id,
+                        fileName: fileName,
+                        filePath: filePath,
+                        studentsProcessed: studentData.length,
+                        studentsEligible: studentData.filter(s => s.isEligible === 'YES').length,
+                        studentsIneligible: studentData.filter(s => s.isEligible === 'NO').length,
+                        errors: 0
+                    });
+
+                } catch (moduleError) {
+                    console.error(`Error exporting module ${moduleData.module_id}:`, moduleError);
+                    exportResults.push({
+                        module_id: moduleData.module_id,
+                        error: moduleError.message,
+                        fileName: null,
+                        filePath: null
+                    });
+                }
+            }
+
+            return {
+                exportDirectory: exportDir,
+                totalModules: eligibilityData.modules.length,
+                successfulExports: exportResults.filter(r => !r.error).length,
+                failedExports: exportResults.filter(r => r.error).length,
+                results: exportResults
+            };
+
+        } catch (error) {
+            console.error('Error exporting exam eligibility to Excel:', error);
+            throw new Error('Error exporting exam eligibility to Excel: ' + error.message);
+        }
+    },
+
+    // Export exam eligibility data to Excel files for each module taught by a specific lecturer
+    exportExamEligibilityForLecturerToExcel: async (lecturerId) => {
+        try {
+            const path = await import('path');
+            const fs = await import('fs/promises');
+            const Excel = (await import('exceljs')).default;
+
+            // First, update exam eligibility for lecturer's modules to get the latest data
+            const eligibilityData = await attendanceService.updateExamEligibilityForLecturerModules(lecturerId);
+
+            // Create the export directory if it doesn't exist
+            const exportDir = path.resolve(process.cwd(), 'eligibility for exam');
+            try {
+                await fs.access(exportDir);
+            } catch {
+                await fs.mkdir(exportDir, { recursive: true });
+            }
+
+            const exportResults = [];
+
+            // Process each module from the eligibility data
+            for (const moduleData of eligibilityData.modules) {
+                try {
+                    console.log(`Exporting eligibility data for lecturer ${lecturerId}, module: ${moduleData.module_id}`);
+                    console.log(`Module data structure:`, JSON.stringify(moduleData, null, 2));
+                    
+                    // Check if there's an error with this module
+                    if (moduleData.error) {
+                        console.log(`Module ${moduleData.module_id} has error: ${moduleData.error}`);
+                        exportResults.push({
+                            module_id: moduleData.module_id,
+                            lecturer_id: lecturerId,
+                            error: `Module processing error: ${moduleData.error}`,
+                            fileName: null,
+                            filePath: null
+                        });
+                        continue;
+                    }
+                    
+                    if (!moduleData.results || moduleData.results.length === 0) {
+                        console.log(`No students found for module: ${moduleData.module_id}`);
+                        console.log(`Module results:`, moduleData.results);
+                        continue;
+                    }
+
+                    // Get additional module and student information
+                    const moduleInfo = await ModuleRegistration.findOne({
+                        where: { 
+                            module_id: moduleData.module_id,
+                            lecturer_id: lecturerId 
+                        },
+                        include: [
+                            { 
+                                model: Module, 
+                                attributes: ['module_id', 'name'] 
+                            },
+                            { 
+                                model: Lecturer, 
+                                attributes: ['lecturer_id', 'name'] 
+                            }
+                        ]
+                    });
+
+                    if (!moduleInfo) {
+                        console.log(`No module info found for lecturer ${lecturerId}, module: ${moduleData.module_id}`);
+                        continue;
+                    }
+
+                    // Create Excel workbook and worksheet
+                    const workbook = new Excel.Workbook();
+                    const worksheet = workbook.addWorksheet(`${moduleData.module_id}_Eligibility`);
+
+                    // Set up headers
+                    worksheet.columns = [
+                        { header: 'Module ID', key: 'module_id', width: 15 },
+                        { header: 'Module Name', key: 'module_name', width: 30 },
+                        { header: 'Lecturer ID', key: 'lecturer_id', width: 15 },
+                        { header: 'Student ID', key: 'student_id', width: 15 },
+                        { header: 'Student Name', key: 'student_name', width: 25 },
+                        { header: 'Attendance Rate', key: 'attendanceRate', width: 18 },
+                        { header: 'Is Eligible', key: 'isEligible', width: 12 }
+                    ];
+
+                    // Style the headers
+                    worksheet.getRow(1).font = { bold: true };
+                    worksheet.getRow(1).fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFE0E0E0' }
+                    };
+
+                    // Collect data for each student from the eligibility results
+                    const studentData = [];
+                    for (const studentResult of moduleData.results) {
+                        try {
+                            // Skip error entries
+                            if (studentResult.error) {
+                                console.log(`Skipping student with error: ${studentResult.error}`);
+                                continue;
+                            }
+
+                            // Get student information
+                            const student = await Student.findByPk(studentResult.examRecord.student_id, {
+                                attributes: ['student_id', 'name']
+                            });
+
+                            if (!student) {
+                                console.log(`Student not found: ${studentResult.examRecord.student_id}`);
+                                continue;
+                            }
+
+                            studentData.push({
+                                module_id: moduleData.module_id,
+                                module_name: moduleInfo.Module.name,
+                                lecturer_id: lecturerId,
+                                student_id: student.student_id,
+                                student_name: student.name,
+                                attendanceRate: `${studentResult.attendanceRate.toFixed(2)}%`,
+                                isEligible: studentResult.isEligible ? 'YES' : 'NO'
+                            });
+                        } catch (studentError) {
+                            console.error(`Error processing student data:`, studentError);
+                            continue;
+                        }
+                    }
+
+                    if (studentData.length === 0) {
+                        console.log(`No valid student data for module: ${moduleData.module_id}`);
+                        continue;
+                    }
+
+                    // Add data to worksheet
+                    studentData.forEach(data => {
+                        const row = worksheet.addRow(data);
+                        
+                        // Color code the eligibility column
+                        const eligibilityCell = row.getCell('isEligible');
+                        if (data.isEligible === 'YES') {
+                            eligibilityCell.fill = {
+                                type: 'pattern',
+                                pattern: 'solid',
+                                fgColor: { argb: 'FF90EE90' } // Light green
+                            };
+                        } else if (data.isEligible === 'NO') {
+                            eligibilityCell.fill = {
+                                type: 'pattern',
+                                pattern: 'solid',
+                                fgColor: { argb: 'FFFFCCCB' } // Light red
+                            };
+                        }
+                    });
+
+                    // Auto-fit columns
+                    worksheet.columns.forEach(column => {
+                        column.width = Math.max(column.width || 10, 12);
+                    });
+
+                    // Save the file with naming pattern: lecturer_id + module_id + eligibility_for_exam.xlsx
+                    const fileName = `${lecturerId}_${moduleData.module_id}_eligibility_for_exam.xlsx`;
+                    const filePath = path.join(exportDir, fileName);
+                    await workbook.xlsx.writeFile(filePath);
+
+                    exportResults.push({
+                        module_id: moduleData.module_id,
+                        lecturer_id: lecturerId,
+                        fileName: fileName,
+                        filePath: filePath,
+                        studentsProcessed: studentData.length,
+                        studentsEligible: studentData.filter(s => s.isEligible === 'YES').length,
+                        studentsIneligible: studentData.filter(s => s.isEligible === 'NO').length,
+                        errors: 0
+                    });
+
+                } catch (moduleError) {
+                    console.error(`Error exporting module ${moduleData.module_id} for lecturer ${lecturerId}:`, moduleError);
+                    exportResults.push({
+                        module_id: moduleData.module_id,
+                        lecturer_id: lecturerId,
+                        error: moduleError.message,
+                        fileName: null,
+                        filePath: null
+                    });
+                }
+            }
+
+            return {
+                lecturer_id: lecturerId,
+                exportDirectory: exportDir,
+                totalModules: eligibilityData.modules.length,
+                successfulExports: exportResults.filter(r => !r.error).length,
+                failedExports: exportResults.filter(r => r.error).length,
+                results: exportResults
+            };
+
+        } catch (error) {
+            console.error('Error exporting exam eligibility to Excel for lecturer:', error);
+            throw new Error('Error exporting exam eligibility to Excel for lecturer: ' + error.message);
         }
     },
 };

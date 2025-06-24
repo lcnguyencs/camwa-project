@@ -53,4 +53,10 @@ Exam.prototype.checkEligibility = function() {
   return this.attendance_rate >= 80;
 };
 
+// Import related models for associations
+import Module from './Module.model.js';
+
+// Define associations
+Exam.belongsTo(Module, { foreignKey: 'module_id' });
+
 export default Exam;
