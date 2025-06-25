@@ -1,7 +1,6 @@
 import express from 'express';
 import attendanceRouter from './attendance.router.js';
 import moduleRouter from './module.router.js';
-import notificationRouter from './notification.router.js';
 import authRoutes from './authRoutes.js';
 import studentRouter from './student.router.js';
 import lecturerRouter from './lecturer.route.js';
@@ -31,9 +30,6 @@ rootRoutes.use('/attendance', attendanceRouter);
 
 // Module routes
 rootRoutes.use('/module', moduleRouter);
-
-// Notification routes
-rootRoutes.use('/notification', notificationRouter);
 
 //Student routes
 rootRoutes.use('/student', studentRouter);

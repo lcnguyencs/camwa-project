@@ -5,7 +5,6 @@ import Semester from './Semester.model.js';
 import Lecturer from './Lecturer.model.js';
 import Attendance from './Attendance.model.js';
 import Iam from './Iam.model.js';
-import Notification from './Notification.model.js';
 import AttendanceRequest from './AttendanceRequest.model.js';
 import Module from './Module.model.js';
 import Exam from './Exam.model.js';
@@ -29,19 +28,11 @@ Module.belongsTo(Program, { foreignKey: 'program_id' });
 Student.hasMany(Attendance, { foreignKey: 'student_id' });
 Attendance.belongsTo(Student, { foreignKey: 'student_id' });
 
-// 5. Iam and Notification Relationship (An Iam entity sends many Notifications)
-Iam.hasMany(Notification, { foreignKey: 'sender_id' });
-Notification.belongsTo(Iam, { foreignKey: 'sender_id' });
-
-// 6. Student and Notification Relationship (A Student receives many Notifications)
-Student.hasMany(Notification, { foreignKey: 'receiver_id' });
-Notification.belongsTo(Student, { foreignKey: 'receiver_id' });
-
-// 7. Iam and AttendanceRequest Relationship (An Iam entity processes many Attendance Requests)
+// 5. Iam and AttendanceRequest Relationship (An Iam entity processes many Attendance Requests)
 Iam.hasMany(AttendanceRequest, { foreignKey: 'lecturer_id' });
 AttendanceRequest.belongsTo(Iam, { foreignKey: 'lecturer_id' });
 
-// 8. Student and AttendanceRequest Relationship (A Student makes many Attendance Requests)
+// 6. Student and AttendanceRequest Relationship (A Student makes many Attendance Requests)
 Student.hasMany(AttendanceRequest, { foreignKey: 'student_id' });
 AttendanceRequest.belongsTo(Student, { foreignKey: 'student_id' });
 
@@ -61,14 +52,12 @@ Student.hasMany(Exam, { foreignKey: 'student_id' });
 Exam.belongsTo(Student, { foreignKey: 'student_id' });
 
 export {
-  Student,
-  Program,
+  Student,  Program,
   Intake,
   Semester,
   Lecturer,
   Attendance,
   Iam,
-  Notification,
   AttendanceRequest,
   Module,
   Exam,
