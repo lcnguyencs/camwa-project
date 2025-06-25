@@ -193,6 +193,88 @@ const authService = {
     }
   },
 
+  toggleACRole: async (accessToken) => {
+    if (!accessToken) {
+      throw new UnauthorizedError('Access token required');
+    }
+
+    try {
+      // Verify and decode the access token
+      const decoded = jwt.verify(accessToken, JWT_SECRET);
+      const userId = decoded.uid;
+
+      // Find the user in the database
+      const user = await Iam.findOne({ where: { iam_id: userId } });
+      if (!user) {
+        throw new NotFoundError('User not found');
+      }
+
+      // Verify user has AC role
+      if (user.role !== 'AC') {
+        throw new UnauthorizedError('Only Academic Coordinators can toggle roles');
+      }
+
+      // Find the academic coordinator record
+      const academicCoordinator = await AcademicCoordinator.findOne({ 
+        where: { ac_id: user.iam_id } 
+      });
+
+      if (!academicCoordinator) {
+        throw new NotFoundError('Academic Coordinator record not found');
+      }
+
+      // Toggle the current_role
+      const newRole = academicCoordinator.current_role === 'AC' ? 'LECTURER' : 'AC';
+      
+      // Update the current_role in the database
+      await academicCoordinator.update({ current_role: newRole });
+
+      // Blacklist the current access token
+      tokenBlacklistService.blacklistToken(accessToken, decoded.exp * 1000);
+
+      // Clear the refresh token to force re-authentication
+      await user.update({ refresh_token: null });
+
+      // Generate new tokens with the updated role
+      const newAccessToken = jwt.sign(
+        { uid: user.iam_id, 
+          email: user.email, 
+          role: newRole, 
+          username: user.username},
+        JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      const newRefreshToken = jwt.sign(
+        { uid: user.iam_id },
+        JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      // Store new refresh token in database
+      await user.update({ refresh_token: newRefreshToken });
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        role: newRole,
+        username: user.username,
+        message: `Role toggled successfully to ${newRole}`,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      // Handle JWT verification errors
+      if (error.name === 'JsonWebTokenError') {
+        throw new UnauthorizedError('Invalid access token');
+      }
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedError('Access token has expired');
+      }
+      // Re-throw other errors (like database errors)
+      throw error;
+    }
+  },
+
   register: async (userData) => {
     const { username, email, password, role } = userData;
 

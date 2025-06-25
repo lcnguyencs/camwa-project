@@ -78,3 +78,25 @@ export const getBlacklistStats = async (req, res) => {
     return res.status(resData.code).json(resData);
   }
 };
+
+export const toggleACRole = async (req, res) => {
+  try {
+    // Extract access token from Authorization header
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    
+    if (!accessToken) {
+      const resData = responseError(
+        { message: 'Access token missing' }, 
+        'Role toggle failed'
+      );
+      return res.status(401).json(resData);
+    }
+
+    const result = await authService.toggleACRole(accessToken);
+    const resData = responseSuccess(result, 'Role toggled successfully');
+    return res.status(200).json(resData);
+  } catch (error) {
+    const resData = responseError(error, 'Role toggle failed');
+    return res.status(resData.code).json(resData);
+  }
+};
