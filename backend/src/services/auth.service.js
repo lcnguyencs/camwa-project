@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Iam from '../models/Iam.model.js';
 import AcademicCoordinator from '../models/AcademicCoordinator.model.js';
 import { UnauthorizedError, NotFoundError } from '../common/helpers/error.helper.js';
+import tokenBlacklistService from './tokenBlacklist.service.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret';
@@ -98,16 +99,98 @@ const authService = {
       await user.update({ refresh_token: null });
       throw new UnauthorizedError('Invalid refresh token');
     }
-  },
-
-  logOut: async (userId) => {
-    const user = await Iam.findOne({ where: { iam_id: userId } });
-    if (!user) {
-      throw new NotFoundError('User not found');
+  },  logOut: async (accessToken) => {
+    if (!accessToken) {
+      throw new UnauthorizedError('Access token required');
     }
 
-    await user.update({ refresh_token: null });
-    return { message: 'Logged out successfully' };
+    try {
+      // Verify and decode the access token to extract user ID
+      const decoded = jwt.verify(accessToken, JWT_SECRET);
+      const userId = decoded.uid;
+
+      // Find the user in the database
+      const user = await Iam.findOne({ where: { iam_id: userId } });
+      if (!user) {
+        throw new NotFoundError('User not found');
+      }
+
+      // Additional security check: ensure the token wasn't already invalidated
+      if (!user.refresh_token) {
+        // User might already be logged out, but we'll treat this as success
+        // to prevent information leakage about user session state
+        return { 
+          message: 'Logged out successfully',
+          userId: userId
+        };
+      }
+
+      // Blacklist the current access token immediately
+      tokenBlacklistService.blacklistToken(accessToken, decoded.exp * 1000); // exp is in seconds, convert to milliseconds
+
+      // Clear the refresh token to invalidate the user session
+      await user.update({ refresh_token: null });
+
+      return { 
+        message: 'Logged out successfully',
+        userId: userId,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      // Handle JWT verification errors
+      if (error.name === 'JsonWebTokenError') {
+        throw new UnauthorizedError('Invalid access token');
+      }
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedError('Access token has expired');
+      }
+      // Re-throw other errors (like database errors)
+      throw error;
+    }
+  },  logOutFromAllDevices: async (accessToken) => {
+    if (!accessToken) {
+      throw new UnauthorizedError('Access token required');
+    }
+
+    try {
+      // Verify and decode the access token to extract user ID
+      const decoded = jwt.verify(accessToken, JWT_SECRET);
+      const userId = decoded.uid;
+
+      // Find the user in the database
+      const user = await Iam.findOne({ where: { iam_id: userId } });
+      if (!user) {
+        throw new NotFoundError('User not found');
+      }
+
+      // Blacklist the current access token
+      tokenBlacklistService.blacklistToken(accessToken, decoded.exp * 1000);
+      
+      // Invalidate ALL tokens for this user (including other devices)
+      tokenBlacklistService.blacklistAllUserTokens(userId);
+
+      // Clear the refresh token to invalidate all user sessions
+      await user.update({ 
+        refresh_token: null,
+      });
+
+      return { 
+        message: 'Logged out from all devices successfully',
+        userId: userId,
+        timestamp: new Date().toISOString(),
+        note: 'All access tokens and refresh tokens have been invalidated immediately.'
+      };
+    } catch (error) {
+      // Handle JWT verification errors
+      if (error.name === 'JsonWebTokenError') {
+        throw new UnauthorizedError('Invalid access token');
+      }
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedError('Access token has expired');
+      }
+      // Re-throw other errors (like database errors)
+      throw error;
+    }
   },
 
   register: async (userData) => {
@@ -130,6 +213,11 @@ const authService = {
       email: newUser.email,
       role: newUser.role
     };
+  },
+
+  // Utility method to get blacklist stats (for debugging/monitoring)
+  getBlacklistStats: () => {
+    return tokenBlacklistService.getStats();
   }
 };
 

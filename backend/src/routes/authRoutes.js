@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, refreshToken, logOutUser } from '../controllers/authController.js';
+import { loginUser, refreshToken, logOutUser, logOutFromAllDevices, getBlacklistStats } from '../controllers/authController.js';
 import { authenticateJWT, verifyTokenAndRole, getUserRole } from '../middleware/authMiddleware.js';
 
 const authRoutes = express.Router();
@@ -10,6 +10,10 @@ authRoutes.post('/refresh-token', refreshToken);
 
 // Protected routes - require authentication
 authRoutes.post('/logout', authenticateJWT, logOutUser);
+authRoutes.post('/logout-all-devices', authenticateJWT, logOutFromAllDevices);
+
+// Debug/monitoring routes (consider restricting to admin only in production)
+authRoutes.get('/blacklist-stats', verifyTokenAndRole(['ADMIN']), getBlacklistStats);
 
 // Test route to verify token and get role
 authRoutes.get('/verify-role', getUserRole);
