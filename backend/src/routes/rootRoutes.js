@@ -6,7 +6,6 @@ import authRoutes from './authRoutes.js';
 import studentRouter from './student.router.js';
 import lecturerRouter from './lecturer.route.js';
 import programRouter from './program.router.js';
-import intakeModuleRouter from './intakeModule.router.js';
 import facilityFacultyRouter from './faculty.router.js';
 import testTokenController from '../controllers/testTokenController.js';
 import accountRouter from './account.router.js';
@@ -44,9 +43,6 @@ rootRoutes.use('/lecturer', lecturerRouter);
 
 //Program routes
 rootRoutes.use('/program', programRouter);
-
-//IntakeModule routes
-rootRoutes.use('/intakemodule', intakeModuleRouter);
 
 //Faculty routes
 rootRoutes.use('/faculty', facilityFacultyRouter);

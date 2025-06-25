@@ -43,12 +43,11 @@ module.exports = {
         validate: {
           isIn: [['unread', 'read']],
         },
-      },
-      module_id: {
+      },      module_id: {
         type: Sequelize.STRING(36),
         references: {
-          model: 'intake_module',      
-          key: 'intake_module_id'      
+          model: 'module',      
+          key: 'module_id'      
         },
         onUpdate: 'CASCADE',   
         onDelete: 'SET NULL',  

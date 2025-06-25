@@ -51,16 +51,6 @@ moduleRouter.post('/create', verifyTokenAndRole(['ADMIN']), moduleController.cre
 moduleRouter.put('/update/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.updateModule); 
 moduleRouter.delete('/delete/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.deleteModule); 
 
-// Assign lecturers and students to intake modules (Faculty Assistant only)
-moduleRouter.put('/:intakeModuleId/assign-lecturer', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.assignLecturerToIntakeModule); 
-moduleRouter.put('/:intakeModuleId/assign-students', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.assignStudentsToIntakeModule); 
-
-// Create classes for intake modules (Faculty Assistant only)
-moduleRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.createClassesForIntakeModule); 
-
-// Export Intake Module Report (Faculty Assistant only)
-moduleRouter.get('/:intakeModuleId/export-report', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleController.exportIntakeModuleReport);
-
 // New routes for CSV upload
 // Endpoint with specific field name
 moduleRouter.post(
