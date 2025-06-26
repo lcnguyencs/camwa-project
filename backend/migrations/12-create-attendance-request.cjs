@@ -67,19 +67,7 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.fn('now'),
       },
-    });    try {
-      await queryInterface.addIndex('attendance_request',
-        ['attendance_id'],
-        { unique: true, name: 'unique_attendance_request_index' }
-      );
-    } catch (error) {
-      if (error.message.includes('already exists')) {
-        console.log('Index already exists, skipping creation.');
-      } else {
-        throw error; 
-      }
-    }
-
+    });
 
     await queryInterface.addIndex('attendance_request', ['student_id']);
     await queryInterface.addIndex('attendance_request', ['module_id']);

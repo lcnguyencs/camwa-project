@@ -7,6 +7,7 @@ import Lecturer from '../models/Lecturer.model.js';
 import Exam from '../models/Exam.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 import { Op, Sequelize } from 'sequelize';
+import notificationService from './notification.service.js';
 
 const attendanceService = {
     // Get attendance by id
@@ -85,6 +86,19 @@ const attendanceService = {
             throw new Error('Attendance record not found');
         }
 
+        // Check if there's already a pending request for this attendance record
+        const existingPendingRequest = await AttendanceRequest.findOne({
+            where: {
+                attendance_id: attendanceId,
+                student_id: studentId,
+                request_status: 'pending'
+            }
+        });
+
+        if (existingPendingRequest) {
+            throw new Error('There is already a pending correction request for this attendance record');
+        }
+
         const request = await AttendanceRequest.create({
             attendance_id: attendanceId,
             student_id: studentId,
@@ -101,6 +115,14 @@ const attendanceService = {
             text: `Your attendance correction request for module ${moduleId} has been submitted successfully.`,
             html: `<p>Your attendance correction request for module ${moduleId} has been submitted successfully.</p>`
         });
+
+        // Create notification for Faculty/Admin
+        try {
+            await notificationService.createNewRequestNotification(request.request_id, studentId);
+        } catch (notificationError) {
+            console.error('Failed to create notification:', notificationError);
+            // Don't throw error here as the main request was successful
+        }
 
         return request;
     },
@@ -145,13 +167,25 @@ const attendanceService = {
         }
         
         // Update the request record
-        await AttendanceRequest.update(updateData, { where: { request_id: requestId } });        // Send email notification about the correction decision
+        await AttendanceRequest.update(updateData, { where: { request_id: requestId } });
+
+        // Send email notification about the correction decision
         await sendMail({
             to: 'student@example.com',  // Replace with student's email in a real scenario
             subject: `Attendance Correction ${isApproved ? 'Approved' : 'Rejected'}`,
             text: `Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.`,
             html: `<p>Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.</p>`
-        });return {
+        });
+
+        // Create notification for the student about the request decision
+        try {
+            await notificationService.createRequestProcessedNotification(requestId, processedBy, isApproved);
+        } catch (notificationError) {
+            console.error('Failed to create notification:', notificationError);
+            // Don't throw error here as the main request processing was successful
+        }
+
+        return {
             status: newStatus,
             message: isApproved ? 'Correction Approved' : 'Correction Rejected',
             proposed_status: request.proposed_status,

@@ -149,6 +149,11 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resData = responseSuccess(result, 'Attendance correction request submitted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
+            // Handle specific error cases with appropriate status codes
+            if (error.message && error.message.includes('already a pending correction request')) {
+                return res.status(409).json(responseError(error.message, 409));
+            }
+            
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
