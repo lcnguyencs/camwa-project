@@ -122,6 +122,68 @@ const moduleManagement = {
             const resError = responseError(error, 'Failed to process CSV file');
             res.status(resError.code).json(resError);
         }
+    },
+
+    // Get camera path with temporary signed URL (Admin only)
+    getCameraPath: async (req, res) => {
+        try {
+            // Additional role check with custom message
+            if (req.user.role !== 'ADMIN') {
+                return res.status(403).json({
+                    status: 'error',
+                    code: 403,
+                    message: 'Access denied: Only administrators are allowed to access camera paths'
+                });
+            }
+
+            const moduleId = req.params.moduleId;
+            const userId = req.user.uid;
+            
+            const result = await moduleService.getCameraPath(moduleId, userId);
+            
+            const resData = responseSuccess(result, 'Camera path retrieved successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            console.error("Failed to get camera path:", error);
+            const resError = responseError(error, 'Failed to retrieve camera path');
+            res.status(resError.code).json(resError);
+        }
+    },
+
+    // Set camera path for a module (Admin only)
+    setCameraPath: async (req, res) => {
+        try {
+            // Additional role check with custom message
+            if (req.user.role !== 'ADMIN') {
+                return res.status(403).json({
+                    status: 'error',
+                    code: 403,
+                    message: 'Access denied: Only administrators are allowed to set camera paths'
+                });
+            }
+
+            const moduleId = req.params.moduleId;
+            const { camera_path } = req.body;
+            const userId = req.user.uid;
+            
+            // Validate input
+            if (!camera_path) {
+                return res.status(400).json({
+                    status: 'error',
+                    code: 400,
+                    message: 'Camera path is required'
+                });
+            }
+            
+            const result = await moduleService.setCameraPath(moduleId, camera_path, userId);
+            
+            const resData = responseSuccess(result, 'Camera path set successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            console.error("Failed to set camera path:", error);
+            const resError = responseError(error, 'Failed to set camera path');
+            res.status(resError.code).json(resError);
+        }
     }
 };
 

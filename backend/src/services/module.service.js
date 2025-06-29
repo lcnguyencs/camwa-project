@@ -4,6 +4,7 @@ import Student from '../models/Student.model.js';
 import Attendance from '../models/Attendance.model.js';
 import auditLogService from '../services/auditLogService.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
+import { s3, BUCKET_NAME, CDN_ENDPOINT, URL_EXPIRY_SECONDS } from '../config/digitalocean.config.js';
 
 const moduleService = {
     // Create a new module (Admin only)
@@ -279,7 +280,98 @@ const moduleService = {
             console.error('Error deleting modules from CSV:', error);
             throw new Error('Error deleting modules from CSV: ' + error.message);
         }
-    }
+    },
+
+    // Get camera path with temporary signed URL (Admin only)
+    getCameraPath: async (moduleId, userId) => {
+        try {
+            // Find the module by ID
+            const module = await Module.findByPk(moduleId);
+            
+            if (!module) {
+                throw new Error('Module not found');
+            }
+            
+            if (!module.camera_path) {
+                throw new Error('No camera path configured for this module');
+            }
+            
+            // Generate signed URL with configurable expiration (default 5 minutes)
+            const params = {
+                Bucket: BUCKET_NAME,
+                Key: module.camera_path, // This should be the video filename like "1.mp4"
+                Expires: URL_EXPIRY_SECONDS // Default 300 seconds (5 minutes)
+            };
+            
+            const signedUrl = await new Promise((resolve, reject) => {
+                s3.getSignedUrl('getObject', params, (error, url) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(url);
+                    }
+                });
+            });
+            
+            // Log the action
+            await auditLogService.logAction(userId, 'getCameraPath', { 
+                moduleId, 
+                cameraPath: module.camera_path 
+            });
+            
+            return {
+                moduleId: module.module_id,
+                moduleName: module.name,
+                cameraPath: module.camera_path,
+                signedUrl: signedUrl,
+                expiresIn: '1 minutes'
+            };
+        } catch (error) {
+            console.error('Error getting camera path:', error);
+            throw error;
+        }
+    },
+
+    // Set camera path for a module (Admin only)
+    setCameraPath: async (moduleId, cameraPath, userId) => {
+        try {
+            // Find the module by ID
+            const module = await Module.findByPk(moduleId);
+            
+            if (!module) {
+                throw new Error('Module not found');
+            }
+            
+            // Update the camera path
+            const [affectedCount] = await Module.update(
+                { camera_path: cameraPath }, 
+                { where: { module_id: moduleId } }
+            );
+            
+            if (affectedCount === 0) {
+                throw new Error('Failed to update camera path');
+            }
+            
+            // Log the action
+            await auditLogService.logAction(userId, 'setCameraPath', { 
+                moduleId, 
+                oldCameraPath: module.camera_path,
+                newCameraPath: cameraPath 
+            });
+            
+            // Return updated module info
+            const updatedModule = await Module.findByPk(moduleId);
+            return {
+                moduleId: updatedModule.module_id,
+                moduleName: updatedModule.name,
+                cameraPath: updatedModule.camera_path,
+                message: 'Camera path updated successfully'
+            };
+        } catch (error) {
+            console.error('Error setting camera path:', error);
+            throw error;
+        }
+    },
 };
 
 export default moduleService;

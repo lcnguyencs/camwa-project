@@ -47,9 +47,18 @@ const moduleRouter = express.Router();
 // Create a module (Admin only)
 moduleRouter.post('/create', verifyTokenAndRole(['ADMIN','FACULTY']), moduleController.createModule); 
 
+// View all modules (Admin/Faculty Assistant)
+moduleRouter.get('/view', verifyTokenAndRole(['ADMIN','FACULTY']), moduleController.viewModules);
+
 // Update and delete modules (Admin/Faculty Assistant)
 moduleRouter.put('/update/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.updateModule); 
 moduleRouter.delete('/delete/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.deleteModule); 
+
+// Get camera path with temporary signed URL (Admin only)
+moduleRouter.get('/camera-path/:moduleId', verifyTokenAndRole(['ADMIN']), moduleController.getCameraPath);
+
+// Set camera path for a module (Admin only)
+moduleRouter.put('/set-camera-path/:moduleId', verifyTokenAndRole(['ADMIN']), moduleController.setCameraPath);
 
 // New routes for CSV upload
 // Endpoint with specific field name
