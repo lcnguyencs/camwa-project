@@ -21,7 +21,7 @@ const Notification = sequelize.define('Notification', {
   },
   request_id: {
     type: DataTypes.INTEGER,
-    references: { model: 'AttendanceRequest', key: 'request_id' },
+    references: { model: 'attendance_request', key: 'request_id' },
     allowNull: false,
   },
   status: {

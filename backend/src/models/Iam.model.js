@@ -33,4 +33,12 @@ const Iam = sequelize.define('Iam', {
   timestamps: false,
 });
 
+// Define the association here as well
+Iam.associate = function(models) {
+  Iam.hasMany(models.ImageAsset, {
+    foreignKey: 'username',
+    sourceKey: 'username'
+  });
+};
+
 export default Iam;

@@ -54,7 +54,7 @@ attendanceRouter.delete('/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY'
 attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), attendanceController.getAttendanceRequestsByStatus);
 
 // Attendance correction requests
-attendanceRouter.post('/request-correction', verifyTokenAndRole(['ADMIN', 'STUDENT']), attendanceController.requestAttendanceCorrection);
+attendanceRouter.post('/request-correction', verifyTokenAndRole(['STUDENT']), attendanceController.requestAttendanceCorrection);
 attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.handleCorrectionRequest);
 
 // CSV upload routes (Faculty Assistant only)
@@ -122,7 +122,7 @@ attendanceRouter.post('/exam-eligibility/update-all-modules', verifyTokenAndRole
 // Update exam eligibility for lecturer's own modules only (Lecturer only)
 attendanceRouter.post('/exam-eligibility/update-my-modules', verifyTokenAndRole(['LECTURER']), attendanceController.updateExamEligibilityForMyModules);
 // Export exam eligibility data to Excel files (Admin/Faculty only)
-attendanceRouter.post('/exam-eligibility/export', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.exportExamEligibilityToExcel);
+attendanceRouter.post('/exam-eligibility/export', verifyTokenAndRole(['ADMIN', 'FACULTY', 'AC']), attendanceController.exportExamEligibilityToExcel);
 // Export exam eligibility data to Excel files for lecturer's modules only (Lecturer only)
 attendanceRouter.post('/exam-eligibility/export-my-modules', verifyTokenAndRole(['LECTURER']), attendanceController.exportExamEligibilityForMyModulesToExcel);
 

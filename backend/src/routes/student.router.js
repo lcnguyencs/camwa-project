@@ -49,6 +49,42 @@ studentRouter.get('/my/exam-eligibility-status',
   studentController.getMyExamEligibilityStatus
 );
 
+// Get student images
+studentRouter.get('/:student_id/images', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), 
+  studentController.getStudentImages
+);
+
+// Get my images (for authenticated student)
+studentRouter.get('/my/images', 
+  verifyTokenAndRole(['STUDENT']), 
+  studentController.getMyImages
+);
+
+// Create a new image asset for a student
+studentRouter.post('/:student_id/images', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY']), 
+  studentController.createStudentImage
+);
+
+// Get specific image file info for a student
+studentRouter.get('/:student_id/images/:image_id', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), 
+  studentController.getStudentImageFile
+);
+
+// Get specific image file metadata only for a student
+studentRouter.get('/:student_id/images/:image_id/info', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), 
+  studentController.getStudentImageFileInfo
+);
+
+// Get student image file directly by student_id (returns actual image)
+studentRouter.get('/:student_id/image', 
+  verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER', 'STUDENT']), 
+  studentController.getStudentImageByStudentId
+);
+
 // New endpoints for CSV upload
 
 // Endpoint with specific field name

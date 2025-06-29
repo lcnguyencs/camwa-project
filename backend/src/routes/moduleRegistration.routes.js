@@ -52,8 +52,9 @@ router.delete('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrati
 // Routes accessible by admin, faculty, and lecturers
 router.get('/', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getAllRegistrations);
 router.get('/my-modules', verifyTokenAndRole(['LECTURER']), moduleRegistrationController.getMyRegistrationModules);
+router.get('/my-registrations', verifyTokenAndRole(['STUDENT']), moduleRegistrationController.getMyRegistrations);
 router.get('/all-modules-with-attendance', verifyTokenAndRole(['ADMIN', 'FACULTY']), moduleRegistrationController.getAllModulesWithAttendanceRate);
-router.get('/student/:student_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByStudentId);
+router.get('/student/:student_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER','STUDENT']), moduleRegistrationController.getRegistrationsByStudentId);
 router.get('/module/:module_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationsByModuleId);
 router.get('/lecturer/:lecturer_id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER','AC']), moduleRegistrationController.getRegistrationsByLecturerId);
 // Export student list for a specific module (Admin/Faculty can export any module, Lecturers can only export their own modules)

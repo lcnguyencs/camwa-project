@@ -81,19 +81,21 @@ const attendanceService = {
             throw new Error('Invalid proposed attendance status');
         }
 
-        const attendance = await Attendance.findByPk(attendanceId);
+        // Optimize database queries by running them in parallel
+        const [attendance, existingPendingRequest] = await Promise.all([
+            Attendance.findByPk(attendanceId),
+            AttendanceRequest.findOne({
+                where: {
+                    attendance_id: attendanceId,
+                    student_id: studentId,
+                    request_status: 'pending'
+                }
+            })
+        ]);
+
         if (!attendance) {
             throw new Error('Attendance record not found');
         }
-
-        // Check if there's already a pending request for this attendance record
-        const existingPendingRequest = await AttendanceRequest.findOne({
-            where: {
-                attendance_id: attendanceId,
-                student_id: studentId,
-                request_status: 'pending'
-            }
-        });
 
         if (existingPendingRequest) {
             throw new Error('There is already a pending correction request for this attendance record');
@@ -108,21 +110,30 @@ const attendanceService = {
             reason: requestDetails.reason || null
         });
 
-        // Send email notification to student about the correction request submission
-        await sendMail({
-            to: 'student@example.com', // Replace with student's email
-            subject: 'Attendance Correction Request Submitted',
-            text: `Your attendance correction request for module ${moduleId} has been submitted successfully.`,
-            html: `<p>Your attendance correction request for module ${moduleId} has been submitted successfully.</p>`
-        });
+        // Send email notification asynchronously (fire-and-forget)
+        // This won't block the response to the client
+        // setImmediate(async () => {
+        //     try {
+        //         await sendMail({
+        //             to: 'student@example.com', // Replace with student's email
+        //             subject: 'Attendance Correction Request Submitted',
+        //             text: `Your attendance correction request for module ${moduleId} has been submitted successfully.`,
+        //             html: `<p>Your attendance correction request for module ${moduleId} has been submitted successfully.</p>`
+        //         });
+        //     } catch (emailError) {
+        //         console.error('Failed to send email notification:', emailError);
+        //     }
+        // });
 
-        // Create notification for Faculty/Admin
-        try {
-            await notificationService.createNewRequestNotification(request.request_id, studentId);
-        } catch (notificationError) {
-            console.error('Failed to create notification:', notificationError);
-            // Don't throw error here as the main request was successful
-        }
+        // Create notification for Faculty/Admin asynchronously (fire-and-forget)
+        // This won't block the response to the client
+        setImmediate(async () => {
+            try {
+                await notificationService.createNewRequestNotification(request.request_id, studentId);
+            } catch (notificationError) {
+                console.error('Failed to create notification:', notificationError);
+            }
+        });
 
         return request;
     },
@@ -150,40 +161,55 @@ const attendanceService = {
             approved_status: approved_status
         };
         
-        // If approved (approved_status matches proposed_status), update the attendance record
+        // Prepare database updates to run in parallel
+        const updatePromises = [
+            // Always update the request record
+            AttendanceRequest.update(updateData, { where: { request_id: requestId } })
+        ];
+        
+        // If approved, also update the attendance record
         if (isApproved) {
-            // Update the actual attendance record
-            await Attendance.update(
-                { 
-                    attendance_status: approved_status,
-                    updated_at: new Date()
-                },
-                { where: { attendance_id: request.attendance_id } }
+            updatePromises.push(
+                Attendance.update(
+                    { 
+                        attendance_status: approved_status,
+                        updated_at: new Date()
+                    },
+                    { where: { attendance_id: request.attendance_id } }
+                )
             );
-            
             console.log(`Correction request ${requestId} approved and attendance updated to ${approved_status}.`);
         } else {
             console.log(`Correction request ${requestId} rejected. Proposed status was ${request.proposed_status}, admin approved status is ${approved_status}.`);
         }
         
-        // Update the request record
-        await AttendanceRequest.update(updateData, { where: { request_id: requestId } });
+        // Execute all database updates in parallel
+        await Promise.all(updatePromises);
 
-        // Send email notification about the correction decision
-        await sendMail({
-            to: 'student@example.com',  // Replace with student's email in a real scenario
-            subject: `Attendance Correction ${isApproved ? 'Approved' : 'Rejected'}`,
-            text: `Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.`,
-            html: `<p>Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.</p>`
+        // Send email notification asynchronously (fire-and-forget)
+        // This won't block the response to the client
+        // setImmediate(async () => {
+        //     try {
+        //         await sendMail({
+        //             to: 'student@example.com',  // Replace with student's email in a real scenario
+        //             subject: `Attendance Correction ${isApproved ? 'Approved' : 'Rejected'}`,
+        //             text: `Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.`,
+        //             html: `<p>Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.</p>`
+        //         });
+        //     } catch (emailError) {
+        //         console.error('Failed to send email notification:', emailError);
+        //     }
+        // });
+
+        // Create notification for the student asynchronously (fire-and-forget)
+        // This won't block the response to the client
+        setImmediate(async () => {
+            try {
+                await notificationService.createRequestProcessedNotification(requestId, processedBy, isApproved);
+            } catch (notificationError) {
+                console.error('Failed to create notification:', notificationError);
+            }
         });
-
-        // Create notification for the student about the request decision
-        try {
-            await notificationService.createRequestProcessedNotification(requestId, processedBy, isApproved);
-        } catch (notificationError) {
-            console.error('Failed to create notification:', notificationError);
-            // Don't throw error here as the main request processing was successful
-        }
 
         return {
             status: newStatus,

@@ -5,13 +5,13 @@ module.exports = {
     await queryInterface.bulkDelete('program', null, {});
     return queryInterface.bulkInsert('program', [
       {
-        program_id: 'PROG001',
+        program_id: 'CSE',
         name: 'Computer Science'
       },
-      {
-        program_id: 'PROG002',
-        name: 'Information Technology'      
-      }
+      // {
+      //   program_id: 'PROG002',
+      //   name: 'Information Technology'      
+      // }
     ]);
   },
 

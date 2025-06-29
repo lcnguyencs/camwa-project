@@ -45,7 +45,7 @@ const upload = multer({
 const moduleRouter = express.Router();
 
 // Create a module (Admin only)
-moduleRouter.post('/create', verifyTokenAndRole(['ADMIN']), moduleController.createModule); 
+moduleRouter.post('/create', verifyTokenAndRole(['ADMIN','FACULTY']), moduleController.createModule); 
 
 // Update and delete modules (Admin/Faculty Assistant)
 moduleRouter.put('/update/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleController.updateModule); 
@@ -55,7 +55,7 @@ moduleRouter.delete('/delete/:moduleId', verifyTokenAndRole(['ADMIN']),  moduleC
 // Endpoint with specific field name
 moduleRouter.post(
   '/create-from-csv', 
-  verifyTokenAndRole(['ADMIN']), 
+  verifyTokenAndRole(['ADMIN','FACULTY']), 
   upload.single('file'),
   moduleController.createModulesFromCSV
 );
@@ -63,7 +63,7 @@ moduleRouter.post(
 // Alternative endpoint that can accept any field name
 moduleRouter.post(
   '/upload-csv',
-  verifyTokenAndRole(['ADMIN']),
+  verifyTokenAndRole(['ADMIN','FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
     const uploadAny = multer({ 
@@ -96,7 +96,7 @@ moduleRouter.post(
 // Endpoint for using a default CSV file
 moduleRouter.post(
   '/create-from-default-csv',
-  verifyTokenAndRole(['ADMIN']),
+  verifyTokenAndRole(['ADMIN','FACULTY']),
   (req, res, next) => {
     // Set the default CSV file path
     const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Create Module List.csv');

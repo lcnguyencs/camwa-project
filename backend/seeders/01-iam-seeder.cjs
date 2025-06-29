@@ -8,6 +8,7 @@ module.exports = {
     const hashedLecturerPassword = await bcrypt.hash('lecturer123', salt);
     const hashedStudentPassword = await bcrypt.hash('student123', salt);
     const hashedFacultyPassword = await bcrypt.hash('faculty123', salt);
+    const hashedACPassword = await bcrypt.hash('sonll', salt);
 
     await queryInterface.bulkDelete('iam', null, {});
     return queryInterface.bulkInsert('iam', [
@@ -19,47 +20,12 @@ module.exports = {
         role: 'ADMIN'
       },
       {
-        iam_id: 'LEC001',
-        username: 'lecturer1',
-        email: 'lecturer1@example.com',
-        password: hashedLecturerPassword,
-        role: 'LECTURER'
-      },
-      {
-        iam_id: 'LEC002',
-        username: 'lecturer2',
-        email: 'lecturer2@example.com',
-        password: hashedLecturerPassword,
-        role: 'LECTURER'
-      },
-      {
-        iam_id: 'STU001',
-        username: 'STU001',
-        email: 'student1@example.com',
-        password: hashedStudentPassword,
-        role: 'STUDENT'
-      },
-      {
-        iam_id: 'STU002',
-        username: 'STU002',
-        email: 'student2@example.com',
-        password: hashedStudentPassword,
-        role: 'STUDENT'
-      },
-      {
         iam_id: 'FAC001',
         username: 'faculty1',
         email: 'faculty1@example.com',
         password: hashedFacultyPassword,
         role: 'FACULTY'
       },
-      {
-        iam_id: 'FAC002',
-        username: 'faculty2',
-        email: 'faculty2@example.com',
-        password: hashedFacultyPassword,
-        role: 'FACULTY'
-      }
     ]);
   },
 

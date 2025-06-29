@@ -3,6 +3,8 @@ import ModuleRegistration from '../models/ModuleRegistration.model.js';
 import Module from '../models/Module.model.js';
 import Exam from '../models/Exam.model.js';
 import Attendance from '../models/Attendance.model.js';
+import ImageAsset from '../models/ImageAsset.model.js';
+import Iam from '../models/Iam.model.js';
 import attendanceService from './attendance.service.js';
 
 const studentService = {
@@ -279,6 +281,117 @@ const studentService = {
       };
     } catch (error) {
       throw new Error('Error retrieving student exam eligibility status: ' + error.message);
+    }
+  },
+
+  // Get student images
+  getStudentImages: async (studentId) => {
+    try {
+      // First, find the student to get their username (which is the student_id)
+      const student = await Student.findOne({
+        where: { student_id: studentId }
+      });
+
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Find all images for this student using their username
+      const images = await ImageAsset.findAll({
+        where: { username: studentId }, // student_id is the username in iam table
+        order: [['created_at', 'DESC']]
+      });
+
+      if (!images || images.length === 0) {
+        return {
+          message: "No images found for this student",
+          images: []
+        };
+      }
+
+      // Get the IAM info separately to avoid association issues
+      const iamUser = await Iam.findOne({
+        where: { username: studentId },
+        attributes: ['username', 'email', 'role']
+      });
+
+      // Format the response
+      const imageList = images.map(image => ({
+        image_id: image.image_id,
+        username: image.username,
+        image_path: image.image_path,
+        created_at: image.created_at,
+        updated_at: image.updated_at,
+        user_info: {
+          email: iamUser?.email || null,
+          role: iamUser?.role || null
+        }
+      }));
+
+      return {
+        message: `Found ${imageList.length} image(s) for this student`,
+        student_id: studentId,
+        images: imageList
+      };
+    } catch (error) {
+      throw new Error('Error retrieving student images: ' + error.message);
+    }
+  },
+
+  // Create a new image asset for a student
+  createStudentImage: async (studentId, imagePath) => {
+    try {
+      // First, verify the student exists
+      const student = await Student.findOne({
+        where: { student_id: studentId }
+      });
+
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Create the image asset record
+      const newImageAsset = await ImageAsset.create({
+        username: studentId, // student_id is the username in iam table
+        image_path: imagePath || `image_assets/${studentId}.jpg`
+      });
+
+      return {
+        message: 'Image asset created successfully',
+        image: {
+          image_id: newImageAsset.image_id,
+          username: newImageAsset.username,
+          image_path: newImageAsset.image_path,
+          created_at: newImageAsset.created_at
+        }
+      };
+    } catch (error) {
+      throw new Error('Error creating student image: ' + error.message);
+    }
+  },
+
+  // Get the actual image file for a student
+  getStudentImageFile: async (studentId, imageId) => {
+    try {
+      // Find the specific image record
+      const imageAsset = await ImageAsset.findOne({
+        where: { 
+          username: studentId,
+          image_id: imageId 
+        }
+      });
+
+      if (!imageAsset) {
+        throw new Error('Image not found for this student');
+      }
+
+      return {
+        image_path: imageAsset.image_path,
+        username: imageAsset.username,
+        image_id: imageAsset.image_id
+      };
+    } catch (error) {
+      throw new Error('Error retrieving student image file: ' + error.message);
     }
   }
 };

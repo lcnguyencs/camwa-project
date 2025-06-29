@@ -17,29 +17,29 @@ module.exports = {
     
     const now = new Date();
     
-    return queryInterface.bulkInsert('attendance_request', [
-      {
-        attendance_id: attendances[0].attendance_id,
-        student_id: 'STU001',
-        module_id: 'MOD001',
-        request_status: 'pending',
-        proposed_status: 'excused',
-        reason: 'Medical appointment',
-        created_at: now
-      },
-      {
-        attendance_id: attendances[1].attendance_id,
-        student_id: 'STU002',
-        module_id: 'MOD002',
-        request_status: 'approved',
-        proposed_status: 'excused',
-        approved_status: 'excused',
-        reason: 'Family emergency',
-        processed_by: 'ADMIN',
-        processed_at: now,
-        created_at: now
-      }
-    ]);
+    // return queryInterface.bulkInsert('attendance_request', [
+    //   {
+    //     attendance_id: attendances[0].attendance_id,
+    //     student_id: 'STU001',
+    //     module_id: 'MOD001',
+    //     request_status: 'pending',
+    //     proposed_status: 'excused',
+    //     reason: 'Medical appointment',
+    //     created_at: now
+    //   },
+    //   {
+    //     attendance_id: attendances[1].attendance_id,
+    //     student_id: 'STU002',
+    //     module_id: 'MOD002',
+    //     request_status: 'approved',
+    //     proposed_status: 'excused',
+    //     approved_status: 'excused',
+    //     reason: 'Family emergency',
+    //     processed_by: 'ADMIN',
+    //     processed_at: now,
+    //     created_at: now
+    //   }
+    // ]);
   },
 
   down: async (queryInterface, Sequelize) => {

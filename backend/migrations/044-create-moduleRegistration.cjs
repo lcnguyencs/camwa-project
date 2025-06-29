@@ -29,30 +29,6 @@ module.exports = {
         onUpdate: 'CASCADE',     
         onDelete: 'CASCADE',     
       },
-      module_name: {
-        type: Sequelize.STRING(50),
-        allowNull: false,
-      },
-      semester_id: {
-        type: Sequelize.STRING(36),
-        allowNull: false,
-        references: {
-          model: 'semester',      
-          key: 'sem_id'      
-        },
-        onUpdate: 'CASCADE',     
-        onDelete: 'CASCADE',     
-      },
-      program_id: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        references: {
-          model: 'program',      
-          key: 'program_id'      
-        },
-        onUpdate: 'CASCADE',     
-        onDelete: 'CASCADE',     
-      },
       lecturer_id: {
         type: Sequelize.STRING(20),
         allowNull: false,

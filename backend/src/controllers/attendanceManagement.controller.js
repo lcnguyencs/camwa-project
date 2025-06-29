@@ -30,7 +30,9 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // View Attendance Records by Module or Student   
+    },
+
+    // View Attendance Records by Module or Student   
     viewAttendance: async (req, res, next) => {
         try {
             const { moduleId, studentId } = req.query;
@@ -116,33 +118,29 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
     // Request Attendance Correction    
     requestAttendanceCorrection: async (req, res, next) => {
         try {
-            const attendanceRequestData = req.body;
-            const attendanceId = attendanceRequestData.attendance_id;
-            const studentId = attendanceRequestData.student_id;
-            const moduleId = attendanceRequestData.module_id;
-            const proposedStatus = attendanceRequestData.proposed_status;
-            const reason = attendanceRequestData.reason;
+            const { attendance_id, student_id, module_id, proposed_status, reason } = req.body;
             const userId = req.user?.uid;
             const userRole = req.user?.role;
             
-            if (!attendanceId || !studentId || !moduleId || !proposedStatus) {
+            // Early validation to fail fast
+            if (!attendance_id || !student_id || !module_id || !proposed_status) {
                 return res.status(400).json(responseError('Missing required fields', 400));
             }
             
             // If the user is a student, verify they can only request corrections for their own attendance
-            if (userRole === 'STUDENT' && userId !== studentId) {
+            if (userRole === 'STUDENT' && userId !== student_id) {
                 return res.status(403).json(responseError('Students can only request corrections for their own attendance', 403));
             }
             
             const requestDetails = {
-                proposed_status: proposedStatus,
-                reason: reason
+                proposed_status,
+                reason
             };
             
             const result = await attendanceService.requestAttendanceCorrection(
-                attendanceId, 
-                studentId, 
-                moduleId, 
+                attendance_id, 
+                student_id, 
+                module_id, 
                 requestDetails
             );
             
@@ -157,14 +155,16 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Approve/Deny Attendance Correction Request
+    },
+
+    // Approve/Deny Attendance Correction Request
     handleCorrectionRequest: async (req, res, next) => {
         try {
-            const requestId = req.params.requestId;
-            const correctionData = req.body;
-            const approved_status = correctionData.approved_status;
-            const processedBy = correctionData.processedBy || req.user?.username || 'system';
+            const { requestId } = req.params;
+            const { approved_status, processedBy } = req.body;
+            const finalProcessedBy = processedBy || req.user?.username || 'system';
             
+            // Early validation to fail fast
             if (!approved_status) {
                 return res.status(400).json(responseError('Approved status is required', 400));
             }
@@ -177,7 +177,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const result = await attendanceService.handleCorrectionRequest(
                 requestId, 
                 approved_status,
-                processedBy
+                finalProcessedBy
             );
             
             const resData = responseSuccess(
@@ -189,7 +189,9 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Get attendance requests by status
+    },
+
+    // Get attendance requests by status
     getAttendanceRequestsByStatus: async (req, res, next) => {
         try {
             const { status, moduleId } = req.query;
@@ -234,7 +236,9 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             console.error('Error processing attendance CSV:', error);
             res.status(500).json(responseError(error.message, 500));
         }
-    },    // Get exam eligibility for a student in a module
+    },
+
+    // Get exam eligibility for a student in a module
     // This endpoint only retrieves existing eligibility records or calculated values
     // It does not update the eligibility records in the database
     getExamEligibility: async (req, res, next) => {
@@ -351,7 +355,9 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Update exam eligibility for all students in lecturer's modules only
+    },
+
+    // Update exam eligibility for all students in lecturer's modules only
     // This endpoint updates exam eligibility records for lecturer's modules only
     // It should only be callable by lecturers for their own modules
     updateExamEligibilityForMyModules: async (req, res, next) => {
@@ -378,14 +384,17 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
-    },    // Export exam eligibility data to Excel files
+    },
+
+    // Export exam eligibility data to Excel files
     // This endpoint exports exam eligibility data to Excel files (one per module)
     // Only accessible by ADMIN and FACULTY
-    exportExamEligibilityToExcel: async (req, res, next) => {        try {
+    exportExamEligibilityToExcel: async (req, res, next) => {
+        try {
             const userRole = req.user?.role;
             
             // Only ADMIN and FACULTY can access this endpoint
-            if (!['ADMIN', 'FACULTY'].includes(userRole)) {
+            if (!['ADMIN', 'FACULTY', 'AC'].includes(userRole)) {
                 return res.status(403).json(responseError('This endpoint is only accessible by administrators and faculty', 403));
             }
             

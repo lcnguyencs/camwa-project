@@ -56,6 +56,17 @@ const moduleRegistrationController = {
   getRegistrationsByStudentId: async (req, res) => {
     try {
       const { student_id } = req.params;
+      const userId = req.user?.uid;
+      const userRole = req.user?.role;
+
+      // If user is a student, they can only view their own registrations
+      if (userRole === 'STUDENT' && student_id !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Students can only view their own registrations'
+        });
+      }
+
       const registrations = await moduleRegistrationService.findRegistrationsByStudentId(student_id);
       res.status(200).json({
         success: true,
@@ -127,6 +138,25 @@ const moduleRegistrationController = {
         success: true,
         message: 'My modules with student counts and attendance rates retrieved successfully',
         data: lecturerModules
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Get my registrations (for authenticated student)
+  getMyRegistrations: async (req, res) => {
+    try {
+      const student_id = req.user.uid; // Get student ID from authenticated user
+      
+      const registrations = await moduleRegistrationService.findRegistrationsByStudentId(student_id);
+      res.status(200).json({
+        success: true,
+        message: 'My registrations retrieved successfully',
+        data: registrations
       });
     } catch (error) {
       res.status(400).json({

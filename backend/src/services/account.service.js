@@ -1,4 +1,5 @@
 import Iam from '../models/Iam.model.js';
+import ImageAsset from '../models/ImageAsset.model.js';
 import bcrypt from 'bcrypt';
 
 
@@ -105,6 +106,19 @@ const accountService = {
       throw new Error('Error deleting user: ' + error.message);
     }
   },
+  
+  createStudentImageAsset: async (username) => {
+    try {
+      await ImageAsset.create({
+        username: username,
+        image_path: `image_assets/${username}.jpg`
+      });
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+  
   createMultipleStudentsFromCSV: async (filePath) => {
     try {
       const fs = await import('fs/promises');
@@ -154,10 +168,28 @@ const accountService = {
           
           // Use the existing createUser method to create each student
           const newUser = await accountService.createUser(userData);
+          
+          // Create corresponding image asset for the student
+          const imageResult = await accountService.createStudentImageAsset(studentId);
+          if (!imageResult.success) {
+            console.warn(`Failed to create image asset for student ${studentId}: ${imageResult.error}`);
+            // Don't fail the entire operation if image creation fails
+            if (!results.imageCreationWarnings) {
+              results.imageCreationWarnings = [];
+            }
+            results.imageCreationWarnings.push({
+              studentId,
+              error: imageResult.error
+            });
+          } else {
+            console.log(`Image asset created for student: ${studentId}`);
+          }
+          
           results.successful.push({
             iamId: newUser.iamId,
             username: newUser.username,
-            email: newUser.email
+            email: newUser.email,
+            imageAssetCreated: !results.imageCreationWarnings?.some(w => w.studentId === studentId)
           });
         } catch (error) {
           results.failed.push({

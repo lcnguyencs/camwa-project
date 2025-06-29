@@ -60,7 +60,9 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
     { fields: ['attendance_id'] },
     { fields: ['student_id'] },
     { fields: ['module_id'] },
-    { fields: ['request_status'] }
+    { fields: ['request_status'] },
+    // Composite index for the common query in requestAttendanceCorrection
+    { fields: ['attendance_id', 'student_id', 'request_status'] }
   ]
 });
 

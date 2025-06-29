@@ -9,6 +9,7 @@ import AttendanceRequest from './AttendanceRequest.model.js';
 import Module from './Module.model.js';
 import Exam from './Exam.model.js';
 import ModuleRegistration from './ModuleRegistration.model.js';
+import ImageAsset from './ImageAsset.model.js';
 
 // Define Associations
 
@@ -51,6 +52,10 @@ Exam.belongsTo(Module, { foreignKey: 'module_id' });
 Student.hasMany(Exam, { foreignKey: 'student_id' });
 Exam.belongsTo(Student, { foreignKey: 'student_id' });
 
+// 12. ImageAsset and Iam Relationship (An Iam user can have many images)
+Iam.hasMany(ImageAsset, { foreignKey: 'username', sourceKey: 'username' });
+ImageAsset.belongsTo(Iam, { foreignKey: 'username', targetKey: 'username' });
+
 export {
   Student,  Program,
   Intake,
@@ -62,4 +67,5 @@ export {
   Module,
   Exam,
   ModuleRegistration,
+  ImageAsset,
 };
