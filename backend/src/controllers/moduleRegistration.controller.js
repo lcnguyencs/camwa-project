@@ -219,21 +219,21 @@ const moduleRegistrationController = {
     }
   },
 
-  // Create registrations from CSV file (Faculty Assistant only)
-  createRegistrationsFromCSV: async (req, res) => {
+  // Create registrations from Excel file (Faculty Assistant only)
+  createRegistrationsFromExcel: async (req, res) => {
     try {
       // Check if file was uploaded
       if (!req.file) {
         return res.status(400).json({
           success: false,
-          message: 'No CSV file uploaded. Make sure to include a file field with your CSV file.'        });
+          message: 'No Excel file uploaded. Make sure to include a file field with your Excel file.'        });
       }
 
       console.log('File uploaded:', req.file);
       console.log('File path:', req.file.path);
       
-      // Process the CSV file and create registrations
-      const results = await moduleRegistrationService.createRegistrationsFromCSV(req.file.path);
+      // Process the Excel file and create registrations
+      const results = await moduleRegistrationService.createRegistrationsFromExcel(req.file.path);
       
       res.status(201).json({
         success: true,
@@ -241,7 +241,7 @@ const moduleRegistrationController = {
         data: results
       });
     } catch (error) {
-      console.error('Error processing CSV:', error);
+      console.error('Error processing Excel file:', error);
       res.status(500).json({
         success: false,
         message: error.message

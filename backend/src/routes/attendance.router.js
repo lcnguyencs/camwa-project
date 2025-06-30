@@ -26,12 +26,12 @@ const storage = multer.diskStorage({
   }
 });
 
-// Set file filter to only allow csv files
+// Set file filter to only allow Excel files
 const fileFilter = (req, file, cb) => {
-  if (file.originalname.toLowerCase().endsWith('.csv')) {
+  if (file.originalname.toLowerCase().endsWith('.xlsx')) {
     cb(null, true);
   } else {
-    cb(new Error('Only CSV files are allowed!'), false);
+    cb(new Error('Only XLSX files are allowed!'), false);
   }
 };
 
@@ -57,18 +57,18 @@ attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTU
 attendanceRouter.post('/request-correction', verifyTokenAndRole(['STUDENT']), attendanceController.requestAttendanceCorrection);
 attendanceRouter.put('/correction/:requestId', verifyTokenAndRole(['ADMIN', 'FACULTY']), attendanceController.handleCorrectionRequest);
 
-// CSV upload routes (Faculty Assistant only)
+// Excel upload routes (Faculty Assistant only)
 // Standard endpoint with specific field name
 attendanceRouter.post(
-  '/create-from-csv', 
+  '/create-from-excel', 
   verifyTokenAndRole(['ADMIN', 'FACULTY']), 
   upload.single('file'),
-  attendanceController.createAttendanceFromCSV
+  attendanceController.createAttendanceFromExcel
 );
 
 // Alternative endpoint that can accept any field name
 attendanceRouter.post(
-  '/upload-csv',
+  '/upload-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -96,20 +96,20 @@ attendanceRouter.post(
       next();
     });
   },
-  attendanceController.createAttendanceFromCSV
+  attendanceController.createAttendanceFromExcel
 );
 
-// Endpoint for using a default CSV file
+// Endpoint for using a default Excel file
 attendanceRouter.post(
-  '/create-from-default-csv',
+  '/create-from-default-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'FA - Create Attendance List.csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'FA - Create Attendance List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  attendanceController.createAttendanceFromCSV
+  attendanceController.createAttendanceFromExcel
 );
 
 // Exam eligibility endpoints

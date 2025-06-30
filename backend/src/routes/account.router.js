@@ -23,15 +23,15 @@ accountRouter.get('/:iamId', iamController.getUserById);
 accountRouter.post('/create', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), iamController.createUser);
 // Endpoint with specific field name
 accountRouter.post(
-  '/create-students-from-csv', 
+  '/create-students-from-excel', 
   verifyTokenAndRole(['ADMIN']), 
   upload.single('file'), // Changed field name to 'file' as it's a common default
-  iamController.createStudentsFromCSV
+  iamController.createStudentsFromExcel
 );
 
 // Alternative endpoint that can accept any field name - will use the first file it finds
 accountRouter.post(
-  '/upload-students-csv',
+  '/upload-students-excel',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -46,10 +46,10 @@ accountRouter.post(
     const uploadAny = multer({ 
       storage,
       fileFilter: (req, file, cb) => {
-        if (file.originalname.toLowerCase().endsWith('.csv')) {
+        if (file.originalname.toLowerCase().endsWith('.xlsx')) {
           cb(null, true);
         } else {
-          cb(new Error('Only CSV files are allowed!'), false);
+          cb(new Error('Only XLSX files are allowed!'), false);
         }
       }
     }).any();
@@ -72,29 +72,29 @@ accountRouter.post(
       next();
     });
   },
-  iamController.createStudentsFromCSV
+  iamController.createStudentsFromExcel
 );
 accountRouter.post(
-  '/create-students-from-default-csv',
+  '/create-students-from-default-excel',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'list.csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'list.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  iamController.createStudentsFromCSV
+  iamController.createStudentsFromExcel
 );
 accountRouter.post(
-  '/create-lecturers-from-csv', 
+  '/create-lecturers-from-excel', 
   verifyTokenAndRole(['ADMIN']), 
   upload.single('file'),
-  iamController.createLecturersFromCSV
+  iamController.createLecturersFromExcel
 );
 
 // Alternative endpoint for lecturers that can accept any field name
 accountRouter.post(
-  '/upload-lecturers-csv',
+  '/upload-lecturers-excel',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -109,10 +109,10 @@ accountRouter.post(
     const uploadAny = multer({ 
       storage,
       fileFilter: (req, file, cb) => {
-        if (file.originalname.toLowerCase().endsWith('.csv')) {
+        if (file.originalname.toLowerCase().endsWith('.xlsx')) {
           cb(null, true);
         } else {
-          cb(new Error('Only CSV files are allowed!'), false);
+          cb(new Error('Only XLSX files are allowed!'), false);
         }
       }
     }).any();
@@ -135,20 +135,20 @@ accountRouter.post(
       next();
     });
   },
-  iamController.createLecturersFromCSV
+  iamController.createLecturersFromExcel
 );
 
-// Endpoint for using a default lecturer CSV file
+// Endpoint for using a default lecturer Excel file
 accountRouter.post(
-  '/create-lecturers-from-default-csv',
+  '/create-lecturers-from-default-excel',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Create Lecturer List.csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'Admin - Create Lecturer List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  iamController.createLecturersFromCSV
+  iamController.createLecturersFromExcel
 );
 accountRouter.put('/:iamId', iamController.updateUser);
 accountRouter.delete('/:iamId', iamController.deleteUser);

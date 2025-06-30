@@ -53,15 +53,15 @@ const moduleService = {
         return { message: 'Module successfully deleted' };  // Return success message
     },
 
-    // Create multiple modules from CSV file (Admin only)
-    createMultipleModulesFromCSV: async (filePath, userId) => {
+    // Create multiple modules from Excel file (Admin only)
+    createMultipleModulesFromExcel: async (filePath, userId) => {
         try {
             const fs = await import('fs/promises');
             
             // Check if file exists before attempting to read
             try {
                 await fs.access(filePath);
-                console.log(`CSV file exists at: ${filePath}`);
+                console.log(`Excel file exists at: ${filePath}`);
             } catch (fileError) {
                 throw new Error(`File not found: ${filePath}`);
             }
@@ -69,13 +69,13 @@ const moduleService = {
             const Excel = (await import('exceljs')).default;
             const workbook = new Excel.Workbook();
             
-            console.log(`Attempting to read CSV from: ${filePath}`);
+            console.log(`Attempting to read Excel file from: ${filePath}`);
             
-            // Parse the CSV file
-            await workbook.csv.readFile(filePath);
+            // Parse the Excel file
+            await workbook.xlsx.readFile(filePath);
             const worksheet = workbook.worksheets[0];
             
-            console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+            console.log(`Excel file loaded successfully with ${worksheet.rowCount} rows`);
             
             const results = {
                 successful: [],
@@ -155,20 +155,20 @@ const moduleService = {
             
             return results;
         } catch (error) {
-            console.error('Error creating modules from CSV:', error);
-            throw new Error('Error creating modules from CSV: ' + error.message);
+            console.error('Error creating modules from Excel file:', error);
+            throw new Error('Error creating modules from Excel file: ' + error.message);
         }
     },
 
-    // Delete multiple modules from CSV file (Admin only)
-    deleteMultipleModulesFromCSV: async (filePath, userId) => {
+    // Delete multiple modules from Excel file (Admin only)
+    deleteMultipleModulesFromExcel: async (filePath, userId) => {
         try {
             const fs = await import('fs/promises');
             
             // Check if file exists before attempting to read
             try {
                 await fs.access(filePath);
-                console.log(`CSV file exists at: ${filePath}`);
+                console.log(`Excel file exists at: ${filePath}`);
             } catch (fileError) {
                 throw new Error(`File not found: ${filePath}`);
             }
@@ -176,13 +176,13 @@ const moduleService = {
             const Excel = (await import('exceljs')).default;
             const workbook = new Excel.Workbook();
             
-            console.log(`Attempting to read CSV from: ${filePath}`);
+            console.log(`Attempting to read Excel file from: ${filePath}`);
             
-            // Parse the CSV file
-            await workbook.csv.readFile(filePath);
+            // Parse the Excel file
+            await workbook.xlsx.readFile(filePath);
             const worksheet = workbook.worksheets[0];
             
-            console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+            console.log(`Excel file loaded successfully with ${worksheet.rowCount} rows`);
             
             const results = {
                 successful: [],
@@ -247,7 +247,7 @@ const moduleService = {
                     });
                     
                     // Log each deletion
-                    await auditLogService.logAction(userId, 'deleteModuleFromCSV', { 
+                    await auditLogService.logAction(userId, 'deleteModuleFromExcel', { 
                         criteria: whereClause, 
                         count: deleteCount 
                     });
@@ -277,8 +277,8 @@ const moduleService = {
             
             return results;
         } catch (error) {
-            console.error('Error deleting modules from CSV:', error);
-            throw new Error('Error deleting modules from CSV: ' + error.message);
+            console.error('Error deleting modules from Excel file:', error);
+            throw new Error('Error deleting modules from Excel file: ' + error.message);
         }
     },
 

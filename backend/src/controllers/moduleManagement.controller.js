@@ -70,56 +70,56 @@ const moduleManagement = {
     },
 
 
-    // Create modules from CSV file (Admin only)
-    createModulesFromCSV: async (req, res) => {
+    // Create modules from Excel file (Admin only)
+    createModulesFromExcel: async (req, res) => {
         try {
             // Check if a file was uploaded
             if (!req.file) {
                 return res.status(400).json({
                     status: 'error',
                     code: 400,
-                    message: 'No CSV file uploaded'
+                    message: 'No Excel file uploaded'
                 });
             }
             
             const userId = req.user.uid;
             const filePath = req.file.path;
             
-            // Process the CSV file
-            const result = await moduleService.createMultipleModulesFromCSV(filePath, userId);
+            // Process the Excel file
+            const result = await moduleService.createMultipleModulesFromExcel(filePath, userId);
             
-            const resData = responseSuccess(result, 'Modules created from CSV successfully');
+            const resData = responseSuccess(result, 'Modules created from Excel file successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            console.error("Failed to create modules from CSV:", error);
-            const resError = responseError(error, 'Failed to process CSV file');
+            console.error("Failed to create modules from Excel file:", error);
+            const resError = responseError(error, 'Failed to process Excel file');
             res.status(resError.code).json(resError);
         }
     },
 
-    // Delete modules from CSV file (Admin only)
-    deleteModulesFromCSV: async (req, res) => {
+    // Delete modules from Excel file (Admin only)
+    deleteModulesFromExcel: async (req, res) => {
         try {
             // Check if a file was uploaded
             if (!req.file) {
                 return res.status(400).json({
                     status: 'error',
                     code: 400,
-                    message: 'No CSV file uploaded'
+                    message: 'No Excel file uploaded'
                 });
             }
             
             const userId = req.user.uid;
             const filePath = req.file.path;
             
-            // Process the CSV file
-            const result = await moduleService.deleteMultipleModulesFromCSV(filePath, userId);
+            // Process the Excel file
+            const result = await moduleService.deleteMultipleModulesFromExcel(filePath, userId);
             
-            const resData = responseSuccess(result, 'Modules deleted from CSV successfully');
+            const resData = responseSuccess(result, 'Modules deleted from Excel file successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            console.error("Failed to delete modules from CSV:", error);
-            const resError = responseError(error, 'Failed to process CSV file');
+            console.error("Failed to delete modules from Excel file:", error);
+            const resError = responseError(error, 'Failed to process Excel file');
             res.status(resError.code).json(resError);
         }
     },

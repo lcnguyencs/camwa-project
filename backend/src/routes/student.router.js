@@ -85,19 +85,19 @@ studentRouter.get('/:student_id/image',
   studentController.getStudentImageByStudentId
 );
 
-// New endpoints for CSV upload
+// New endpoints for Excel upload
 
 // Endpoint with specific field name
 studentRouter.post(
-  '/create-from-csv', 
+  '/create-from-excel', 
   verifyTokenAndRole(['ADMIN', 'FACULTY']), 
   upload.single('file'),
-  studentController.createStudentsFromCSV
+  studentController.createStudentsFromExcel
 );
 
 // Alternative endpoint that can accept any field name
 studentRouter.post(
-  '/upload-csv',
+  '/upload-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -138,20 +138,20 @@ studentRouter.post(
       next();
     });
   },
-  studentController.createStudentsFromCSV
+  studentController.createStudentsFromExcel
 );
 
-// Endpoint for using a default CSV file
+// Endpoint for using a default Excel file
 studentRouter.post(
-  '/create-from-default-csv',
+  '/create-from-default-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'FA - Create Student List .csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'FA - Create Student List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  studentController.createStudentsFromCSV
+  studentController.createStudentsFromExcel
 );
 
 export default studentRouter;

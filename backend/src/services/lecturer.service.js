@@ -54,14 +54,14 @@ const lecturerService = {
       throw new Error('Error updating lecturer: ' + error.message);
     }
   },
-  createMultipleLecturersFromCSV: async (filePath) => {
+  createMultipleLecturersFromExcel: async (filePath) => {
     try {
       const fs = await import('fs/promises');
       
       // Check if file exists before attempting to read
       try {
         await fs.access(filePath);
-        console.log(`CSV file exists at: ${filePath}`);
+        console.log(`Excel file exists at: ${filePath}`);
       } catch (fileError) {
         throw new Error(`File not found: ${filePath}`);
       }
@@ -69,13 +69,13 @@ const lecturerService = {
       const Excel = (await import('exceljs')).default;
       const workbook = new Excel.Workbook();
       
-      console.log(`Attempting to read CSV from: ${filePath}`);
+      console.log(`Attempting to read Excel file from: ${filePath}`);
       
-      // Parse the CSV file
-      await workbook.csv.readFile(filePath);
+      // Parse the Excel file
+      await workbook.xlsx.readFile(filePath);
       const worksheet = workbook.worksheets[0];
       
-      console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+      console.log(`Excel file loaded successfully with ${worksheet.rowCount} rows`);
       
       const results = {
         successful: [],
@@ -119,7 +119,7 @@ const lecturerService = {
       
       return results;
     } catch (error) {
-      throw new Error('Error creating lecturers from CSV: ' + error.message);
+      throw new Error('Error creating lecturers from Excel file: ' + error.message);
     }
   }
 };

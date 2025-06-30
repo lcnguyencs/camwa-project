@@ -26,12 +26,12 @@ const storage = multer.diskStorage({
   }
 });
 
-// Set file filter to only allow csv files
+// Set file filter to only allow Excel files
 const fileFilter = (req, file, cb) => {
-  if (file.originalname.toLowerCase().endsWith('.csv')) {
+  if (file.originalname.toLowerCase().endsWith('.xlsx')) {
     cb(null, true);
   } else {
-    cb(new Error('Only CSV files are allowed!'), false);
+    cb(new Error('Only XLSX files are allowed!'), false);
   }
 };
 
@@ -51,18 +51,18 @@ lecturerRouter.get('/:lecturer_id', lecturerController.findLecturerById);
 lecturerRouter.delete('/:lecturer_id', lecturerController.deleteLecturer);
 lecturerRouter.put('/:lecturer_id', lecturerController.updateLecturer);
 
-// CSV upload routes for bulk creation
+// Excel upload routes for bulk creation
 // Endpoint with specific field name
 lecturerRouter.post(
-  '/create-from-csv', 
+  '/create-from-excel', 
   verifyTokenAndRole(['ADMIN', 'FACULTY']), 
   upload.single('file'), 
-  lecturerController.createLecturersFromCSV
+  lecturerController.createLecturersFromExcel
 );
 
 // Alternative endpoint that can accept any field name
 lecturerRouter.post(
-  '/upload-csv',
+  '/upload-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -90,20 +90,20 @@ lecturerRouter.post(
       next();
     });
   },
-  lecturerController.createLecturersFromCSV
+  lecturerController.createLecturersFromExcel
 );
 
-// Endpoint for using a default CSV file
+// Endpoint for using a default Excel file
 lecturerRouter.post(
-  '/create-from-default-csv',
+  '/create-from-default-excel',
   verifyTokenAndRole(['ADMIN', 'faculty_assistant']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'FA - Create Lecturer List .csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'FA - Create Lecturer List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  lecturerController.createLecturersFromCSV
+  lecturerController.createLecturersFromExcel
 );
 
 export default lecturerRouter;

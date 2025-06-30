@@ -26,12 +26,12 @@ const storage = multer.diskStorage({
   }
 });
 
-// Set file filter to only allow csv files
+// Set file filter to only allow Excel files
 const fileFilter = (req, file, cb) => {
-  if (file.originalname.toLowerCase().endsWith('.csv')) {
+  if (file.originalname.toLowerCase().endsWith('.xlsx')) {
     cb(null, true);
   } else {
-    cb(new Error('Only CSV files are allowed!'), false);
+    cb(new Error('Only XLSX files are allowed!'), false);
   }
 };
 
@@ -62,18 +62,18 @@ router.post('/export-student-list/:module_id', verifyTokenAndRole(['ADMIN', 'FAC
 // This route must be last to avoid conflicts with the above specific routes
 router.get('/:id', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), moduleRegistrationController.getRegistrationById);
 
-// CSV upload routes (Faculty Assistant only)
+// Excel upload routes (Faculty Assistant only)
 // Standard endpoint with specific field name
 router.post(
-  '/create-from-csv', 
+  '/create-from-excel', 
   verifyTokenAndRole(['ADMIN', 'FACULTY']), 
   upload.single('file'),
-  moduleRegistrationController.createRegistrationsFromCSV
+  moduleRegistrationController.createRegistrationsFromExcel
 );
 
 // Alternative endpoint that can accept any field name
 router.post(
-  '/upload-csv',
+  '/upload-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -100,20 +100,20 @@ router.post(
       next();
     });
   },
-  moduleRegistrationController.createRegistrationsFromCSV
+  moduleRegistrationController.createRegistrationsFromExcel
 );
 
-// Endpoint for using a default CSV file
+// Endpoint for using a default Excel file
 router.post(
-  '/create-from-default-csv',
+  '/create-from-default-excel',
   verifyTokenAndRole(['ADMIN', 'FACULTY']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'FA - Create Modle Registration List.csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'FA - Create Modle Registration List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  moduleRegistrationController.createRegistrationsFromCSV
+  moduleRegistrationController.createRegistrationsFromExcel
 );
 
 export default router;

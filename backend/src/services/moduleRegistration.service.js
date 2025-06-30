@@ -299,15 +299,15 @@ const moduleRegistrationService = {
       throw new Error('Error deleting module registration: ' + error.message);
     }
   },
-  // Create multiple module registrations from CSV file
-  createRegistrationsFromCSV: async (filePath) => {
+  // Create multiple module registrations from Excel file
+  createRegistrationsFromExcel: async (filePath) => {
     try {
       const fs = await import('fs/promises');
       
       // Check if file exists before attempting to read
       try {
         await fs.access(filePath);
-        console.log(`CSV file exists at: ${filePath}`);
+        console.log(`Excel file exists at: ${filePath}`);
       } catch (fileError) {
         throw new Error(`File not found: ${filePath}`);
       }
@@ -315,13 +315,13 @@ const moduleRegistrationService = {
       const Excel = (await import('exceljs')).default;
       const workbook = new Excel.Workbook();
       
-      console.log(`Attempting to read CSV from: ${filePath}`);
+      console.log(`Attempting to read Excel file from: ${filePath}`);
       
-      // Parse the CSV file
-      await workbook.csv.readFile(filePath);
+      // Parse the Excel file
+      await workbook.xlsx.readFile(filePath);
       const worksheet = workbook.worksheets[0];
       
-      console.log(`CSV loaded successfully with ${worksheet.rowCount} rows`);
+      console.log(`Excel file loaded successfully with ${worksheet.rowCount} rows`);
       
       const results = {
         successful: [],
@@ -409,8 +409,8 @@ const moduleRegistrationService = {
       
       return results;
     } catch (error) {
-      console.error('Error creating registrations from CSV:', error);
-      throw new Error('Error creating registrations from CSV: ' + error.message);
+      console.error('Error creating registrations from Excel file:', error);
+      throw new Error('Error creating registrations from Excel file: ' + error.message);
     }
   },
 

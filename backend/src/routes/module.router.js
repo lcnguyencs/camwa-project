@@ -26,12 +26,12 @@ const storage = multer.diskStorage({
   }
 });
 
-// Set file filter to only allow csv files
+// Set file filter to only allow Excel files
 const fileFilter = (req, file, cb) => {
-  if (file.originalname.toLowerCase().endsWith('.csv')) {
+  if (file.originalname.toLowerCase().endsWith('.xlsx')) {
     cb(null, true);
   } else {
-    cb(new Error('Only CSV files are allowed!'), false);
+    cb(new Error('Only XLSX files are allowed!'), false);
   }
 };
 
@@ -60,18 +60,18 @@ moduleRouter.get('/camera-path/:moduleId', verifyTokenAndRole(['ADMIN']), module
 // Set camera path for a module (Admin only)
 moduleRouter.put('/set-camera-path/:moduleId', verifyTokenAndRole(['ADMIN']), moduleController.setCameraPath);
 
-// New routes for CSV upload
+// New routes for Excel upload
 // Endpoint with specific field name
 moduleRouter.post(
-  '/create-from-csv', 
+  '/create-from-excel', 
   verifyTokenAndRole(['ADMIN','FACULTY']), 
   upload.single('file'),
-  moduleController.createModulesFromCSV
+  moduleController.createModulesFromExcel
 );
 
 // Alternative endpoint that can accept any field name
 moduleRouter.post(
-  '/upload-csv',
+  '/upload-excel',
   verifyTokenAndRole(['ADMIN','FACULTY']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -99,33 +99,33 @@ moduleRouter.post(
       next();
     });
   },
-  moduleController.createModulesFromCSV
+  moduleController.createModulesFromExcel
 );
 
-// Endpoint for using a default CSV file
+// Endpoint for using a default Excel file
 moduleRouter.post(
-  '/create-from-default-csv',
+  '/create-from-default-excel',
   verifyTokenAndRole(['ADMIN','FACULTY']),
   (req, res, next) => {
-    // Set the default CSV file path
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Create Module List.csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'Admin - Create Module List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  moduleController.createModulesFromCSV
+  moduleController.createModulesFromExcel
 );
 
-// Delete modules from CSV file - Endpoint with specific field name
+// Delete modules from Excel file - Endpoint with specific field name
 moduleRouter.post(
-  '/delete-from-csv', 
+  '/delete-from-excel', 
   verifyTokenAndRole(['ADMIN']), 
   upload.single('file'),
-  moduleController.deleteModulesFromCSV
+  moduleController.deleteModulesFromExcel
 );
 
-// Delete modules from CSV file - Alternative endpoint that can accept any field name
+// Delete modules from Excel file - Alternative endpoint that can accept any field name
 moduleRouter.post(
-  '/delete/upload-csv',
+  '/delete/upload-excel',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
     // Using multer directly with any field
@@ -153,20 +153,20 @@ moduleRouter.post(
       next();
     });
   },
-  moduleController.deleteModulesFromCSV
+  moduleController.deleteModulesFromExcel
 );
 
-// Delete modules from a default CSV file
+// Delete modules from a default Excel file
 moduleRouter.post(
-  '/delete-from-default-csv',
+  '/delete-from-default-excel',
   verifyTokenAndRole(['ADMIN']),
   (req, res, next) => {
-    // Set the default CSV file path for deletion
-    const defaultCsvPath = path.resolve(__dirname, '../../../..', 'Admin - Delete Module List.csv');
-    req.file = { path: defaultCsvPath };
+    // Set the default Excel file path for deletion
+    const defaultExcelPath = path.resolve(__dirname, '../../../..', 'Admin - Delete Module List.xlsx');
+    req.file = { path: defaultExcelPath };
     next();
   },
-  moduleController.deleteModulesFromCSV
+  moduleController.deleteModulesFromExcel
 );
 
 export default moduleRouter;

@@ -61,14 +61,14 @@ const studentController = {
     }
   },
 
-  // Create students from CSV file
-  createStudentsFromCSV: async (req, res) => {
+  // Create students from Excel file
+  createStudentsFromExcel: async (req, res) => {
     try {
       if (!req.file) {
-        return res.status(400).json(responseError('No CSV file provided', 400));
+        return res.status(400).json(responseError('No Excel file provided', 400));
       }
 
-      const results = await studentService.createMultipleStudentsFromCSV(req.file.path);
+      const results = await studentService.createMultipleStudentsFromExcel(req.file.path);
       
       return res.status(200).json(responseSuccess({
         successful: results.successful.length,

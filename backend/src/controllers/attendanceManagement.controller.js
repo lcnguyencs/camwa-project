@@ -212,19 +212,19 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
         }
     },
 
-    // Create attendance records from CSV file (Faculty Assistant only)
-    createAttendanceFromCSV: async (req, res, next) => {
+    // Create attendance records from Excel file (Faculty Assistant only)
+    createAttendanceFromExcel: async (req, res, next) => {
         try {
             // Check if file was uploaded
             if (!req.file) {
-                return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+                return res.status(400).json(responseError('No Excel file uploaded. Make sure to include a file field with your Excel file.', 400));
             }
 
             console.log('File uploaded for attendance:', req.file);
             console.log('File path:', req.file.path);
             
-            // Process the CSV file and create attendance records
-            const results = await attendanceService.createAttendanceFromCSV(req.file.path);
+            // Process the Excel file and create attendance records
+            const results = await attendanceService.createAttendanceFromExcel(req.file.path);
             
             res.status(201).json(
                 responseSuccess(
@@ -233,7 +233,7 @@ const attendanceManagement = {    // Create Attendance (Automated or Manual)
                 )
             );
         } catch (error) {
-            console.error('Error processing attendance CSV:', error);
+            console.error('Error processing attendance Excel file:', error);
             res.status(500).json(responseError(error.message, 500));
         }
     },

@@ -51,18 +51,18 @@ const iamController = {
       res.status(500).json(responseError(error.message, 500));
     }
   },
-  createStudentsFromCSV: async (req, res) => {
+  createStudentsFromExcel: async (req, res) => {
     try {
       // Check if file was uploaded
       if (!req.file) {
-        return res.status(400).json(responseError('No CSV file uploaded. Make sure to include a file field with your CSV file.', 400));
+        return res.status(400).json(responseError('No Excel file uploaded. Make sure to include a file field with your XLSX file.', 400));
       }
 
       console.log('File uploaded:', req.file);
       console.log('File path:', req.file.path);
       
-      // Process the CSV file and create students using the uploaded file path
-      const results = await accountService.createMultipleStudentsFromCSV(req.file.path);
+      // Process the Excel file and create students using the uploaded file path
+      const results = await accountService.createMultipleStudentsFromExcel(req.file.path);
       
       res.status(201).json(
         responseSuccess(
@@ -71,21 +71,21 @@ const iamController = {
         )
       );
     } catch (error) {
-      console.error('Error processing CSV:', error);
+      console.error('Error processing Excel file:', error);
       res.status(500).json(responseError(error.message, 500));
     }
   },
-  createLecturersFromCSV: async (req, res) => {
+  createLecturersFromExcel: async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({
           status: 'error',
           code: 400,
-          message: 'No CSV file provided'
+          message: 'No Excel file provided'
         });
       }
 
-      const results = await accountService.createMultipleLecturersFromCSV(req.file.path);
+      const results = await accountService.createMultipleLecturersFromExcel(req.file.path);
       
       return res.status(200).json({
         status: 'success',
