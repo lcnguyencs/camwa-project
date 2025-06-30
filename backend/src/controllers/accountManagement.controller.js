@@ -51,6 +51,7 @@ const iamController = {
       res.status(500).json(responseError(error.message, 500));
     }
   },
+
   createStudentsFromExcel: async (req, res) => {
     try {
       // Check if file was uploaded
@@ -104,7 +105,28 @@ const iamController = {
         message: error.message
       });
     }
-  }
+  },
+
+  changePassword: async (req, res) => {
+    try {
+      const { iamId } = req.params;
+      const { currentPassword, newPassword } = req.body;
+
+      // Validate input
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json(responseError('Current password and new password are required', 400));
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json(responseError('New password must be at least 6 characters long', 400));
+      }
+
+      const result = await accountService.changePassword(iamId, currentPassword, newPassword);
+      res.status(200).json(responseSuccess(result, 'Password changed successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
 };
 
 export default iamController;

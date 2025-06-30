@@ -153,4 +153,11 @@ accountRouter.post(
 accountRouter.put('/:iamId', iamController.updateUser);
 accountRouter.delete('/:iamId', iamController.deleteUser);
 
+// Change password endpoint - accessible by ADMIN, LECTURER, faculty_assistant, and STUDENT
+accountRouter.put(
+  '/:iamId/change-password',
+  verifyTokenAndRole(['ADMIN', 'LECTURER', 'faculty_assistant', 'STUDENT']),
+  iamController.changePassword
+);
+
 export default accountRouter;

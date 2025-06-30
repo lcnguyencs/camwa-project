@@ -106,6 +106,37 @@ const accountService = {
       throw new Error('Error deleting user: ' + error.message);
     }
   },
+
+  changePassword: async (iamId, currentPassword, newPassword) => {
+    try {
+      // Find the user by ID
+      const user = await Iam.findByPk(iamId);
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        throw new Error('Current password is incorrect');
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+      // Update the password
+      await Iam.update(
+        { password: hashedNewPassword },
+        { where: { iam_id: iamId } }
+      );
+
+      return { message: 'Password changed successfully' };
+    } catch (error) {
+      throw new Error('Error changing password: ' + error.message);
+    }
+  },
   
   createStudentImageAsset: async (username) => {
     try {
