@@ -5,9 +5,11 @@ import Student from '../models/Student.model.js';
 import Module from '../models/Module.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Exam from '../models/Exam.model.js';
+import Iam from '../models/Iam.model.js';
 import { sendMail } from '../common/nodemailer/send-mail.nodemailer.js';
 import { Op, Sequelize } from 'sequelize';
 import notificationService from './notification.service.js';
+import emailService from './email.service.js';
 
 const attendanceService = {
     // Get attendance by id
@@ -110,20 +112,39 @@ const attendanceService = {
             reason: requestDetails.reason || null
         });
 
-        // Send email notification asynchronously (fire-and-forget)
+        // Send confirmation email to student asynchronously (fire-and-forget)
         // This won't block the response to the client
-        // setImmediate(async () => {
-        //     try {
-        //         await sendMail({
-        //             to: 'student@example.com', // Replace with student's email
-        //             subject: 'Attendance Correction Request Submitted',
-        //             text: `Your attendance correction request for module ${moduleId} has been submitted successfully.`,
-        //             html: `<p>Your attendance correction request for module ${moduleId} has been submitted successfully.</p>`
-        //         });
-        //     } catch (emailError) {
-        //         console.error('Failed to send email notification:', emailError);
-        //     }
-        // });
+        setImmediate(async () => {
+            try {
+                // Get student's email from IAM table
+                const studentIam = await Iam.findOne({
+                    where: { iam_id: studentId },
+                    attributes: ['email']
+                });
+
+                if (studentIam && studentIam.email) {
+                    const requestData = {
+                        module_id: moduleId,
+                        attendance_date: attendance.attendance_date,
+                        current_status: attendance.attendance_status,
+                        proposed_status: requestDetails.proposed_status,
+                        reason: requestDetails.reason
+                    };
+
+                    await emailService.sendAttendanceRequestConfirmation(
+                        studentIam.email,
+                        requestData,
+                        request.request_id
+                    );
+                    
+                    console.log(`Confirmation email sent to ${studentIam.email} for request ${request.request_id}`);
+                } else {
+                    console.warn(`Could not find email for student ${studentId} - confirmation email not sent`);
+                }
+            } catch (emailError) {
+                console.error('Failed to send confirmation email:', emailError);
+            }
+        });
 
         // Create notification for Faculty/Admin asynchronously (fire-and-forget)
         // This won't block the response to the client
@@ -148,6 +169,15 @@ const attendanceService = {
         if (request.request_status !== 'pending') {
             throw new Error('This request has already been processed');
         }
+
+        // Get student's email from IAM table for email notification
+        const studentIam = await Iam.findOne({
+            where: { iam_id: request.student_id },
+            attributes: ['email']
+        });
+
+        // Get original attendance record to include current status in email
+        const originalAttendance = await Attendance.findByPk(request.attendance_id);
 
         // Compare approved_status with proposed_status to determine if it's an approval
         const isApproved = approved_status === request.proposed_status;
@@ -188,18 +218,32 @@ const attendanceService = {
 
         // Send email notification asynchronously (fire-and-forget)
         // This won't block the response to the client
-        // setImmediate(async () => {
-        //     try {
-        //         await sendMail({
-        //             to: 'student@example.com',  // Replace with student's email in a real scenario
-        //             subject: `Attendance Correction ${isApproved ? 'Approved' : 'Rejected'}`,
-        //             text: `Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.`,
-        //             html: `<p>Your attendance correction request for module ${request.module_id} has been ${isApproved ? 'approved' : 'rejected'}.</p>`
-        //         });
-        //     } catch (emailError) {
-        //         console.error('Failed to send email notification:', emailError);
-        //     }
-        // });
+        setImmediate(async () => {
+            try {
+                if (studentIam && studentIam.email) {
+                    const requestData = {
+                        module_id: request.module_id,
+                        original_status: originalAttendance ? originalAttendance.attendance_status : null,
+                        proposed_status: request.proposed_status,
+                        approved_status: approved_status,
+                        reason: request.reason
+                    };
+
+                    await emailService.sendAttendanceCorrectionNotification(
+                        studentIam.email,
+                        requestData,
+                        isApproved,
+                        processedBy
+                    );
+                    
+                    console.log(`Email notification sent to ${studentIam.email} for request ${requestId}`);
+                } else {
+                    console.warn(`Could not find email for student ${request.student_id} - email notification not sent`);
+                }
+            } catch (emailError) {
+                console.error('Failed to send email notification:', emailError);
+            }
+        });
 
         // Create notification for the student asynchronously (fire-and-forget)
         // This won't block the response to the client

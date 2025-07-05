@@ -140,3 +140,5 @@ node_modules/
 
 # Bỏ thư mục .angular
 .angular/
+*.csv
+*.xlsx
