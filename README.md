@@ -313,7 +313,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - **[Email Service](docs/configuration/email-service-config.md)** - Automated notifications
 
 ### 🔗 Quick Links
-- **[Live Demo](http://localhost:4200)** - Access the application
+- **[Live Demo](https://www.youtube.com/watch?v=SPuSc05JIlM)** - Access the application
 - **[API Documentation](http://localhost:3000/api-docs/#/)** - Interactive API docs
 - **[GitHub Repository](https://github.com/lcnguyencs/camwa-project)** - Source code
 
